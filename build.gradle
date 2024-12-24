@@ -10,6 +10,7 @@ plugins {
     id "jhipster.code-quality-conventions"
     id "jhipster.node-gradle-conventions"
     id "org.liquibase.gradle"
+    id("io.freefair.lombok") version "8.3"
     // jhipster-needle-gradle-plugins - JHipster will add additional gradle plugins here
 }
 
@@ -143,6 +144,10 @@ dependencies {
     testImplementation "org.springframework.boot:spring-boot-starter-test"
     implementation "org.springframework.boot:spring-boot-starter-thymeleaf"
     implementation "org.springframework.boot:spring-boot-starter-undertow"
+    implementation 'org.projectlombok:lombok:1.18.30' // Use the latest version
+    annotationProcessor 'org.projectlombok:lombok:1.18.30'
+    testAnnotationProcessor 'org.projectlombok:lombok:1.18.30' // Optional for testing
+    testImplementation 'org.projectlombok:lombok:1.18.30'
     modules {
         module("org.springframework.boot:spring-boot-starter-tomcat") {
             replacedBy("org.springframework.boot:spring-boot-starter-undertow", "Use Undertow instead of Tomcat")
