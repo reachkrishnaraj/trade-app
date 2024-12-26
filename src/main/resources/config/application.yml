@@ -220,3 +220,8 @@ jhipster:
     enabled: true
     baseline-on-migrate: true
     locations: classpath:db/migration
+
+crosstrade:
+  api:
+    base-url: https://app.crosstrade.io/v1/api
+    secret-key: your-secret-key
