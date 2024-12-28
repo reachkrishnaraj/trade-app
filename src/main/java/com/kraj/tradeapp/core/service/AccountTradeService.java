@@ -1,6 +1,6 @@
 package com.kraj.tradeapp.core.service;
 
-import com.kraj.tradeapp.core.model.Trade;
+import com.kraj.tradeapp.core.model.persistance.Trade;
 import com.kraj.tradeapp.core.repository.TradeRepository;
 import jakarta.persistence.EntityNotFoundException;
 import jakarta.transaction.Transactional;

@@ -1,6 +1,6 @@
 package com.kraj.tradeapp.core.service;
 
-import com.kraj.tradeapp.core.model.AccountPNL;
+import com.kraj.tradeapp.core.model.persistance.AccountPNL;
 import com.kraj.tradeapp.core.repository.AccountPNLRepository;
 import jakarta.transaction.Transactional;
 import java.time.LocalDate;

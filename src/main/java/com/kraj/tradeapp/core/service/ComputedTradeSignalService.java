@@ -2,7 +2,9 @@ package com.kraj.tradeapp.core.service;
 
 import com.kraj.tradeapp.core.model.ComputedTradeSignal;
 import com.kraj.tradeapp.core.model.dto.TradeSignalRequest;
+import com.kraj.tradeapp.core.model.persistance.TradeSignal;
 import com.kraj.tradeapp.core.repository.ComputedTradeSignalRepository;
+import com.kraj.tradeapp.core.repository.TradeSignalRepository;
 import jakarta.persistence.EntityNotFoundException;
 import jakarta.transaction.Transactional;
 import java.math.BigDecimal;
@@ -17,23 +19,28 @@ import org.springframework.stereotype.Service;
 @Slf4j
 public class ComputedTradeSignalService {
 
-    private final ComputedTradeSignalRepository computedTradeSignalRepository;
+    private final TradeSignalRepository tradeSignalRepository;
 
     @Autowired
-    public ComputedTradeSignalService(ComputedTradeSignalRepository computedTradeSignalRepository) {
-        this.computedTradeSignalRepository = computedTradeSignalRepository;
+    public ComputedTradeSignalService(TradeSignalRepository tradeSignalRepository) {
+        this.tradeSignalRepository = tradeSignalRepository;
     }
 
-    public List<ComputedTradeSignal> getSignalsForSymbol(String symbol) {
-        return computedTradeSignalRepository.findBySymbol(symbol);
+    public List<TradeSignal> getSignalsForSymbol(String symbol) {
+        return tradeSignalRepository.findBySymbol(symbol);
     }
 
-    public List<ComputedTradeSignal> getHighConfidenceSignals(BigDecimal minConfidence) {
-        return computedTradeSignalRepository.findByConfidenceGreaterThan(minConfidence);
+    public List<TradeSignal> getHighConfidenceSignals(BigDecimal minConfidence) {
+        return tradeSignalRepository.findByConfidenceGreaterThan(minConfidence);
     }
 
-    public ComputedTradeSignal createSignal(TradeSignalRequest request) {
-        ComputedTradeSignal signal = new ComputedTradeSignal();
+    public void deleteOldSignals(int daysOld) {
+        LocalDateTime cutoffDate = LocalDateTime.now().minusDays(daysOld);
+        tradeSignalRepository.deleteOldSignals(cutoffDate);
+    }
+
+    public TradeSignal createSignal(TradeSignalRequest request) {
+        TradeSignal signal = new TradeSignal();
         signal.setDatetime(LocalDateTime.now());
         signal.setSymbol(request.getSymbol());
         signal.setSignalType(request.getSignalType());
@@ -42,26 +49,22 @@ public class ComputedTradeSignalService {
         signal.setSource(request.getSource());
         signal.setCreatedTs(LocalDateTime.now());
         signal.setLastUpdated(LocalDateTime.now());
-        return computedTradeSignalRepository.save(signal);
+        return tradeSignalRepository.save(signal);
     }
 
-    public ComputedTradeSignal updateSignal(Long id, TradeSignalRequest request) {
-        ComputedTradeSignal existingSignal = computedTradeSignalRepository
-            .findById(id)
-            .orElseThrow(() -> new EntityNotFoundException("Signal not found"));
+    public TradeSignal updateSignal(Long id, TradeSignalRequest request) {
+        TradeSignal existingSignal = tradeSignalRepository.findById(id).orElseThrow(() -> new EntityNotFoundException("Signal not found"));
         existingSignal.setSymbol(request.getSymbol());
         existingSignal.setSignalType(request.getSignalType());
         existingSignal.setConfidence(request.getConfidence());
         existingSignal.setReason(request.getReason());
         existingSignal.setSource(request.getSource());
         existingSignal.setLastUpdated(LocalDateTime.now());
-        return computedTradeSignalRepository.save(existingSignal);
+        return tradeSignalRepository.save(existingSignal);
     }
 
     public void deleteSignal(Long id) {
-        ComputedTradeSignal signal = computedTradeSignalRepository
-            .findById(id)
-            .orElseThrow(() -> new EntityNotFoundException("Signal not found"));
-        computedTradeSignalRepository.delete(signal);
+        TradeSignal signal = tradeSignalRepository.findById(id).orElseThrow(() -> new EntityNotFoundException("Signal not found"));
+        tradeSignalRepository.delete(signal);
     }
 }

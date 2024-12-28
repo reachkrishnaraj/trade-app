@@ -1,4 +1,4 @@
-package com.kraj.tradeapp.core.model;
+package com.kraj.tradeapp.core.model.persistance;
 
 import jakarta.persistence.*;
 import java.math.BigDecimal;
@@ -12,7 +12,7 @@ import lombok.NoArgsConstructor;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-public class ComputedTradeSignal {
+public class TradeSignal {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -24,8 +24,8 @@ public class ComputedTradeSignal {
     @Column(nullable = false, length = 50)
     private String symbol;
 
-    @Column(name = "signal_type", nullable = false, length = 20)
-    private String signalType;
+    @Column
+    private String direction;
 
     @Column(precision = 5, scale = 2)
     private BigDecimal confidence;

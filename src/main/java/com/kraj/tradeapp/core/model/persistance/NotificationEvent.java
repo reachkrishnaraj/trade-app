@@ -1,10 +1,10 @@
-package com.kraj.tradeapp.core.model;
+package com.kraj.tradeapp.core.model.persistance;
 
 import jakarta.persistence.*;
 import java.math.BigDecimal;
-import java.time.LocalDate;
 import java.time.LocalDateTime;
 import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
@@ -13,31 +13,38 @@ import lombok.NoArgsConstructor;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
+@Builder
 public class NotificationEvent {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(nullable = false)
+    @Column
     private LocalDateTime datetime;
 
-    @Column(nullable = false, length = 100)
+    @Column
     private String source;
 
-    @Column(nullable = false, length = 50)
+    @Column
     private String indicator;
 
-    @Column(nullable = false, length = 20)
-    private String signal;
+    @Column
+    private String derivedValue;
+
+    @Column
+    private String direction;
+
+    @Column
+    private String category;
 
     @Column(columnDefinition = "TEXT", name = "raw_msg")
     private String rawMsg;
 
-    @Column(nullable = false, precision = 15, scale = 2)
+    @Column(precision = 15, scale = 2)
     private BigDecimal price;
 
-    @Column(nullable = false, length = 20)
+    @Column(length = 20)
     private String interval;
 
     @Column(name = "created_ts")
@@ -45,4 +52,7 @@ public class NotificationEvent {
 
     @Column(name = "lastupdated_ts")
     private LocalDateTime lastUpdated;
+
+    @Column
+    private boolean isStrategy;
 }

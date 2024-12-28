@@ -1,6 +1,6 @@
 package com.kraj.tradeapp.core.repository;
 
-import com.kraj.tradeapp.core.model.Trade;
+import com.kraj.tradeapp.core.model.persistance.Trade;
 import java.util.List;
 import org.springframework.data.jpa.repository.JpaRepository;
 
