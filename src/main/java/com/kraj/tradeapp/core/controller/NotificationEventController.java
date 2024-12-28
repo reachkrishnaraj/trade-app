@@ -10,7 +10,6 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/api/v1/notifications")
@@ -40,36 +39,5 @@ public class NotificationEventController {
     public ResponseEntity<List<TradeSignal>> getTradeSignals(String symbol) {
         List<TradeSignal> tradeSignals = notificationProcessorService.getTradeSignals(symbol);
         return ResponseEntity.ok(tradeSignals);
-    }
-
-    @GetMapping
-    public ResponseEntity<List<NotificationEvent>> getNotifications(@Valid NotificationEventRequest request) {
-        return ResponseEntity.ok(
-            notificationService.getLatestNotifications(request.getIndicator(), request.getInterval(), request.getLimit())
-        );
-    }
-
-    @GetMapping("/{id}")
-    public ResponseEntity<NotificationEvent> getNotificationById(@PathVariable Long id) {
-        return ResponseEntity.ok(notificationService.getNotificationById(id));
-    }
-
-    @PostMapping
-    public ResponseEntity<NotificationEvent> createNotification(@RequestBody @Valid NotificationEvent notificationEvent) {
-        return ResponseEntity.ok(notificationService.createNotification(notificationEvent));
-    }
-
-    @PutMapping("/{id}")
-    public ResponseEntity<NotificationEvent> updateNotification(
-        @PathVariable Long id,
-        @RequestBody @Valid NotificationEvent notificationEvent
-    ) {
-        return ResponseEntity.ok(notificationService.updateNotification(id, notificationEvent));
-    }
-
-    @DeleteMapping("/{id}")
-    public ResponseEntity<Void> deleteNotification(@PathVariable Long id) {
-        notificationService.deleteNotification(id);
-        return ResponseEntity.noContent().build();
     }
 }

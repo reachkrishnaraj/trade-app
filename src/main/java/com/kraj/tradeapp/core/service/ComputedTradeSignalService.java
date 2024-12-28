@@ -1,9 +1,7 @@
 package com.kraj.tradeapp.core.service;
 
-import com.kraj.tradeapp.core.model.ComputedTradeSignal;
 import com.kraj.tradeapp.core.model.dto.TradeSignalRequest;
 import com.kraj.tradeapp.core.model.persistance.TradeSignal;
-import com.kraj.tradeapp.core.repository.ComputedTradeSignalRepository;
 import com.kraj.tradeapp.core.repository.TradeSignalRepository;
 import jakarta.persistence.EntityNotFoundException;
 import jakarta.transaction.Transactional;
@@ -43,7 +41,6 @@ public class ComputedTradeSignalService {
         TradeSignal signal = new TradeSignal();
         signal.setDatetime(LocalDateTime.now());
         signal.setSymbol(request.getSymbol());
-        signal.setSignalType(request.getSignalType());
         signal.setConfidence(request.getConfidence());
         signal.setReason(request.getReason());
         signal.setSource(request.getSource());
@@ -55,7 +52,6 @@ public class ComputedTradeSignalService {
     public TradeSignal updateSignal(Long id, TradeSignalRequest request) {
         TradeSignal existingSignal = tradeSignalRepository.findById(id).orElseThrow(() -> new EntityNotFoundException("Signal not found"));
         existingSignal.setSymbol(request.getSymbol());
-        existingSignal.setSignalType(request.getSignalType());
         existingSignal.setConfidence(request.getConfidence());
         existingSignal.setReason(request.getReason());
         existingSignal.setSource(request.getSource());
