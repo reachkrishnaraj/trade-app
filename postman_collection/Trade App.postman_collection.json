@@ -1,0 +1,650 @@
+{
+  "info": {
+    "_postman_id": "e6f2fec4-e989-48d1-b766-e7f29d50d847",
+    "name": "Trade App",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+    "_exporter_id": "40667079"
+  },
+  "item": [
+    {
+      "name": "AccountPNL",
+      "item": [
+        {
+          "name": "Get PNL",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiJhZG1pbiIsImV4cCI6MTczNTQ4NjI0NywiYXV0aCI6IlJPTEVfQURNSU4gUk9MRV9VU0VSIiwiaWF0IjoxNzM1Mzk5ODQ3fQ.cc8qmw8S5esASWkA-2_7IqU8yuF1bjpuaJcoTRIQsCOEl6-4LmRLIG0c005UknCgzV_a5PyzUgLHx4mGxN82Fw",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "http://localhost:8080/api/v1/pnl/ACC123?startDate=2023-12-01&endDate=2023-12-31",
+              "protocol": "http",
+              "host": ["localhost"],
+              "port": "8080",
+              "path": ["api", "v1", "pnl", "ACC123"],
+              "query": [
+                {
+                  "key": "startDate",
+                  "value": "2023-12-01"
+                },
+                {
+                  "key": "endDate",
+                  "value": "2023-12-31"
+                }
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Get Daily PNL",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiJhZG1pbiIsImV4cCI6MTczNTQ4NjI0NywiYXV0aCI6IlJPTEVfQURNSU4gUk9MRV9VU0VSIiwiaWF0IjoxNzM1Mzk5ODQ3fQ.cc8qmw8S5esASWkA-2_7IqU8yuF1bjpuaJcoTRIQsCOEl6-4LmRLIG0c005UknCgzV_a5PyzUgLHx4mGxN82Fw",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "http://localhost:8080/api/v1/pnl/daily/2023-12-29",
+              "protocol": "http",
+              "host": ["localhost"],
+              "port": "8080",
+              "path": ["api", "v1", "pnl", "daily", "2023-12-29"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "store PNL Data",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiJhZG1pbiIsImV4cCI6MTczNTQ4NjI0NywiYXV0aCI6IlJPTEVfQURNSU4gUk9MRV9VU0VSIiwiaWF0IjoxNzM1Mzk5ODQ3fQ.cc8qmw8S5esASWkA-2_7IqU8yuF1bjpuaJcoTRIQsCOEl6-4LmRLIG0c005UknCgzV_a5PyzUgLHx4mGxN82Fw",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "POST",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{\r\n        \"accountIdDate\": \"20231229_15:60_ACC123\",\r\n        \"accountId\": \"ACC123\",\r\n        \"accountName\": \"Sample Account\",\r\n        \"profitLoss\": 8989.50,\r\n        \"date\": \"2023-12-29\",\r\n        \"createdTs\": \"2023-12-29T15:30:00\",\r\n        \"lastUpdatedTs\": \"2023-12-29T17:30:00\"\r\n    }",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "http://localhost:8080/api/v1/pnl",
+              "protocol": "http",
+              "host": ["localhost"],
+              "port": "8080",
+              "path": ["api", "v1", "pnl"]
+            }
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "Notifications",
+      "item": [
+        {
+          "name": "GetNotificationsForSpecificIndicator",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiJhZG1pbiIsImV4cCI6MTczNTQ4NjI0NywiYXV0aCI6IlJPTEVfQURNSU4gUk9MRV9VU0VSIiwiaWF0IjoxNzM1Mzk5ODQ3fQ.cc8qmw8S5esASWkA-2_7IqU8yuF1bjpuaJcoTRIQsCOEl6-4LmRLIG0c005UknCgzV_a5PyzUgLHx4mGxN82Fw",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "http://localhost:8080/api/v1/notifications?indicator=Indicator1&interval=1H&limit=2",
+              "protocol": "http",
+              "host": ["localhost"],
+              "port": "8080",
+              "path": ["api", "v1", "notifications"],
+              "query": [
+                {
+                  "key": "indicator",
+                  "value": "Indicator1"
+                },
+                {
+                  "key": "interval",
+                  "value": "1H"
+                },
+                {
+                  "key": "limit",
+                  "value": "2"
+                }
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "GetNotification",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiJhZG1pbiIsImV4cCI6MTczNTQ4NjI0NywiYXV0aCI6IlJPTEVfQURNSU4gUk9MRV9VU0VSIiwiaWF0IjoxNzM1Mzk5ODQ3fQ.cc8qmw8S5esASWkA-2_7IqU8yuF1bjpuaJcoTRIQsCOEl6-4LmRLIG0c005UknCgzV_a5PyzUgLHx4mGxN82Fw",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "http://localhost:8080/api/v1/notifications/1",
+              "protocol": "http",
+              "host": ["localhost"],
+              "port": "8080",
+              "path": ["api", "v1", "notifications", "1"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "DeleteNotificationData",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiJhZG1pbiIsImV4cCI6MTczNTQ4NjI0NywiYXV0aCI6IlJPTEVfQURNSU4gUk9MRV9VU0VSIiwiaWF0IjoxNzM1Mzk5ODQ3fQ.cc8qmw8S5esASWkA-2_7IqU8yuF1bjpuaJcoTRIQsCOEl6-4LmRLIG0c005UknCgzV_a5PyzUgLHx4mGxN82Fw",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "DELETE",
+            "header": [],
+            "url": {
+              "raw": "http://localhost:8080/api/v1/notifications/1",
+              "protocol": "http",
+              "host": ["localhost"],
+              "port": "8080",
+              "path": ["api", "v1", "notifications", "1"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "StoreNotificationData",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiJhZG1pbiIsImV4cCI6MTczNTQ4NjI0NywiYXV0aCI6IlJPTEVfQURNSU4gUk9MRV9VU0VSIiwiaWF0IjoxNzM1Mzk5ODQ3fQ.cc8qmw8S5esASWkA-2_7IqU8yuF1bjpuaJcoTRIQsCOEl6-4LmRLIG0c005UknCgzV_a5PyzUgLHx4mGxN82Fw",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "POST",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{\r\n    \"datetime\": \"2023-12-28T15:30:00\",\r\n    \"source\": \"Source1\",\r\n    \"indicator\": \"Indicator1\",\r\n    \"signal\": \"BUY\",\r\n    \"rawMsg\": \"Raw message 1\",\r\n    \"price\": 100.50,\r\n    \"interval\": \"1H\",\r\n    \"created\": \"2023-12-28T15:35:00\",\r\n    \"lastUpdated\": \"2023-12-28T15:40:00\"\r\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "http://localhost:8080/api/v1/notifications",
+              "protocol": "http",
+              "host": ["localhost"],
+              "port": "8080",
+              "path": ["api", "v1", "notifications"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "updateNotification",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiJhZG1pbiIsImV4cCI6MTczNTQ4NjI0NywiYXV0aCI6IlJPTEVfQURNSU4gUk9MRV9VU0VSIiwiaWF0IjoxNzM1Mzk5ODQ3fQ.cc8qmw8S5esASWkA-2_7IqU8yuF1bjpuaJcoTRIQsCOEl6-4LmRLIG0c005UknCgzV_a5PyzUgLHx4mGxN82Fw",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "PUT",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{\r\n    \"datetime\": \"2023-12-28T15:30:00\",\r\n    \"indicator\": \"Indicator122\",\r\n    \"interval\": \"1H\"\r\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "http://localhost:8080/api/v1/notifications/1",
+              "protocol": "http",
+              "host": ["localhost"],
+              "port": "8080",
+              "path": ["api", "v1", "notifications", "1"]
+            }
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "AccountTrades",
+      "item": [
+        {
+          "name": "GetOpenTradeForSpecificSignal",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiJhZG1pbiIsImV4cCI6MTczNTQ4NjI0NywiYXV0aCI6IlJPTEVfQURNSU4gUk9MRV9VU0VSIiwiaWF0IjoxNzM1Mzk5ODQ3fQ.cc8qmw8S5esASWkA-2_7IqU8yuF1bjpuaJcoTRIQsCOEl6-4LmRLIG0c005UknCgzV_a5PyzUgLHx4mGxN82Fw",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "http://localhost:8080/api/v1/trades/open/symbol/:symbol",
+              "protocol": "http",
+              "host": ["localhost"],
+              "port": "8080",
+              "path": ["api", "v1", "trades", "open", "symbol", ":symbol"],
+              "variable": [
+                {
+                  "key": "symbol",
+                  "value": "GOOG"
+                }
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "GetAllOpenTradeForAccountId",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiJhZG1pbiIsImV4cCI6MTczNTQ4NjI0NywiYXV0aCI6IlJPTEVfQURNSU4gUk9MRV9VU0VSIiwiaWF0IjoxNzM1Mzk5ODQ3fQ.cc8qmw8S5esASWkA-2_7IqU8yuF1bjpuaJcoTRIQsCOEl6-4LmRLIG0c005UknCgzV_a5PyzUgLHx4mGxN82Fw",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "http://localhost:8080/api/v1/trades/open/account/:accountId",
+              "protocol": "http",
+              "host": ["localhost"],
+              "port": "8080",
+              "path": ["api", "v1", "trades", "open", "account", ":accountId"],
+              "variable": [
+                {
+                  "key": "accountId",
+                  "value": "ACC002"
+                }
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "GetTradeById",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiJhZG1pbiIsImV4cCI6MTczNTQ4NjI0NywiYXV0aCI6IlJPTEVfQURNSU4gUk9MRV9VU0VSIiwiaWF0IjoxNzM1Mzk5ODQ3fQ.cc8qmw8S5esASWkA-2_7IqU8yuF1bjpuaJcoTRIQsCOEl6-4LmRLIG0c005UknCgzV_a5PyzUgLHx4mGxN82Fw",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "http://localhost:8080/api/v1/trades/1",
+              "protocol": "http",
+              "host": ["localhost"],
+              "port": "8080",
+              "path": ["api", "v1", "trades", "1"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "DeleteAccountTradeData",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiJhZG1pbiIsImV4cCI6MTczNTQ4NjI0NywiYXV0aCI6IlJPTEVfQURNSU4gUk9MRV9VU0VSIiwiaWF0IjoxNzM1Mzk5ODQ3fQ.cc8qmw8S5esASWkA-2_7IqU8yuF1bjpuaJcoTRIQsCOEl6-4LmRLIG0c005UknCgzV_a5PyzUgLHx4mGxN82Fw",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "DELETE",
+            "header": [],
+            "url": {
+              "raw": "http://localhost:8080/api/v1/trades/1",
+              "protocol": "http",
+              "host": ["localhost"],
+              "port": "8080",
+              "path": ["api", "v1", "trades", "1"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "StoreTradeData",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiJhZG1pbiIsImV4cCI6MTczNTQ4NjI0NywiYXV0aCI6IlJPTEVfQURNSU4gUk9MRV9VU0VSIiwiaWF0IjoxNzM1Mzk5ODQ3fQ.cc8qmw8S5esASWkA-2_7IqU8yuF1bjpuaJcoTRIQsCOEl6-4LmRLIG0c005UknCgzV_a5PyzUgLHx4mGxN82Fw",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "POST",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{\r\n    \"id\": 1,\r\n    \"datetime\": \"2023-12-28T14:30:00\",\r\n    \"accountId\": \"ACC001\",\r\n    \"accountName\": \"Account One\",\r\n    \"symbol\": \"AAPL\",\r\n    \"status\": \"COMPLETED\",\r\n    \"quantity\": 100.50,\r\n    \"price\": 150.25,\r\n    \"tradeType\": \"BUY\",\r\n    \"createdTs\": \"2023-12-28T14:35:00\",\r\n    \"lastUpdatedTs\": \"2023-12-28T14:40:00\"\r\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "http://localhost:8080/api/v1/trades",
+              "protocol": "http",
+              "host": ["localhost"],
+              "port": "8080",
+              "path": ["api", "v1", "trades"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "updateTrade",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiJhZG1pbiIsImV4cCI6MTczNTQ4NjI0NywiYXV0aCI6IlJPTEVfQURNSU4gUk9MRV9VU0VSIiwiaWF0IjoxNzM1Mzk5ODQ3fQ.cc8qmw8S5esASWkA-2_7IqU8yuF1bjpuaJcoTRIQsCOEl6-4LmRLIG0c005UknCgzV_a5PyzUgLHx4mGxN82Fw",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "PUT",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{\r\n    \"id\": 5,\r\n    \"datetime\": \"2023-12-28T14:30:00\",\r\n    \"accountId\": \"ACC001\",\r\n    \"accountName\": \"Account One\",\r\n    \"symbol\": \"AAPL\",\r\n    \"status\": \"COMPLETED\",\r\n    \"quantity\": 1550.50,\r\n    \"price\": 150.25,\r\n    \"tradeType\": \"BUY\",\r\n    \"createdTs\": \"2023-12-28T14:35:00\",\r\n    \"lastUpdatedTs\": \"2023-12-28T14:40:00\"\r\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "http://localhost:8080/api/v1/trades/5",
+              "protocol": "http",
+              "host": ["localhost"],
+              "port": "8080",
+              "path": ["api", "v1", "trades", "5"]
+            }
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "AccountTrades Copy",
+      "item": [
+        {
+          "name": "GetHighConfidenceSignals",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiJhZG1pbiIsImV4cCI6MTczNTQ4NjI0NywiYXV0aCI6IlJPTEVfQURNSU4gUk9MRV9VU0VSIiwiaWF0IjoxNzM1Mzk5ODQ3fQ.cc8qmw8S5esASWkA-2_7IqU8yuF1bjpuaJcoTRIQsCOEl6-4LmRLIG0c005UknCgzV_a5PyzUgLHx4mGxN82Fw",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "http://localhost:8080/api/v1/trades/open/symbol/:symbol",
+              "protocol": "http",
+              "host": ["localhost"],
+              "port": "8080",
+              "path": ["api", "v1", "trades", "open", "symbol", ":symbol"],
+              "variable": [
+                {
+                  "key": "symbol",
+                  "value": "GOOG"
+                }
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "GetAllOpenTradeForAccountId",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiJhZG1pbiIsImV4cCI6MTczNTQ4NjI0NywiYXV0aCI6IlJPTEVfQURNSU4gUk9MRV9VU0VSIiwiaWF0IjoxNzM1Mzk5ODQ3fQ.cc8qmw8S5esASWkA-2_7IqU8yuF1bjpuaJcoTRIQsCOEl6-4LmRLIG0c005UknCgzV_a5PyzUgLHx4mGxN82Fw",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "http://localhost:8080/api/v1/trades/open/account/:accountId",
+              "protocol": "http",
+              "host": ["localhost"],
+              "port": "8080",
+              "path": ["api", "v1", "trades", "open", "account", ":accountId"],
+              "variable": [
+                {
+                  "key": "accountId",
+                  "value": "ACC002"
+                }
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "StoreSignalData",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiJhZG1pbiIsImV4cCI6MTczNTQ4NjI0NywiYXV0aCI6IlJPTEVfQURNSU4gUk9MRV9VU0VSIiwiaWF0IjoxNzM1Mzk5ODQ3fQ.cc8qmw8S5esASWkA-2_7IqU8yuF1bjpuaJcoTRIQsCOEl6-4LmRLIG0c005UknCgzV_a5PyzUgLHx4mGxN82Fw",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "POST",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{\r\n    \"id\": 1,\r\n    \"datetime\": \"2023-12-28T14:00:00\",\r\n    \"symbol\": \"AAPL\",\r\n    \"signalType\": \"BUY\",\r\n    \"confidence\": 95.50,\r\n    \"reason\": \"Strong earnings high report and high trading volume.\",\r\n    \"source\": \"AlgorithmX\",\r\n    \"createdTs\": \"2023-12-2sdf8T14:05:00\",\r\n    \"lastUpdated\": \"2023-12-28T14:10:00\"\r\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "http://localhost:8080/api/v1/signals",
+              "protocol": "http",
+              "host": ["localhost"],
+              "port": "8080",
+              "path": ["api", "v1", "signals"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Delete",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiJhZG1pbiIsImV4cCI6MTczNTQ4NjI0NywiYXV0aCI6IlJPTEVfQURNSU4gUk9MRV9VU0VSIiwiaWF0IjoxNzM1Mzk5ODQ3fQ.cc8qmw8S5esASWkA-2_7IqU8yuF1bjpuaJcoTRIQsCOEl6-4LmRLIG0c005UknCgzV_a5PyzUgLHx4mGxN82Fw",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "DELETE",
+            "header": [],
+            "url": {
+              "raw": "http://localhost:8080/api/v1/trades/1",
+              "protocol": "http",
+              "host": ["localhost"],
+              "port": "8080",
+              "path": ["api", "v1", "trades", "1"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "UpdateSignalData",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiJhZG1pbiIsImV4cCI6MTczNTQ4NjI0NywiYXV0aCI6IlJPTEVfQURNSU4gUk9MRV9VU0VSIiwiaWF0IjoxNzM1Mzk5ODQ3fQ.cc8qmw8S5esASWkA-2_7IqU8yuF1bjpuaJcoTRIQsCOEl6-4LmRLIG0c005UknCgzV_a5PyzUgLHx4mGxN82Fw",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "PUT",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{\r\n    \"id\": 6,\r\n    \"datetime\": \"2024-12-29T03:06:01.6150558\",\r\n    \"symbol\": \"AAPL\",\r\n    \"signalType\": \"SELL\",\r\n    \"confidence\": 95.50,\r\n    \"reason\": \"Strong earnings high report and high trading volume.\",\r\n    \"source\": \"AlgorithmX\",\r\n    \"createdTs\": \"2024-12-29T03:06:01.6150558\",\r\n    \"lastUpdated\": \"2024-12-29T03:06:01.6150558\"\r\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "http://localhost:8080/api/v1/signals/6",
+              "protocol": "http",
+              "host": ["localhost"],
+              "port": "8080",
+              "path": ["api", "v1", "signals", "6"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Analyze(OpenAI)",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiJhZG1pbiIsImV4cCI6MTczNTQ4NjI0NywiYXV0aCI6IlJPTEVfQURNSU4gUk9MRV9VU0VSIiwiaWF0IjoxNzM1Mzk5ODQ3fQ.cc8qmw8S5esASWkA-2_7IqU8yuF1bjpuaJcoTRIQsCOEl6-4LmRLIG0c005UknCgzV_a5PyzUgLHx4mGxN82Fw",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "POST",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "\"tradeData\": \"NQ1!, 21576.5, Bearish Resistance\"\r\n",
+              "options": {
+                "raw": {
+                  "language": "text"
+                }
+              }
+            },
+            "url": {
+              "raw": "http://localhost:8080/api/v1/signals/analyze",
+              "protocol": "http",
+              "host": ["localhost"],
+              "port": "8080",
+              "path": ["api", "v1", "signals", "analyze"]
+            }
+          },
+          "response": []
+        }
+      ]
+    }
+  ]
+}

@@ -34,9 +34,9 @@ public class AccountPNL {
     @Column(name = "date", nullable = false)
     private LocalDate date;
 
-    @Column(name = "created")
+    @Column(name = "created_ts")
     private LocalDateTime createdTs;
 
-    @Column(name = "lastupdated")
+    @Column(name = "lastupdated_ts")
     private LocalDateTime lastUpdatedTs;
 }

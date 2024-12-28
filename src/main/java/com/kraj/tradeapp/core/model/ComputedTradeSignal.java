@@ -36,9 +36,9 @@ public class ComputedTradeSignal {
     @Column(nullable = false, length = 50)
     private String source;
 
-    @Column(name = "created")
+    @Column(name = "created_ts")
     private LocalDateTime createdTs;
 
-    @Column(name = "lastupdated")
+    @Column(name = "lastupdated_ts")
     private LocalDateTime lastUpdated;
 }

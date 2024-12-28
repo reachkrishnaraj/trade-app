@@ -8,12 +8,10 @@ import java.time.LocalDate;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.format.annotation.DateTimeFormat;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/api/v1/pnl")
@@ -31,5 +29,21 @@ public class AccountPNLController {
     @GetMapping("/daily/{date}")
     public ResponseEntity<List<AccountPNL>> getDailyPNL(@PathVariable @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate date) {
         return ResponseEntity.ok(accountPNLService.getAllPNLForDate(date));
+    }
+
+    @PostMapping
+    public ResponseEntity<AccountPNL> createPNL(@RequestBody @Valid AccountPNL accountPNL) {
+        return ResponseEntity.status(HttpStatus.CREATED).body(accountPNLService.createPNL(accountPNL));
+    }
+
+    @PutMapping("/{id}")
+    public ResponseEntity<AccountPNL> updatePNL(@PathVariable String accountId, @RequestBody @Valid AccountPNL accountPNL) {
+        return ResponseEntity.ok(accountPNLService.updatePNL(accountId, accountPNL));
+    }
+
+    @DeleteMapping("/{id}")
+    public ResponseEntity<Void> deletePNL(@PathVariable String accountId) {
+        accountPNLService.deletePNL(accountId);
+        return ResponseEntity.noContent().build();
     }
 }

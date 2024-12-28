@@ -3,6 +3,7 @@ package com.kraj.tradeapp.core.controller;
 import com.kraj.tradeapp.core.model.ComputedTradeSignal;
 import com.kraj.tradeapp.core.model.dto.TradeSignalRequest;
 import com.kraj.tradeapp.core.service.ComputedTradeSignalService;
+import com.kraj.tradeapp.core.service.OpenAIService;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.DecimalMax;
 import jakarta.validation.constraints.DecimalMin;
@@ -22,6 +23,8 @@ public class TradeSignalController {
 
     private final ComputedTradeSignalService signalService;
 
+    private final OpenAIService openAIService;
+
     @GetMapping("/symbol/{symbol}")
     public ResponseEntity<List<ComputedTradeSignal>> getSignalsBySymbol(@PathVariable String symbol) {
         return ResponseEntity.ok(signalService.getSignalsForSymbol(symbol));
@@ -36,7 +39,28 @@ public class TradeSignalController {
 
     @PostMapping
     public ResponseEntity<ComputedTradeSignal> createSignal(@Valid @RequestBody TradeSignalRequest request) {
-        // Implementation for creating new signal
-        return ResponseEntity.status(HttpStatus.CREATED).body(null);
+        ComputedTradeSignal createdSignal = signalService.createSignal(request);
+        return ResponseEntity.status(HttpStatus.CREATED).body(createdSignal);
+    }
+
+    @PutMapping("/{id}")
+    public ResponseEntity<ComputedTradeSignal> updateSignal(@PathVariable Long id, @Valid @RequestBody TradeSignalRequest request) {
+        ComputedTradeSignal updatedSignal = signalService.updateSignal(id, request);
+        return ResponseEntity.ok(updatedSignal);
+    }
+
+    @DeleteMapping("/{id}")
+    public ResponseEntity<Void> deleteSignal(@PathVariable Long id) {
+        signalService.deleteSignal(id);
+        return ResponseEntity.noContent().build();
+    }
+
+    @PostMapping("/analyze")
+    public String analyzeSignal(@RequestBody String tradeData) {
+        try {
+            return openAIService.analyzeTradeSignal(tradeData);
+        } catch (Exception e) {
+            return "Error analyzing trade signal: " + e.getMessage();
+        }
     }
 }
