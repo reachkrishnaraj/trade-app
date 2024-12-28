@@ -2,10 +2,9 @@ package com.kraj.tradeapp.core.repository;
 
 import com.kraj.tradeapp.core.model.persistance.Trade;
 import java.util.List;
-import org.springframework.stereotype.Repository;
+import org.springframework.data.jpa.repository.JpaRepository;
 
-@Repository
-public interface TradeRepository {
+public interface TradeRepository extends JpaRepository<Trade, Long> {
     List<Trade> findBySymbolAndStatus(String symbol, String status);
 
     List<Trade> findByAccountIdAndStatus(String accountId, String status);

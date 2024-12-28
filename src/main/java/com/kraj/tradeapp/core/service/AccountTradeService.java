@@ -5,7 +5,6 @@ import com.kraj.tradeapp.core.repository.TradeRepository;
 import jakarta.transaction.Transactional;
 import java.util.List;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -15,7 +14,6 @@ public class AccountTradeService {
 
     private final TradeRepository accountTradeRepository;
 
-    @Autowired
     public AccountTradeService(TradeRepository tradeRepository) {
         this.accountTradeRepository = tradeRepository;
     }
