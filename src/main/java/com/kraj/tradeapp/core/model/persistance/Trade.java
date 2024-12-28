@@ -1,4 +1,4 @@
-package com.kraj.tradeapp.core.model;
+package com.kraj.tradeapp.core.model.persistance;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.GeneratedValue;

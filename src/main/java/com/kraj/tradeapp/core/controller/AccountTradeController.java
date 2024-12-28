@@ -1,6 +1,6 @@
 package com.kraj.tradeapp.core.controller;
 
-import com.kraj.tradeapp.core.model.Trade;
+import com.kraj.tradeapp.core.model.persistance.Trade;
 import com.kraj.tradeapp.core.service.AccountTradeService;
 import java.util.List;
 import lombok.RequiredArgsConstructor;

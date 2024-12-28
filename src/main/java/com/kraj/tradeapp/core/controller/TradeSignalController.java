@@ -1,7 +1,7 @@
 package com.kraj.tradeapp.core.controller;
 
-import com.kraj.tradeapp.core.model.ComputedTradeSignal;
 import com.kraj.tradeapp.core.model.dto.TradeSignalRequest;
+import com.kraj.tradeapp.core.model.persistance.TradeSignal;
 import com.kraj.tradeapp.core.service.ComputedTradeSignalService;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.DecimalMax;
@@ -23,19 +23,19 @@ public class TradeSignalController {
     private final ComputedTradeSignalService signalService;
 
     @GetMapping("/symbol/{symbol}")
-    public ResponseEntity<List<ComputedTradeSignal>> getSignalsBySymbol(@PathVariable String symbol) {
+    public ResponseEntity<List<TradeSignal>> getSignalsBySymbol(@PathVariable String symbol) {
         return ResponseEntity.ok(signalService.getSignalsForSymbol(symbol));
     }
 
     @GetMapping("/high-confidence")
-    public ResponseEntity<List<ComputedTradeSignal>> getHighConfidenceSignals(
+    public ResponseEntity<List<TradeSignal>> getHighConfidenceSignals(
         @RequestParam @DecimalMin("0.0") @DecimalMax("100.0") BigDecimal minConfidence
     ) {
         return ResponseEntity.ok(signalService.getHighConfidenceSignals(minConfidence));
     }
 
     @PostMapping
-    public ResponseEntity<ComputedTradeSignal> createSignal(@Valid @RequestBody TradeSignalRequest request) {
+    public ResponseEntity<TradeSignal> createSignal(@Valid @RequestBody TradeSignalRequest request) {
         // Implementation for creating new signal
         return ResponseEntity.status(HttpStatus.CREATED).body(null);
     }

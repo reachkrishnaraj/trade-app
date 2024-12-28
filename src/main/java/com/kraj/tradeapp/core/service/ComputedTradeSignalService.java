@@ -1,7 +1,7 @@
 package com.kraj.tradeapp.core.service;
 
-import com.kraj.tradeapp.core.model.ComputedTradeSignal;
-import com.kraj.tradeapp.core.repository.ComputedTradeSignalRepository;
+import com.kraj.tradeapp.core.model.persistance.TradeSignal;
+import com.kraj.tradeapp.core.repository.TradeSignalRepository;
 import jakarta.transaction.Transactional;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
@@ -15,23 +15,23 @@ import org.springframework.stereotype.Service;
 @Slf4j
 public class ComputedTradeSignalService {
 
-    private final ComputedTradeSignalRepository computedTradeSignalRepository;
+    private final TradeSignalRepository tradeSignalRepository;
 
     @Autowired
-    public ComputedTradeSignalService(ComputedTradeSignalRepository computedTradeSignalRepository) {
-        this.computedTradeSignalRepository = computedTradeSignalRepository;
+    public ComputedTradeSignalService(TradeSignalRepository tradeSignalRepository) {
+        this.tradeSignalRepository = tradeSignalRepository;
     }
 
-    public List<ComputedTradeSignal> getSignalsForSymbol(String symbol) {
-        return computedTradeSignalRepository.findBySymbol(symbol);
+    public List<TradeSignal> getSignalsForSymbol(String symbol) {
+        return tradeSignalRepository.findBySymbol(symbol);
     }
 
-    public List<ComputedTradeSignal> getHighConfidenceSignals(BigDecimal minConfidence) {
-        return computedTradeSignalRepository.findByConfidenceGreaterThan(minConfidence);
+    public List<TradeSignal> getHighConfidenceSignals(BigDecimal minConfidence) {
+        return tradeSignalRepository.findByConfidenceGreaterThan(minConfidence);
     }
 
     public void deleteOldSignals(int daysOld) {
         LocalDateTime cutoffDate = LocalDateTime.now().minusDays(daysOld);
-        computedTradeSignalRepository.deleteOldSignals(cutoffDate);
+        tradeSignalRepository.deleteOldSignals(cutoffDate);
     }
 }

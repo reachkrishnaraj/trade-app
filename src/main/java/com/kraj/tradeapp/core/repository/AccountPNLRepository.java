@@ -1,6 +1,6 @@
 package com.kraj.tradeapp.core.repository;
 
-import com.kraj.tradeapp.core.model.AccountPNL;
+import com.kraj.tradeapp.core.model.persistance.AccountPNL;
 import java.time.LocalDate;
 import java.util.List;
 import org.springframework.data.jpa.repository.JpaRepository;

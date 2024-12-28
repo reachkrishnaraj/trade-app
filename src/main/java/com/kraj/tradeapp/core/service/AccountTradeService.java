@@ -1,11 +1,8 @@
 package com.kraj.tradeapp.core.service;
 
-import com.kraj.tradeapp.core.model.AccountPNL;
-import com.kraj.tradeapp.core.model.Trade;
-import com.kraj.tradeapp.core.repository.AccountPNLRepository;
+import com.kraj.tradeapp.core.model.persistance.Trade;
 import com.kraj.tradeapp.core.repository.TradeRepository;
 import jakarta.transaction.Transactional;
-import java.time.LocalDate;
 import java.util.List;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;

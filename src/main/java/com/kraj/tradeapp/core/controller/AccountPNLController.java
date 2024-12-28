@@ -1,7 +1,7 @@
 package com.kraj.tradeapp.core.controller;
 
-import com.kraj.tradeapp.core.model.AccountPNL;
 import com.kraj.tradeapp.core.model.dto.AccountPNLRequest;
+import com.kraj.tradeapp.core.model.persistance.AccountPNL;
 import com.kraj.tradeapp.core.service.AccountPNLService;
 import jakarta.validation.Valid;
 import java.time.LocalDate;
