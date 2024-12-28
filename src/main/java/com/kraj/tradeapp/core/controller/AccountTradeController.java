@@ -25,25 +25,4 @@ public class AccountTradeController {
     public ResponseEntity<List<Trade>> getOpenTradesByAccount(@PathVariable String accountId) {
         return ResponseEntity.ok(tradeService.getOpenTradesForAccount(accountId));
     }
-
-    @PostMapping
-    public ResponseEntity<Trade> createTrade(@RequestBody Trade trade) {
-        return ResponseEntity.ok(tradeService.createTrade(trade));
-    }
-
-    @GetMapping("/{id}")
-    public ResponseEntity<Trade> getTradeById(@PathVariable Long id) {
-        return ResponseEntity.ok(tradeService.getTradeById(id));
-    }
-
-    @PutMapping("/{id}")
-    public ResponseEntity<Trade> updateTrade(@PathVariable Long id, @RequestBody Trade trade) {
-        return ResponseEntity.ok(tradeService.updateTrade(id, trade));
-    }
-
-    @DeleteMapping("/{id}")
-    public ResponseEntity<Void> deleteTrade(@PathVariable Long id) {
-        tradeService.deleteTrade(id);
-        return ResponseEntity.noContent().build();
-    }
 }
