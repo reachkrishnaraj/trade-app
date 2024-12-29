@@ -4,8 +4,11 @@ import com.kraj.tradeapp.core.model.persistance.NotificationEvent;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
 @Repository
@@ -35,4 +38,13 @@ public interface NotificationEventRepository extends JpaRepository<NotificationE
         "SELECT ne FROM NotificationEvent ne WHERE ne.category = :category AND ne.source = :symbol AND ne.interval = :interval ORDER BY ne.datetime DESC"
     )
     Optional<NotificationEvent> getLatestCategoryEventForInterval(String category, String symbol, String interval);
+
+    List<NotificationEvent> findByDatetimeBetween(LocalDateTime start, LocalDateTime end);
+
+    @Query("SELECT n FROM NotificationEvent n WHERE n.indicator = :indicator AND n.interval = :interval ORDER BY n.datetime DESC")
+    List<NotificationEvent> findTopByIndicatorAndIntervalOrderByDatetimeDesc(
+        @Param("indicator") String indicator,
+        @Param("interval") String interval,
+        Pageable pageable
+    );
 }
