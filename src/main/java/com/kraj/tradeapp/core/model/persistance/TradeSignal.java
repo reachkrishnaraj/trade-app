@@ -39,6 +39,6 @@ public class TradeSignal {
     @Column(name = "created")
     private LocalDateTime createdTs;
 
-    @Column(name = "lastupdated")
+    @Column(name = "last_updated")
     private LocalDateTime lastUpdated;
 }

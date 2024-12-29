@@ -33,7 +33,8 @@ public class NotificationProcessorService {
         try {
             processTradingViewNotificationPriv();
         } catch (Exception e) {
-            //handle exception
+            e.printStackTrace();
+            throw new RuntimeException("Error processing notification");
         }
     }
 
