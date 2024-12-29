@@ -2,6 +2,7 @@ package com.kraj.tradeapp;
 
 import com.kraj.tradeapp.config.ApplicationProperties;
 import com.kraj.tradeapp.config.CRLFLogConverter;
+import com.kraj.tradeapp.config.OpenAIConfiguration;
 import jakarta.annotation.PostConstruct;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
@@ -18,14 +19,12 @@ import org.springframework.boot.context.properties.EnableConfigurationProperties
 import org.springframework.boot.web.client.RestTemplateBuilder;
 import org.springframework.context.annotation.Bean;
 import org.springframework.core.env.Environment;
-import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
 import org.springframework.web.client.RestTemplate;
 import tech.jhipster.config.DefaultProfileUtil;
 import tech.jhipster.config.JHipsterConstants;
 
 @SpringBootApplication
-@EnableJpaRepositories("com.kraj.tradeapp.core.repository")
-@EnableConfigurationProperties({ LiquibaseProperties.class, ApplicationProperties.class })
+@EnableConfigurationProperties({ LiquibaseProperties.class, ApplicationProperties.class, OpenAIConfiguration.class })
 public class TradeApp {
 
     private static final Logger log = LoggerFactory.getLogger(TradeApp.class);

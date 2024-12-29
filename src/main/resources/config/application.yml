@@ -159,6 +159,10 @@ spring:
   output:
     ansi:
       console-available: true
+  flyway:
+    enabled: true
+    baseline-on-migrate: true
+    locations: classpath:db/migration
 
 server:
   servlet:
@@ -225,4 +229,15 @@ jhipster:
 crosstrade:
   api:
     base-url: https://app.crosstrade.io/v1/api
-    secret-key: your-secret-key
+    secret-key: your_crosstrade_secret_key
+
+  # OpenAI API key
+openai:
+  api:
+    key: your_openai_api_key
+    url: https://api.openai.com/v1/chat/completions
+  request:
+    model: 'gpt-4o-mini'
+    temperature: 0.7
+    maxTokens: 300
+    systemMessage: 'You are an expert trading signal analyzer. Analyze the following signals and recommend BUY or SELL decisions with reasoning.'

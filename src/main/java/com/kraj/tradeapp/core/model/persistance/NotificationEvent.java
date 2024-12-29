@@ -9,7 +9,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 @Entity
-@Table(name = "notification_event")
+@Table(name = "notification_events")
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
@@ -38,7 +38,7 @@ public class NotificationEvent {
     @Column
     private String category;
 
-    @Column(columnDefinition = "TEXT")
+    @Column(columnDefinition = "TEXT", name = "raw_msg")
     private String rawMsg;
 
     @Column(precision = 15, scale = 2)
@@ -47,10 +47,10 @@ public class NotificationEvent {
     @Column(length = 20)
     private String interval;
 
-    @Column(name = "created")
+    @Column(name = "created_ts")
     private LocalDateTime created;
 
-    @Column(name = "lastupdated")
+    @Column(name = "lastupdated_ts")
     private LocalDateTime lastUpdated;
 
     @Column
