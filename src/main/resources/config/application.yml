@@ -221,10 +221,6 @@ jhipster:
   # ===================================================================
 
   # application:
-#  flyway:
-#    enabled: false
-#    baseline-on-migrate: false
-#    locations: classpath:db/migration
 
 crosstrade:
   api:
