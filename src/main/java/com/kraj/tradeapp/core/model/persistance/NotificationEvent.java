@@ -1,5 +1,6 @@
 package com.kraj.tradeapp.core.model.persistance;
 
+import com.kraj.tradeapp.core.model.*;
 import jakarta.persistence.*;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
@@ -9,7 +10,14 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 @Entity
-@Table(name = "notification_events")
+@Table(
+    name = "notification_events",
+    indexes = {
+        @Index(name = "idx_event_datetime", columnList = "event_datetime"),
+        @Index(name = "idx_symbol", columnList = "symbol"),
+        @Index(name = "idx_interval", columnList = "interval"),
+    }
+)
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
@@ -17,42 +25,49 @@ import lombok.NoArgsConstructor;
 public class NotificationEvent {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "trade_app_default_seq_gen")
+    @SequenceGenerator(name = "trade_app_default_seq_gen", sequenceName = "trade_app_def_seq")
     private Long id;
 
-    @Column
+    @Column(name = "event_datetime")
     private LocalDateTime datetime;
 
-    @Column
+    @Column(nullable = false)
+    private String symbol;
+
+    @Column(nullable = false)
     private String source;
 
-    @Column
+    @Column(nullable = false)
     private String indicator;
 
-    @Column
+    @Column(name = "derived_value", nullable = false)
     private String derivedValue;
 
-    @Column
+    @Column(nullable = false)
     private String direction;
 
-    @Column
+    @Column(nullable = false)
     private String category;
 
-    @Column(columnDefinition = "TEXT", name = "raw_msg")
+    @Column(name = "raw_msg", nullable = false)
     private String rawMsg;
 
-    @Column(precision = 15, scale = 2)
+    @Column(precision = 15, scale = 2, nullable = false)
     private BigDecimal price;
 
-    @Column(length = 20)
+    @Column(nullable = false)
     private String interval;
 
-    @Column(name = "created_ts")
+    @Column(name = "created_ts", nullable = false)
     private LocalDateTime created;
 
-    @Column(name = "lastupdated_ts")
+    @Column(name = "lastupdated_ts", nullable = false)
     private LocalDateTime lastUpdated;
 
-    @Column
+    @Column(name = "is_strategy", nullable = false)
     private boolean isStrategy;
+
+    @Column(nullable = false)
+    private String importance;
 }

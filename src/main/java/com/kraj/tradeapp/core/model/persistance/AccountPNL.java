@@ -1,9 +1,6 @@
 package com.kraj.tradeapp.core.model.persistance;
 
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.Id;
-import jakarta.persistence.Table;
+import jakarta.persistence.*;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -12,15 +9,21 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 @Entity
-@Table(name = "acc_pnl_daily")
+@Table(
+    name = "acc_pnl_daily",
+    indexes = { @Index(name = "idx_account_id", columnList = "account_id"), @Index(name = "idx_date", columnList = "date") }
+)
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
 public class AccountPNL {
 
     @Id
-    @Column(name = "account_id_date")
+    @Column(name = "account_id_date", nullable = false)
     private String accountIdDate;
+
+    @Column(nullable = false)
+    private String symbol;
 
     @Column(name = "account_id", nullable = false)
     private String accountId;
@@ -34,9 +37,9 @@ public class AccountPNL {
     @Column(name = "date", nullable = false)
     private LocalDate date;
 
-    @Column(name = "created_ts")
+    @Column(name = "created_ts", nullable = false)
     private LocalDateTime createdTs;
 
-    @Column(name = "lastupdated_ts")
+    @Column(name = "lastupdated_ts", nullable = false)
     private LocalDateTime lastUpdatedTs;
 }

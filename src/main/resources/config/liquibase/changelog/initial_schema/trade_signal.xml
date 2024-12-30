@@ -1,0 +1,76 @@
+<databaseChangeLog xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+                   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                   xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+                   http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-4.15.xsd">
+
+    <changeSet id="create-trade-signal" author="krishna">
+        <createTable tableName="trade_signals">
+            <column name="id" type="BIGINT" autoIncrement="true">
+                <constraints primaryKey="true" nullable="false"/>
+            </column>
+            <column name="datetime" type="TIMESTAMP">
+                <constraints nullable="false"/>
+            </column>
+            <column name="symbol" type="VARCHAR(50)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="direction" type="VARCHAR(50)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="confidence" type="DECIMAL(5, 2)">
+                <constraints nullable="true"/>
+            </column>
+            <column name="reason" type="VARCHAR(50)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="source" type="VARCHAR(50)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="created_ts" type="TIMESTAMP">
+                <constraints nullable="false"/>
+            </column>
+            <column name="lastupdated_ts" type="TIMESTAMP">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+
+<!--        <createIndex indexName="idx_datetime" tableName="trade_signals">-->
+<!--            <column name="datetime"/>-->
+<!--        </createIndex>-->
+<!--        <createIndex indexName="idx_symbol" tableName="trade_signals">-->
+<!--            <column name="symbol"/>-->
+<!--        </createIndex>-->
+
+        <loadData file="classpath:config/liquibase/data/trade_signal_data.csv"
+                  tableName="trade_signals"
+                  separator=","/>
+    </changeSet>
+
+    <!-- Recreate idx_datetime -->
+    <changeSet id="recreate-idx-datetime-trade-signals" author="krishna">
+        <!-- Drop the index if it exists -->
+        <preConditions onFail="MARK_RAN">
+            <indexExists indexName="idx_datetime" tableName="trade_signals"/>
+        </preConditions>
+        <dropIndex indexName="idx_datetime" tableName="trade_signals"/>
+
+        <!-- Create the index -->
+        <createIndex indexName="idx_datetime" tableName="trade_signals">
+            <column name="datetime"/>
+        </createIndex>
+    </changeSet>
+
+    <!-- Recreate idx_symbol -->
+    <changeSet id="recreate-idx-symbol-trade-signals" author="krishna">
+        <!-- Drop the index if it exists -->
+        <preConditions onFail="MARK_RAN">
+            <indexExists indexName="idx_symbol" tableName="trade_signals"/>
+        </preConditions>
+        <dropIndex indexName="idx_symbol" tableName="trade_signals"/>
+
+        <!-- Create the index -->
+        <createIndex indexName="idx_symbol" tableName="trade_signals">
+            <column name="symbol"/>
+        </createIndex>
+    </changeSet>
+</databaseChangeLog>

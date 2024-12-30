@@ -9,4 +9,5 @@ public enum SignalCategory {
     DELTA_TURNAROUND,
     BIG_TRADES,
     CUSTOM,
+    CLASSIC,
 }

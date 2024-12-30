@@ -15,27 +15,27 @@ import org.springframework.stereotype.Repository;
 public interface NotificationEventRepository extends JpaRepository<NotificationEvent, Long> {
     List<NotificationEvent> findByIndicatorAndIntervalAndSource(String indicator, String interval, String symbol);
 
-    @Query("SELECT ne FROM NotificationEvent ne WHERE ne.source = :symbol AND ne.datetime BETWEEN :start AND :end")
+    @Query("SELECT ne FROM NotificationEvent ne WHERE ne.symbol = :symbol AND ne.datetime BETWEEN :start AND :end")
     List<NotificationEvent> getBetweenDatetime(String symbol, LocalDateTime start, LocalDateTime end);
 
     @Query(
-        "SELECT ne FROM NotificationEvent ne WHERE ne.indicator = :indicator AND ne.interval = :interval AND ne.source = :symbol ORDER BY ne.datetime DESC"
+        "SELECT ne FROM NotificationEvent ne WHERE ne.indicator = :indicator AND ne.interval = :interval AND ne.symbol = :symbol ORDER BY ne.datetime DESC"
     )
     Optional<NotificationEvent> getLatestByIndicatorAndInterval(String indicator, String interval, String symbol);
 
     @Query(
-        "SELECT ne FROM NotificationEvent ne WHERE ne.indicator = :indicator AND ne.interval = :interval AND ne.direction = :direction AND ne.source = :symbol"
+        "SELECT ne FROM NotificationEvent ne WHERE ne.indicator = :indicator AND ne.interval = :interval AND ne.direction = :direction AND ne.symbol = :symbol"
     )
     List<NotificationEvent> findByIndicatorAndIntervalAndDirection(String indicator, String interval, String direction, String symbol);
 
-    @Query("SELECT ne FROM NotificationEvent ne WHERE ne.category = :category AND ne.source = :symbol")
+    @Query("SELECT ne FROM NotificationEvent ne WHERE ne.category = :category AND ne.symbol = :symbol")
     List<NotificationEvent> getForCategory(String category, String symbol);
 
-    @Query("SELECT ne FROM NotificationEvent ne WHERE ne.category = :category AND ne.source = :symbol ORDER BY ne.datetime DESC")
+    @Query("SELECT ne FROM NotificationEvent ne WHERE ne.category = :category AND ne.symbol = :symbol ORDER BY ne.datetime DESC")
     Optional<NotificationEvent> getLatestCategoryEvent(String category, String symbol);
 
     @Query(
-        "SELECT ne FROM NotificationEvent ne WHERE ne.category = :category AND ne.source = :symbol AND ne.interval = :interval ORDER BY ne.datetime DESC"
+        "SELECT ne FROM NotificationEvent ne WHERE ne.category = :category AND ne.symbol = :symbol AND ne.interval = :interval ORDER BY ne.datetime DESC"
     )
     Optional<NotificationEvent> getLatestCategoryEventForInterval(String category, String symbol, String interval);
 

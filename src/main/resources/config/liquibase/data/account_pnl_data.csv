@@ -1,0 +1,4 @@
+account_id_date,symbol,account_id,account_name,profit_loss,date,created_ts,lastupdated_ts
+1_AAPL,AAPL,1,Account1,1200.50,2024-01-01,2024-01-01T10:00:00,2024-01-01T12:00:00
+2_GOOG,GOOG,2,Account2,1500.75,2024-01-02,2024-01-02T11:00:00,2024-01-02T13:00:00
+3_MSFT,MSFT,3,Account3,980.25,2024-01-03,2024-01-03T09:30:00,2024-01-03T11:30:00

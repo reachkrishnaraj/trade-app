@@ -1,0 +1,109 @@
+<databaseChangeLog xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+                   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                   xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+                   http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-4.15.xsd">
+
+    <changeSet id="create-notification-event" author="krishna">
+        <createTable tableName="notification_events">
+            <column name="id" type="BIGINT" autoIncrement="true">
+                <constraints primaryKey="true" nullable="false"/>
+            </column>
+            <column name="event_datetime" type="TIMESTAMP">
+                <constraints nullable="false"/>
+            </column>
+            <column name="symbol" type="VARCHAR(255)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="source" type="VARCHAR(255)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="indicator" type="VARCHAR(255)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="derived_value" type="VARCHAR(255)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="direction" type="VARCHAR(255)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="category" type="VARCHAR(255)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="raw_msg" type="VARCHAR(255)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="price" type="DECIMAL(15, 2)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="interval" type="VARCHAR(255)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="created_ts" type="TIMESTAMP">
+                <constraints nullable="false"/>
+            </column>
+            <column name="lastupdated_ts" type="TIMESTAMP">
+                <constraints nullable="false"/>
+            </column>
+            <column name="is_strategy" type="BOOLEAN">
+                <constraints nullable="false"/>
+            </column>
+            <column name="importance" type="VARCHAR(255)">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+
+<!--        <createIndex indexName="idx_event_datetime" tableName="notification_events">-->
+<!--            <column name="event_datetime"/>-->
+<!--        </createIndex>-->
+<!--        <createIndex indexName="idx_symbol" tableName="notification_events">-->
+<!--            <column name="symbol"/>-->
+<!--        </createIndex>-->
+<!--        <createIndex indexName="idx_interval" tableName="notification_events">-->
+<!--            <column name="interval"/>-->
+<!--        </createIndex>-->
+
+        <loadData file="classpath:config/liquibase/data/notification_event_data.csv"
+                  tableName="notification_events"
+                  separator=","/>
+    </changeSet>
+    <changeSet id="recreate-idx-event-datetime" author="krishna">
+        <!-- Drop the index if it exists -->
+        <preConditions onFail="MARK_RAN">
+            <indexExists indexName="idx_event_datetime" tableName="notification_events"/>
+        </preConditions>
+        <dropIndex indexName="idx_event_datetime" tableName="notification_events"/>
+
+        <!-- Create the index -->
+        <createIndex indexName="idx_event_datetime" tableName="notification_events">
+            <column name="event_datetime"/>
+        </createIndex>
+    </changeSet>
+
+    <!-- Recreate idx_symbol -->
+    <changeSet id="recreate-idx-symbol" author="krishna">
+        <!-- Drop the index if it exists -->
+        <preConditions onFail="MARK_RAN">
+            <indexExists indexName="idx_symbol" tableName="notification_events"/>
+        </preConditions>
+        <dropIndex indexName="idx_symbol" tableName="notification_events"/>
+
+        <!-- Create the index -->
+        <createIndex indexName="idx_symbol" tableName="notification_events">
+            <column name="symbol"/>
+        </createIndex>
+    </changeSet>
+
+    <!-- Recreate idx_interval -->
+    <changeSet id="recreate-idx-interval" author="krishna">
+        <!-- Drop the index if it exists -->
+        <preConditions onFail="MARK_RAN">
+            <indexExists indexName="idx_interval" tableName="notification_events"/>
+        </preConditions>
+        <dropIndex indexName="idx_interval" tableName="notification_events"/>
+
+        <!-- Create the index -->
+        <createIndex indexName="idx_interval" tableName="notification_events">
+            <column name="interval"/>
+        </createIndex>
+    </changeSet>
+</databaseChangeLog>

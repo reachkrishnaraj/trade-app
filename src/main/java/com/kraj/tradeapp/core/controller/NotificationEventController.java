@@ -1,5 +1,6 @@
 package com.kraj.tradeapp.core.controller;
 
+import com.kraj.tradeapp.core.model.dto.NotificationEventDto;
 import com.kraj.tradeapp.core.model.persistance.NotificationEvent;
 import com.kraj.tradeapp.core.model.persistance.TradeSignal;
 import com.kraj.tradeapp.core.service.NotificationProcessorService;
@@ -26,8 +27,8 @@ public class NotificationEventController {
     }
 
     @GetMapping("/notificationEvents/{symbol}")
-    public ResponseEntity<List<NotificationEvent>> getNotificationEvents(@PathVariable String symbol) {
-        List<NotificationEvent> events = notificationProcessorService.getNotificationEvents(
+    public ResponseEntity<List<NotificationEventDto>> getNotificationEvents(@PathVariable String symbol) {
+        List<NotificationEventDto> events = notificationProcessorService.getNotificationEvents(
             symbol,
             LocalDateTime.now().minusHours(6),
             LocalDateTime.now()

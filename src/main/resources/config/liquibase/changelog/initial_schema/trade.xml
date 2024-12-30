@@ -1,0 +1,119 @@
+<databaseChangeLog xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+                   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                   xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+                   http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-4.15.xsd">
+
+    <changeSet id="create-trade" author="krishna">
+        <createTable tableName="acc_trades">
+            <column name="id" type="BIGINT" autoIncrement="true">
+                <constraints primaryKey="true" nullable="false"/>
+            </column>
+            <column name="signal_id" type="VARCHAR(100)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="datetime" type="TIMESTAMP">
+                <constraints nullable="false"/>
+            </column>
+            <column name="account_id" type="VARCHAR(100)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="account_name" type="VARCHAR(100)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="symbol" type="VARCHAR(20)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="status" type="VARCHAR(20)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="quantity" type="DECIMAL(15, 2)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="price" type="DECIMAL(15, 2)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="trade_type" type="VARCHAR(10)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="created_ts" type="TIMESTAMP">
+                <constraints nullable="false"/>
+            </column>
+            <column name="lastupdated_ts" type="TIMESTAMP">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+
+<!--        <createIndex indexName="idx_signal_id" tableName="acc_trades">-->
+<!--            <column name="signal_id"/>-->
+<!--        </createIndex>-->
+<!--        <createIndex indexName="idx_datetime" tableName="acc_trades">-->
+<!--            <column name="datetime"/>-->
+<!--        </createIndex>-->
+<!--        <createIndex indexName="idx_account_id" tableName="acc_trades">-->
+<!--            <column name="account_id"/>-->
+<!--        </createIndex>-->
+<!--        <createIndex indexName="idx_symbol" tableName="acc_trades">-->
+<!--            <column name="symbol"/>-->
+<!--        </createIndex>-->
+
+        <loadData file="classpath:config/liquibase/data/trade_data.csv"
+                  tableName="acc_trades"
+                  separator=","/>
+    </changeSet>
+
+    <!-- Recreate idx_signal_id -->
+    <changeSet id="recreate-idx-signal-id" author="krishna">
+        <!-- Drop the index if it exists -->
+        <preConditions onFail="MARK_RAN">
+            <indexExists indexName="idx_signal_id" tableName="acc_trades"/>
+        </preConditions>
+        <dropIndex indexName="idx_signal_id" tableName="acc_trades"/>
+
+        <!-- Create the index -->
+        <createIndex indexName="idx_signal_id" tableName="acc_trades">
+            <column name="signal_id"/>
+        </createIndex>
+    </changeSet>
+
+    <!-- Recreate idx_datetime -->
+    <changeSet id="recreate-idx-datetime" author="krishna">
+        <!-- Drop the index if it exists -->
+        <preConditions onFail="MARK_RAN">
+            <indexExists indexName="idx_datetime" tableName="acc_trades"/>
+        </preConditions>
+        <dropIndex indexName="idx_datetime" tableName="acc_trades"/>
+
+        <!-- Create the index -->
+        <createIndex indexName="idx_datetime" tableName="acc_trades">
+            <column name="datetime"/>
+        </createIndex>
+    </changeSet>
+
+    <!-- Recreate idx_account_id -->
+    <changeSet id="recreate-idx-account-id" author="krishna">
+        <!-- Drop the index if it exists -->
+        <preConditions onFail="MARK_RAN">
+            <indexExists indexName="idx_account_id" tableName="acc_trades"/>
+        </preConditions>
+        <dropIndex indexName="idx_account_id" tableName="acc_trades"/>
+
+        <!-- Create the index -->
+        <createIndex indexName="idx_account_id" tableName="acc_trades">
+            <column name="account_id"/>
+        </createIndex>
+    </changeSet>
+
+    <!-- Recreate idx_symbol -->
+    <changeSet id="recreate-idx-symbol" author="krishna">
+        <!-- Drop the index if it exists -->
+        <preConditions onFail="MARK_RAN">
+            <indexExists indexName="idx_symbol" tableName="acc_trades"/>
+        </preConditions>
+        <dropIndex indexName="idx_symbol" tableName="acc_trades"/>
+
+        <!-- Create the index -->
+        <createIndex indexName="idx_symbol" tableName="acc_trades">
+            <column name="symbol"/>
+        </createIndex>
+    </changeSet>
+</databaseChangeLog>

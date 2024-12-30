@@ -3,6 +3,7 @@ import { Route, useLocation } from 'react-router-dom';
 import Loadable from 'react-loadable';
 
 import Login from 'app/modules/login/login';
+import TradingDashboard from 'app/modules/trade-app/dashboard/TradingDashboard';
 import Register from 'app/modules/account/register/register';
 import Activate from 'app/modules/account/activate/activate';
 import PasswordResetInit from 'app/modules/account/password-reset/init/password-reset-init';
@@ -49,6 +50,7 @@ const AppRoutes = () => {
           />
           <Route path="register" element={<Register />} />
           <Route path="activate" element={<Activate />} />
+          <Route path="trade-dashboard" element={<TradingDashboard />} />
           <Route path="reset">
             <Route path="request" element={<PasswordResetInit />} />
             <Route path="finish" element={<PasswordResetFinish />} />

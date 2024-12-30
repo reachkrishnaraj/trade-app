@@ -1,40 +1,58 @@
 package com.kraj.tradeapp.core.model;
 
 import jakarta.annotation.Nullable;
+import lombok.Getter;
 import org.apache.commons.lang3.StringUtils;
 
+@Getter
 public enum Indicator {
-    Q_LINE,
-    Q_CLOUD,
-    Q_BANDS,
-    Q_WAVE,
-    Q_MOMENTUM,
-    Q_MONEY_BALL,
-    Q_GRID,
-    Q_SMC_TREND_RIBBON,
-    Q_SMC_2ND_TREND_RIBBON,
-    Q_ELITE,
-    BJ_KEY_LEVELS,
-    SR_CHANNEL_V2,
-    SMC_CONCEPTS,
-    BPR_DETECTOR,
-    CONSOLIDATION_ZONE_TRACKER,
-    LIQUIDITY_SWEEP_DETECTOR,
-    SMT_DIVERGENCE_DETECTOR,
-    DELTA_TURNAROUND,
-    SPEED_OF_TAPE,
-    BIG_TRADES,
-    FVG_DETECTOR,
-    ABSORPTION,
-    EXHAUSTION,
-    STACKED_IMBALANCE,
-    SMC_BREAKOUT,
-    PRICE_DROP_DETECTOR,
-    IFVG_DETECTOR,
-    FVG_REJECTION_DETECTOR,
-    Q_ORACLE_SQUEEZER,
-    DISPLACEMENT_DETECTOR,
-    UNKNOWN;
+    Q_LINE(EventImportance.HIGH, false),
+    Q_CLOUD(EventImportance.HIGH, false),
+    Q_BANDS(EventImportance.HIGH, false),
+    Q_WAVE(EventImportance.HIGH, false),
+    Q_MOMENTUM(EventImportance.HIGH, false),
+    Q_MONEY_BALL(EventImportance.HIGH, false),
+    Q_GRID(EventImportance.HIGH, false),
+    Q_SMC_TREND_RIBBON(EventImportance.HIGH, false),
+    Q_SMC_2ND_TREND_RIBBON(EventImportance.MEDIUM, false),
+    Q_ELITE(EventImportance.CRITICAL, false),
+    Q_ORACLE_SQUEEZER(EventImportance.HIGH, false),
+    BJ_KEY_LEVELS(EventImportance.HIGH, false),
+    SR_CHANNEL_V2(EventImportance.CRITICAL, false),
+    SMC_CONCEPTS(EventImportance.HIGH, false),
+    BPR_DETECTOR(EventImportance.CRITICAL, false),
+    CONSOLIDATION_ZONE_TRACKER(EventImportance.CRITICAL, false),
+    LIQUIDITY_SWEEP_DETECTOR(EventImportance.CRITICAL, false),
+    SMT_DIVERGENCE_DETECTOR(EventImportance.CRITICAL, false),
+    DELTA_TURNAROUND(EventImportance.HIGH, false),
+    SPEED_OF_TAPE(EventImportance.CRITICAL, false),
+    BIG_TRADES(EventImportance.CRITICAL, false),
+    FVG_DETECTOR(EventImportance.HIGH, false),
+    ABSORPTION(EventImportance.MEDIUM, false),
+    EXHAUSTION(EventImportance.MEDIUM, false),
+    STACKED_IMBALANCES(EventImportance.MEDIUM, false),
+    SMC_BREAKOUT(EventImportance.HIGH, false),
+    PRICE_DROP_DETECTOR(EventImportance.CRITICAL, false),
+    IFVG_DETECTOR(EventImportance.CRITICAL, false),
+    FVG_REJECTION_DETECTOR(EventImportance.CRITICAL, false),
+    DISPLACEMENT_DETECTOR(EventImportance.CRITICAL, false),
+    UNKNOWN(EventImportance.TRIVIAL, false),
+
+    //below are strategies, but adding here for simplicity
+    QKRONOS(EventImportance.CRITICAL, true),
+    QSUMO(EventImportance.CRITICAL, true),
+    QGRID_ELITE(EventImportance.CRITICAL, true),
+    QCLOUD_TREND_TRADER(EventImportance.CRITICAL, true),
+    QSCALPER(EventImportance.CRITICAL, true);
+
+    private final EventImportance defaultImportance;
+
+    private final boolean isStrategy;
+
+    private Indicator(EventImportance defaultImportance, boolean isStrategy) {
+        this.defaultImportance = defaultImportance;
+        this.isStrategy = isStrategy;
+    }
 
     public static Indicator fromString(@Nullable String indicator) {
         for (Indicator i : Indicator.values()) {
