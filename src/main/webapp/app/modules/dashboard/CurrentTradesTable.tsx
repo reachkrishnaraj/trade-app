@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Storage } from 'react-jhipster';
-import './currentTradesTable.scss';
+import { Table, Card, Button } from 'react-bootstrap';
 import { Subscription } from 'rxjs';
 import { connectWebSocket, disconnectWebSocket, subscribeToTopic, unsubscribeFromTopic } from 'app/utils/websocket-utils';
 
@@ -26,7 +26,11 @@ const CurrentTradesTable = () => {
 
     connectWebSocket();
     const subscription: Subscription = subscribeToTopic('/topic/current-trades').subscribe(event => {
-      setData(event);
+      const newData = event;
+
+      setData(prevData => [...newData, ...prevData]);
+
+      // Trigger the updated indicator
       setUpdated(true);
       setTimeout(() => setUpdated(false), 1000);
     });
@@ -43,40 +47,41 @@ const CurrentTradesTable = () => {
   };
 
   return (
-    <div className={`table-container ${loading ? 'loading' : ''} ${updated ? 'updated' : ''}`}>
-      <div className="table-header">
-        <h3>Current Trades</h3>
-        <button onClick={toggleMinimize} className="minimize-button">
+    <Card className={`table-container ${loading ? 'loading' : ''} ${updated ? 'updated' : ''}`}>
+      <Card.Header className="d-flex justify-content-between align-items-center">
+        <Button onClick={toggleMinimize} variant="outline-secondary" size="sm">
           {minimized ? '▼' : '▲'}
-        </button>
-      </div>
+        </Button>
+      </Card.Header>
       {!minimized && (
-        <table>
-          <thead>
-            <tr>
-              <th>Account Name</th>
-              <th>ID</th>
-              <th>Open PnL</th>
-              <th>Trade Open Time</th>
-              <th>Status</th>
-            </tr>
-          </thead>
-          <tbody>
-            {data.map((trade, index) => (
-              <tr key={index}>
-                <td>{trade.accountName}</td>
-                <td>{trade.id}</td>
-                <td className={trade.openPnL >= 0 ? 'positive' : 'negative'}>
-                  {trade.openPnL >= 0 ? `+$${trade.openPnL}` : `-$${Math.abs(trade.openPnL)}`}
-                </td>
-                <td>{new Date(trade.tradeOpenTime).toLocaleString()}</td>
-                <td>{trade.status}</td>
+        <Card.Body>
+          <Table responsive striped bordered hover>
+            <thead>
+              <tr>
+                <th>Account Name</th>
+                <th>ID</th>
+                <th>Open PnL</th>
+                <th>Trade Open Time</th>
+                <th>Status</th>
               </tr>
-            ))}
-          </tbody>
-        </table>
+            </thead>
+            <tbody>
+              {data.map((trade, index) => (
+                <tr key={index}>
+                  <td>{trade.accountName}</td>
+                  <td>{trade.id}</td>
+                  <td className={trade.openPnL >= 0 ? 'positive' : 'negative'}>
+                    {trade.openPnL >= 0 ? `+$${trade.openPnL}` : `-$${Math.abs(trade.openPnL)}`}
+                  </td>
+                  <td>{new Date(trade.tradeOpenTime).toLocaleString()}</td>
+                  <td>{trade.status}</td>
+                </tr>
+              ))}
+            </tbody>
+          </Table>
+        </Card.Body>
       )}
-    </div>
+    </Card>
   );
 };
 
