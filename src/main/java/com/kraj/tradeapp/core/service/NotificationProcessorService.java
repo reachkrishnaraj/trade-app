@@ -4,6 +4,7 @@ import com.kraj.tradeapp.core.model.Direction;
 import com.kraj.tradeapp.core.model.EventInterval;
 import com.kraj.tradeapp.core.model.Indicator;
 import com.kraj.tradeapp.core.model.SignalCategory;
+import com.kraj.tradeapp.core.model.dashboard.ui.dto.EventsUI;
 import com.kraj.tradeapp.core.model.dto.NotificationEventDto;
 import com.kraj.tradeapp.core.model.persistance.NotificationEvent;
 import com.kraj.tradeapp.core.model.persistance.TradeSignal;
@@ -15,16 +16,20 @@ import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.util.*;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
+import org.springframework.messaging.simp.SimpMessageSendingOperations;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 
 @Service
 @RequiredArgsConstructor
+@Slf4j
 public class NotificationProcessorService {
 
     private final NotificationEventRepository notificationEventRepository;
     private final TradeSignalRepository tradeSignalRepository;
+    private final SimpMessageSendingOperations messagingTemplate;
 
     private static final String CUSTOM_PAYLOAD_SEPARATOR = "|";
     private final Queue<String> eventQueue = new LinkedList<>();
@@ -97,6 +102,18 @@ public class NotificationProcessorService {
         notificationEvent.setImportance(indicator.getDefaultImportance().name());
         notificationEvent = overrideFieldsIfNeeded(notificationEvent, indicator, payload);
         notificationEventRepository.save(notificationEvent);
+        sendEventNotification(notificationEvent);
+    }
+
+    private void sendEventNotification(NotificationEvent notificationEvent) {
+        EventsUI event = new EventsUI();
+        event.setIndicatorName(notificationEvent.getIndicator());
+        event.setRawMessage(notificationEvent.getRawMsg());
+        event.setDateTime(notificationEvent.getDatetime());
+        event.setSignal(notificationEvent.getDirection());
+        event.setSymbol(notificationEvent.getSymbol());
+        log.info("Sending event: {}", event);
+        messagingTemplate.convertAndSend("/topic/events", List.of(event));
     }
 
     private NotificationEvent overrideFieldsIfNeeded(NotificationEvent notificationEvent, Indicator indicator, String payload) {

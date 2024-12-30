@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Storage } from 'react-jhipster';
-import './signalsTable.scss';
+import { Table, Card, Button } from 'react-bootstrap';
 import { Subscription } from 'rxjs';
 import { connectWebSocket, disconnectWebSocket, subscribeToTopic, unsubscribeFromTopic } from 'app/utils/websocket-utils';
 
@@ -26,7 +26,11 @@ const SignalsTable = () => {
 
     connectWebSocket();
     const subscription: Subscription = subscribeToTopic('/topic/trading-signals').subscribe(event => {
-      setData(event);
+      const newData = event;
+
+      setData(prevData => [...newData, ...prevData]);
+
+      // Trigger the updated indicator
       setUpdated(true);
       setTimeout(() => setUpdated(false), 1000);
     });
@@ -43,34 +47,35 @@ const SignalsTable = () => {
   };
 
   return (
-    <div className={`table-container ${loading ? 'loading' : ''} ${updated ? 'updated' : ''}`}>
-      <div className="table-header">
-        <h3>Trading Signals</h3>
-        <button onClick={toggleMinimize} className="minimize-button">
+    <Card className={`table-container ${loading ? 'loading' : ''} ${updated ? 'updated' : ''}`}>
+      <Card.Header className="d-flex justify-content-between align-items-center">
+        <Button onClick={toggleMinimize} variant="outline-secondary" size="sm">
           {minimized ? '▼' : '▲'}
-        </button>
-      </div>
+        </Button>
+      </Card.Header>
       {!minimized && (
-        <table>
-          <thead>
-            <tr>
-              <th>Signal</th>
-              <th>Source</th>
-              <th>DateTime</th>
-            </tr>
-          </thead>
-          <tbody>
-            {data.map((signal, index) => (
-              <tr key={index}>
-                <td>{signal.signal}</td>
-                <td>{signal.source}</td>
-                <td>{new Date(signal.dateTime).toLocaleString()}</td>
+        <Card.Body>
+          <Table responsive striped bordered hover>
+            <thead>
+              <tr>
+                <th>Signal</th>
+                <th>Source</th>
+                <th>DateTime</th>
               </tr>
-            ))}
-          </tbody>
-        </table>
+            </thead>
+            <tbody>
+              {data.map((signal, index) => (
+                <tr key={index}>
+                  <td>{signal.signal}</td>
+                  <td>{signal.source}</td>
+                  <td>{new Date(signal.dateTime).toLocaleString()}</td>
+                </tr>
+              ))}
+            </tbody>
+          </Table>
+        </Card.Body>
       )}
-    </div>
+    </Card>
   );
 };
 

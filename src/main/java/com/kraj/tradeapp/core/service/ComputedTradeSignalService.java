@@ -1,5 +1,6 @@
 package com.kraj.tradeapp.core.service;
 
+import com.kraj.tradeapp.core.model.dashboard.ui.dto.TradingSignalUI;
 import com.kraj.tradeapp.core.model.dto.TradeSignalRequest;
 import com.kraj.tradeapp.core.model.persistance.TradeSignal;
 import com.kraj.tradeapp.core.repository.TradeSignalRepository;
@@ -10,6 +11,7 @@ import java.time.LocalDateTime;
 import java.util.List;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.messaging.simp.SimpMessageSendingOperations;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -19,9 +21,12 @@ public class ComputedTradeSignalService {
 
     private final TradeSignalRepository tradeSignalRepository;
 
+    private final SimpMessageSendingOperations messagingTemplate;
+
     @Autowired
-    public ComputedTradeSignalService(TradeSignalRepository tradeSignalRepository) {
+    public ComputedTradeSignalService(TradeSignalRepository tradeSignalRepository, SimpMessageSendingOperations messagingTemplate) {
         this.tradeSignalRepository = tradeSignalRepository;
+        this.messagingTemplate = messagingTemplate;
     }
 
     public List<TradeSignal> getSignalsForSymbol(String symbol) {
@@ -46,7 +51,18 @@ public class ComputedTradeSignalService {
         signal.setSource(request.getSource());
         signal.setCreatedTs(LocalDateTime.now());
         signal.setLastUpdated(LocalDateTime.now());
-        return tradeSignalRepository.save(signal);
+        tradeSignalRepository.save(signal);
+        sendTradeSignal(signal);
+        return signal;
+    }
+
+    private void sendTradeSignal(TradeSignal signal) {
+        log.info("Sending trade signal: {}", signal);
+        TradingSignalUI tradingSignalUI = new TradingSignalUI();
+        tradingSignalUI.setDateTime(signal.getDatetime());
+        tradingSignalUI.setSignal(signal.getSymbol());
+        tradingSignalUI.setSource(signal.getSource());
+        messagingTemplate.convertAndSend("/topic/trading-signals", List.of(signal));
     }
 
     public TradeSignal updateSignal(Long id, TradeSignalRequest request) {
