@@ -1,0 +1,117 @@
+.table-container {
+  position: relative;
+
+  .table-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 10px;
+
+    h3 {
+      margin: 0;
+    }
+
+    .filter-select {
+      padding: 5px;
+      border-radius: 4px;
+      border: 1px solid #ccc;
+      cursor: pointer;
+      transition: border-color 0.3s;
+
+      &:hover {
+        border-color: #888;
+      }
+    }
+  }
+
+  .minimize-button {
+    padding: 5px 10px;
+    border: none;
+    background-color: transparent;
+    color: #000;
+    cursor: pointer;
+    border-radius: 4px;
+    font-size: 16px;
+    transition: background-color 0.3s;
+
+    &:hover {
+      background-color: #f0f0f0;
+    }
+  }
+
+  table {
+    width: 100%;
+    border-collapse: collapse;
+
+    th,
+    td {
+      border: 1px solid #ddd;
+      padding: 8px;
+      text-align: left;
+    }
+
+    th {
+      background-color: #f2f2f2;
+      color: #333;
+    }
+
+    tr:nth-child(even) {
+      background-color: #f9f9f9;
+    }
+
+    tr:hover {
+      background-color: #f1f1f1;
+    }
+  }
+
+  .signal {
+    border: 1px solid #000;
+    padding: 5px;
+    text-align: center;
+    border-radius: 4px;
+    color: #fff;
+
+    &.buy {
+      background-color: green;
+    }
+
+    &.sell {
+      background-color: red;
+    }
+
+    &.hold {
+      background-color: yellow;
+      color: #000;
+    }
+  }
+
+  &.loading {
+    opacity: 0.5;
+    animation: pulse 1s infinite;
+  }
+
+  &.updated {
+    animation: highlight 1s;
+  }
+}
+
+@keyframes pulse {
+  0% {
+    opacity: 0.5;
+  }
+  50% {
+    opacity: 1;
+  }
+  100% {
+    opacity: 0.5;
+  }
+}
+
+@keyframes highlight {
+  0% {
+    background-color: yellow;
+  }
+  100% {
+    background-color: transparent;
+  }
+}
