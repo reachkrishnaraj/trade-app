@@ -50,6 +50,9 @@
             <column name="importance" type="VARCHAR(255)">
                 <constraints nullable="false"/>
             </column>
+            <column name="trade_action" type="VARCHAR(255)">
+                <constraints nullable="false"/>
+            </column>
         </createTable>
 
 <!--        <createIndex indexName="idx_event_datetime" tableName="notification_events">-->

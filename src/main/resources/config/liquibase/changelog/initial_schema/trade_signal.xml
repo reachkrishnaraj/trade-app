@@ -26,10 +26,19 @@
             <column name="source" type="VARCHAR(50)">
                 <constraints nullable="false"/>
             </column>
+            <column name="status" type="VARCHAR(50)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="trade_action" type="VARCHAR(50)">
+                <constraints nullable="false"/>
+            </column>
             <column name="created_ts" type="TIMESTAMP">
                 <constraints nullable="false"/>
             </column>
             <column name="lastupdated_ts" type="TIMESTAMP">
+                <constraints nullable="false"/>
+            </column>
+            <column name="processed_at_ts" type="TIMESTAMP">
                 <constraints nullable="false"/>
             </column>
         </createTable>

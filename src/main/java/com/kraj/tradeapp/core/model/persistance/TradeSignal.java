@@ -1,5 +1,6 @@
 package com.kraj.tradeapp.core.model.persistance;
 
+import com.kraj.tradeapp.core.model.TradeAction;
 import jakarta.persistence.*;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
@@ -45,4 +46,13 @@ public class TradeSignal {
 
     @Column(name = "lastupdated_ts", nullable = false)
     private LocalDateTime lastUpdated;
+
+    @Column(nullable = false, name = "trade_action")
+    private String tradeAction;
+
+    @Column(nullable = false)
+    private String status;
+
+    @Column(name = "processed_at_ts", nullable = false)
+    private LocalDateTime processedAt;
 }

@@ -1,13 +1,11 @@
 package com.kraj.tradeapp.core.service;
 
-import com.kraj.tradeapp.core.model.Direction;
-import com.kraj.tradeapp.core.model.EventInterval;
-import com.kraj.tradeapp.core.model.Indicator;
-import com.kraj.tradeapp.core.model.SignalCategory;
+import com.kraj.tradeapp.core.model.*;
 import com.kraj.tradeapp.core.model.dto.NotificationEventDto;
 import com.kraj.tradeapp.core.model.persistance.NotificationEvent;
 import com.kraj.tradeapp.core.model.persistance.TradeSignal;
 import com.kraj.tradeapp.core.repository.NotificationEventRepository;
+import com.kraj.tradeapp.core.repository.QueueRepository;
 import com.kraj.tradeapp.core.repository.TradeSignalRepository;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
@@ -25,6 +23,7 @@ public class NotificationProcessorService {
 
     private final NotificationEventRepository notificationEventRepository;
     private final TradeSignalRepository tradeSignalRepository;
+    private final QueueRepository queueRepository;
 
     private static final String CUSTOM_PAYLOAD_SEPARATOR = "|";
     private final Queue<String> eventQueue = new LinkedList<>();
@@ -77,6 +76,9 @@ public class NotificationProcessorService {
             .withZoneSameInstant(ZoneId.of("America/New_York"))
             .toLocalDateTime();
 
+        String tradeActionStr = StringUtils.isNotBlank(payloadMap.get("t_action")) ? payloadMap.get("t_action") : TradeAction.NONE.name();
+        TradeAction tradeAction = TradeAction.fromString(tradeActionStr);
+
         NotificationEvent notificationEvent = NotificationEvent.builder()
             .price(price)
             .symbol(symbol)
@@ -92,11 +94,13 @@ public class NotificationProcessorService {
             .indicator(indicator.name())
             .lastUpdated(LocalDateTime.now())
             .category(signalCategory)
+            .tradeAction(tradeAction.name())
             .build();
         notificationEvent.setStrategy(indicator.isStrategy());
         notificationEvent.setImportance(indicator.getDefaultImportance().name());
         notificationEvent = overrideFieldsIfNeeded(notificationEvent, indicator, payload);
         notificationEventRepository.save(notificationEvent);
+        //handle trading signal event here
     }
 
     private NotificationEvent overrideFieldsIfNeeded(NotificationEvent notificationEvent, Indicator indicator, String payload) {

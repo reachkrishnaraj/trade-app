@@ -70,4 +70,7 @@ public class NotificationEvent {
 
     @Column(nullable = false)
     private String importance;
+
+    @Column(nullable = false)
+    private String tradeAction;
 }
