@@ -39,6 +39,8 @@ public class SecurityConfiguration {
 
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http, MvcRequestMatcher.Builder mvc) throws Exception {
+        //enable cors for a public domain
+
         http
             .cors(withDefaults())
             .csrf(csrf -> csrf.disable())
