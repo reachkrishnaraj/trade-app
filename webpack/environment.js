@@ -6,4 +6,5 @@ module.exports = {
   // If you use an API server, in `prod` mode, you will need to enable CORS
   // (see the `jhipster.cors` common JHipster property in the `application-*.yml` configurations)
   SERVER_API_URL: '',
+  WEBSOCKET_URL: 'wss://trade-app-production.up.railway.app/websocket/tracker',
 };
