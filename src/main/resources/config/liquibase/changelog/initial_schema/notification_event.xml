@@ -67,16 +67,6 @@
             </column>
         </createTable>
 
-<!--        <createIndex indexName="idx_event_datetime" tableName="notification_events">-->
-<!--            <column name="event_datetime"/>-->
-<!--        </createIndex>-->
-<!--        <createIndex indexName="idx_symbol" tableName="notification_events">-->
-<!--            <column name="symbol"/>-->
-<!--        </createIndex>-->
-<!--        <createIndex indexName="idx_interval" tableName="notification_events">-->
-<!--            <column name="interval"/>-->
-<!--        </createIndex>-->
-
         <loadData file="classpath:config/liquibase/data/notification_event_data.csv"
                   tableName="notification_events"
                   separator=","/>

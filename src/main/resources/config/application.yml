@@ -126,7 +126,7 @@ spring:
       hibernate.query.fail_on_pagination_over_collection_fetch: true
       hibernate.query.in_clause_parameter_padding: true
     hibernate:
-      ddl-auto: none
+      ddl-auto: validate
       naming:
         physical-strategy: org.hibernate.boot.model.naming.CamelCaseToUnderscoresNamingStrategy
         implicit-strategy: org.springframework.boot.orm.jpa.hibernate.SpringImplicitNamingStrategy
@@ -189,7 +189,7 @@ jhipster:
     name: 'tradeApp'
   # By default CORS is disabled. Uncomment to enable.
   cors:
-    allowed-origins: 'http://trade-app-production.up.railway.app:8080'
+    allowed-origins: 'https://trade-app-production.up.railway.app:8080,https://trade-app-production.up.railway.app,trade-app-production.up.railway.app'
     allowed-methods: '*'
     allowed-headers: '*'
     exposed-headers: 'Authorization,Link,X-Total-Count,X-${jhipster.clientApp.name}-alert,X-${jhipster.clientApp.name}-error,X-${jhipster.clientApp.name}-params'
