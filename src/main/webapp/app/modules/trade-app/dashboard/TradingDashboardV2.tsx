@@ -11,8 +11,7 @@ import SignalsTable from './SignalsTable';
 import { useParams } from 'react-router-dom';
 import 'bootstrap/dist/css/bootstrap.min.css';
 
-//const WS_URL = 'http://localhost:8080/websocket/tracker';
-const WS_URL = 'wss://trade-app-production.up.railway.app/websocket/tracker';
+const WS_URL = 'https://trade-app-production.up.railway.app/websocket/tracker';
 
 const TradingDashboardV2: React.FC = () => {
   const { symbol } = useParams<{ symbol: string }>(); // Extract symbol from URL
