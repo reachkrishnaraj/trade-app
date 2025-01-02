@@ -1,4 +1,4 @@
-id,event_datetime,symbol,source,indicator,derived_value,direction,category,raw_msg,price,interval,created_ts,lastupdated_ts,is_strategy,importance,trade_action
-1,2024-01-01T10:00:00,NQ,TRADING_VIEW,Q_LINE,60.5,BULL,DIRECTION,Message1",150.25,5m,2024-01-01T10:01:00,2024-01-01T10:02:00,true,CRITICAL,ENTER_LONG
-2,2024-01-02T11:00:00,NQ,ATAS,Q_CLOUD,30.8,BEAR,BOS,Message2,2800.75,15m,2024-01-02T11:01:00,2024-01-02T11:02:00,false,HIGH,EXIT_LONG
-3,2024-01-03T12:00:00,ES,QUANTVUE,Q_BANDS,45.3,NEUTRAL,SUPPORT_RESISTANCE,Message3,310.50,1h,2024-01-03T12:01:00,2024-01-03T12:02:00,true,MEDIUM,ENTER_SHORT
+id,event_datetime,symbol,source,indicator,derived_value,direction,category,raw_msg,price,interval,created_ts,lastupdated_ts,is_strategy,importance,trade_action,strategy_name,strategy_process_status,strategy_processed_at,strategy_process_msg
+1,2023-01-01T12:00:00,NQ,API,RSI,70,BUY,Technical,"Raw message 1",15000.00,1h,2023-01-01T12:00:00,2023-01-01T12:10:00,true,High,BREAKOUT,Strategy1,COMPLETED,2023-01-01T12:05:00,"Processed successfully"
+2,2023-01-01T13:00:00,ES,Manual,MACD,-2,SELL,Technical,"Raw message 2",3900.00,30m,2023-01-01T13:00:00,2023-01-01T13:10:00,false,Medium,REVERSAL,Strategy2,FAILED,, "Processing failed due to timeout"
+3,2023-01-01T14:00:00,BTCUSDT,API,EMA,200,BUY,Technical,"Raw message 3",45000.00,15m,2023-01-01T14:00:00,2023-01-01T14:10:00,true,High,BREAKOUT,Strategy3,PENDING,, "Awaiting further signals"

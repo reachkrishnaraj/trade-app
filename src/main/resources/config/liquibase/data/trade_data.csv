@@ -1,4 +1,4 @@
-id,signal_id,datetime,account_id,account_name,symbol,status,quantity,price,trade_type,created_ts,lastupdated_ts
-1,1,2024-01-01T10:00:00,1,Account1,AAPL,OPEN,100,150.25,BUY,2024-01-01T10:01:00,2024-01-01T10:02:00
-2,2,2024-01-01T11:00:00,2,Account2,GOOG,CLOSED,50,2800.75,SELL,2024-01-01T11:01:00,2024-01-01T11:02:00
-3,3,2024-01-01T12:00:00,3,Account3,MSFT,OPEN,75,310.50,BUY,2024-01-01T12:01:00,2024-01-01T12:02:00
+id,signal_id,datetime,account_id,account_name,symbol,status,quantity,price,trade_type,created_ts,lastupdated_ts,strategy_name,trade_dest_id
+1,SIGNAL123,2023-01-01T12:00:00,ACC001,Main Account,ES,ACTIVE,100,150.50,BUY,2023-01-01T12:00:00,2023-01-01T12:10:00,Strategy1,Endpoint1
+2,SIGNAL124,2023-01-02T14:00:00,ACC002,Secondary Account,NQ,COMPLETED,50,300.75,SELL,2023-01-02T14:00:00,2023-01-02T14:30:00,Strategy2,Endpoint2
+3,SIGNAL125,2023-01-03T16:00:00,ACC003,Tertiary Account,BTC,ACTIVE,200,40000.00,BUY,2023-01-03T16:00:00,2023-01-03T16:40:00,Strategy3,Endpoint3

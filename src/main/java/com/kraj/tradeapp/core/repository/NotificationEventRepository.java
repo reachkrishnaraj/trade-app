@@ -13,8 +13,6 @@ import org.springframework.stereotype.Repository;
 
 @Repository
 public interface NotificationEventRepository extends JpaRepository<NotificationEvent, Long> {
-    List<NotificationEvent> findByIndicatorAndIntervalAndSource(String indicator, String interval, String symbol);
-
     @Query("SELECT ne FROM NotificationEvent ne WHERE ne.symbol = :symbol AND ne.datetime BETWEEN :start AND :end")
     List<NotificationEvent> getBetweenDatetime(String symbol, LocalDateTime start, LocalDateTime end);
 

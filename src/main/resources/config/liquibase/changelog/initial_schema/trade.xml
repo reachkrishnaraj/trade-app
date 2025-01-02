@@ -11,6 +11,12 @@
             <column name="signal_id" type="VARCHAR(100)">
                 <constraints nullable="false"/>
             </column>
+            <column name="strategy_name" type="VARCHAR(100)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="trade_dest_id" type="VARCHAR(100)">
+                <constraints nullable="false"/>
+            </column>
             <column name="datetime" type="TIMESTAMP">
                 <constraints nullable="false"/>
             </column>
@@ -59,6 +65,20 @@
         <loadData file="classpath:config/liquibase/data/trade_data.csv"
                   tableName="acc_trades"
                   separator=","/>
+    </changeSet>
+
+    <!-- Recreate idx_signal_id -->
+    <changeSet id="recreate-idx-trade-dest-id" author="krishna">
+        <!-- Drop the index if it exists -->
+        <preConditions onFail="MARK_RAN">
+            <indexExists indexName="idx_trade_dest_id" tableName="acc_trades"/>
+        </preConditions>
+        <dropIndex indexName="idx_trade_dest_id" tableName="acc_trades"/>
+
+        <!-- Create the index -->
+        <createIndex indexName="idx_signal_id" tableName="acc_trades">
+            <column name="signal_id"/>
+        </createIndex>
     </changeSet>
 
     <!-- Recreate idx_signal_id -->

@@ -5,13 +5,13 @@ import com.kraj.tradeapp.core.model.dto.NotificationEventDto;
 import com.kraj.tradeapp.core.model.persistance.NotificationEvent;
 import com.kraj.tradeapp.core.model.persistance.TradeSignal;
 import com.kraj.tradeapp.core.repository.NotificationEventRepository;
-import com.kraj.tradeapp.core.repository.QueueRepository;
 import com.kraj.tradeapp.core.repository.TradeSignalRepository;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.util.*;
+import java.util.concurrent.locks.ReentrantLock;
 import lombok.RequiredArgsConstructor;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.scheduling.annotation.Scheduled;
@@ -21,9 +21,11 @@ import org.springframework.stereotype.Service;
 @RequiredArgsConstructor
 public class NotificationProcessorService {
 
+    private final ReentrantLock EVENT_PROCESSOR_LOCK = new ReentrantLock();
+
     private final NotificationEventRepository notificationEventRepository;
     private final TradeSignalRepository tradeSignalRepository;
-    private final QueueRepository queueRepository;
+    //private final QueueRepository queueRepository;
 
     private static final String CUSTOM_PAYLOAD_SEPARATOR = "|";
     private final Queue<String> eventQueue = new LinkedList<>();
@@ -34,19 +36,26 @@ public class NotificationProcessorService {
 
     @Scheduled(fixedDelay = 500)
     public void processTradingViewNotification() {
-        try {
-            processTradingViewNotificationPriv();
-        } catch (Exception e) {
-            e.printStackTrace();
-            throw new RuntimeException("Error processing notification");
+        if (!EVENT_PROCESSOR_LOCK.tryLock()) {
+            return;
         }
-    }
 
-    public void processTradingViewNotificationPriv() {
         if (eventQueue.isEmpty()) {
             return;
         }
-        String payload = eventQueue.poll();
+        try {
+            String payload = eventQueue.peek();
+            processTradingViewNotificationPriv(payload);
+            eventQueue.poll();
+        } catch (Exception e) {
+            e.printStackTrace();
+            throw new RuntimeException("Error processing notification");
+        } finally {
+            EVENT_PROCESSOR_LOCK.unlock();
+        }
+    }
+
+    public void processTradingViewNotificationPriv(String payload) {
         Map<String, String> payloadMap = getPayloadMap(payload);
         //handle empty
         if (payloadMap.isEmpty()) {
@@ -79,6 +88,11 @@ public class NotificationProcessorService {
         String tradeActionStr = StringUtils.isNotBlank(payloadMap.get("t_action")) ? payloadMap.get("t_action") : TradeAction.NONE.name();
         TradeAction tradeAction = TradeAction.fromString(tradeActionStr);
 
+        String strategyStr = StringUtils.isNotBlank(payloadMap.get("strg")) ? payloadMap.get("strg") : "NONE";
+        Strategy strategy = Strategy.fromString(strategyStr);
+
+        StrategyProcessStatus strategyProcessStatus = strategy == Strategy.NONE ? StrategyProcessStatus.NA : StrategyProcessStatus.PENDING;
+
         NotificationEvent notificationEvent = NotificationEvent.builder()
             .price(price)
             .symbol(symbol)
@@ -95,12 +109,14 @@ public class NotificationProcessorService {
             .lastUpdated(LocalDateTime.now())
             .category(signalCategory)
             .tradeAction(tradeAction.name())
+            .strategyName(strategy.name())
+            .strategyProcessStatus(strategyProcessStatus.name())
             .build();
+
         notificationEvent.setStrategy(indicator.isStrategy());
         notificationEvent.setImportance(indicator.getDefaultImportance().name());
         notificationEvent = overrideFieldsIfNeeded(notificationEvent, indicator, payload);
         notificationEventRepository.save(notificationEvent);
-        //handle trading signal event here
     }
 
     private NotificationEvent overrideFieldsIfNeeded(NotificationEvent notificationEvent, Indicator indicator, String payload) {
@@ -226,9 +242,10 @@ public class NotificationProcessorService {
             .interval(event.getInterval())
             .created(event.getCreated())
             .lastUpdated(event.getLastUpdated())
-            .isStrategy(event.isStrategy())
+            .strategy(event.isStrategy())
             .importance(event.getImportance())
             .sinceCreatedStr(sinceCreatedStr)
+            .tradeAction(event.getTradeAction())
             .build();
     }
 }

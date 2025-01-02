@@ -3,12 +3,15 @@ package com.kraj.tradeapp.core.service;
 import com.kraj.tradeapp.core.model.dashboard.ui.dto.CurrentTradeUI;
 import com.kraj.tradeapp.core.model.dashboard.ui.dto.EventsUI;
 import com.kraj.tradeapp.core.model.dashboard.ui.dto.TradingSignalUI;
+import com.kraj.tradeapp.core.model.dto.NotificationEventDto;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
+import java.util.Arrays;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.messaging.simp.SimpMessageSendingOperations;
+import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 
 /**
@@ -25,8 +28,10 @@ public class DashboardService {
      * TODO: update this class to compute and return the actual current trades,
      * trading signals, and events. and to send updates via WebSocket.
      */
-
+    private final NotificationProcessorService notificationProcessorService;
     private final SimpMessageSendingOperations messagingTemplate;
+
+    private final List<String> SUPPORTED_SYMBOLS = Arrays.asList("NQ", "ES");
 
     public List<CurrentTradeUI> getCurrentTrades() {
         // mock data
@@ -59,6 +64,25 @@ public class DashboardService {
         return events;
     }
 
+    //    private List<EventsDto> getEventsDto(String symbol) {
+    //        List<NotificationEvent> notificationEvents = notificationEventRepository.getBetweenDatetime(symbol,
+    //            LocalDateTime.now().minusHours(24),
+    //            LocalDateTime.now());
+    //        return notificationEvents.stream()
+    //            .map(event -> EventsDto.builder()
+    //                .symbol(event.getSymbol())
+    //                .indicatorName(event.getIndicator())
+    //                .category(event.getCategory())
+    //                .interval(event.getInterval())
+    //                .direction(event.getDirection())
+    //                .price(event.getPrice().toString())
+    //                .derivedVal(event.getDerivedValue())
+    //                .datetime(event.getDatetime().toString())
+    //                .rawMessage(event.getRawMsg())
+    //                .build())
+    //            .collect(Collectors.toList());
+    //    }
+
     public void addCurrentTrade(CurrentTradeUI trade) {
         log.info("Adding trade: {}", trade);
         messagingTemplate.convertAndSend("/topic/current-trades", List.of(trade));
@@ -70,5 +94,27 @@ public class DashboardService {
 
     public void addEvent(EventsUI event) {
         messagingTemplate.convertAndSend("/topic/events", List.of(event));
+    }
+
+    //    @Scheduled(fixedRate = 6000) // Push every 5 seconds
+    //    public void pushCurrentTrades() {
+    //        messagingTemplate.convertAndSend("/topic/v2/current-trades", dashboardService.getCurrentTrades());
+    //    }
+    //
+    //    @Scheduled(fixedRate = 60000)
+    //    public void pushTradingSignals() {
+    //        messagingTemplate.convertAndSend("/topic/v2/trading-signals", dashboardService.getTradingSignals());
+    //    }
+
+    @Scheduled(fixedRate = 60000)
+    public void pushEvents() {
+        for (String symbol : SUPPORTED_SYMBOLS) {
+            List<NotificationEventDto> dtos = notificationProcessorService.getNotificationEvents(
+                symbol,
+                LocalDateTime.now().minusHours(24),
+                LocalDateTime.now()
+            );
+            messagingTemplate.convertAndSend("/topic/v2/events", dtos);
+        }
     }
 }

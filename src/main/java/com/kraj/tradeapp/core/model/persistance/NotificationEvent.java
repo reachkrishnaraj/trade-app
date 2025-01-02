@@ -65,12 +65,24 @@ public class NotificationEvent {
     @Column(name = "lastupdated_ts", nullable = false)
     private LocalDateTime lastUpdated;
 
-    @Column(name = "is_strategy", nullable = false)
-    private boolean isStrategy;
-
     @Column(nullable = false)
     private String importance;
 
     @Column(nullable = false)
     private String tradeAction;
+
+    @Column(name = "is_strategy", nullable = false)
+    private boolean isStrategy;
+
+    @Column(nullable = false, name = "strategy_name")
+    private String strategyName;
+
+    @Column(nullable = false, name = "strategy_process_status")
+    private String strategyProcessStatus;
+
+    @Column(name = "strategy_processed_at")
+    private LocalDateTime strategyProcessedAt;
+
+    @Column(name = "strategy_process_msg")
+    private String strategyProcessMsg;
 }

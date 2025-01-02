@@ -53,6 +53,18 @@
             <column name="trade_action" type="VARCHAR(255)">
                 <constraints nullable="false"/>
             </column>
+            <column name="strategy_name" type="VARCHAR(255)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="strategy_process_status" type="VARCHAR(255)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="strategy_processed_at" type="TIMESTAMP">
+                <constraints nullable="true"/>
+            </column>
+            <column name="strategy_process_msg" type="VARCHAR(255)">
+                <constraints nullable="true"/>
+            </column>
         </createTable>
 
 <!--        <createIndex indexName="idx_event_datetime" tableName="notification_events">-->

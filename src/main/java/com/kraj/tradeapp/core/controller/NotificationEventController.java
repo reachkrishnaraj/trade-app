@@ -30,7 +30,7 @@ public class NotificationEventController {
     public ResponseEntity<List<NotificationEventDto>> getNotificationEvents(@PathVariable String symbol) {
         List<NotificationEventDto> events = notificationProcessorService.getNotificationEvents(
             symbol,
-            LocalDateTime.now().minusHours(6),
+            LocalDateTime.now().minusHours(24),
             LocalDateTime.now()
         );
         return ResponseEntity.ok(events);

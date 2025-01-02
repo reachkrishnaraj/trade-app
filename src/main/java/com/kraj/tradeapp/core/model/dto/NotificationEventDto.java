@@ -1,6 +1,5 @@
 package com.kraj.tradeapp.core.model.dto;
 
-import jakarta.persistence.*;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import lombok.Builder;
@@ -36,9 +35,11 @@ public class NotificationEventDto {
 
     private LocalDateTime lastUpdated;
 
-    private boolean isStrategy;
+    private boolean strategy;
 
     private String importance;
 
     private String sinceCreatedStr;
+
+    private String tradeAction;
 }

@@ -15,6 +15,7 @@ import lombok.NoArgsConstructor;
         @Index(name = "idx_datetime", columnList = "datetime"),
         @Index(name = "idx_account_id", columnList = "account_id"),
         @Index(name = "idx_symbol", columnList = "symbol"),
+        @Index(name = "idx_trade_dest_id", columnList = "trade_dest_id"),
     }
 )
 @Data
@@ -26,6 +27,12 @@ public class Trade {
     @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "trade_app_default_seq_gen")
     @SequenceGenerator(name = "trade_app_default_seq_gen", sequenceName = "trade_app_def_seq")
     private Long id;
+
+    @Column(name = "strategy_name", nullable = false, length = 100)
+    private String strategyName;
+
+    @Column(name = "trade_dest_id", nullable = false, length = 100)
+    private String tradeDestinationId; //usually TradersPost endpoint id
 
     @Column(name = "signal_id", nullable = false, length = 100)
     private String signalId;

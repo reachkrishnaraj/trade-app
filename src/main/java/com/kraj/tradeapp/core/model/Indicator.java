@@ -15,7 +15,6 @@ public enum Indicator {
     Q_GRID(EventImportance.HIGH, false),
     Q_SMC_TREND_RIBBON(EventImportance.HIGH, false),
     Q_SMC_2ND_TREND_RIBBON(EventImportance.MEDIUM, false),
-    Q_ELITE(EventImportance.CRITICAL, false),
     Q_ORACLE_SQUEEZER(EventImportance.HIGH, false),
     BJ_KEY_LEVELS(EventImportance.HIGH, false),
     SR_CHANNEL_V2(EventImportance.CRITICAL, false),
@@ -43,6 +42,7 @@ public enum Indicator {
     QSUMO(EventImportance.CRITICAL, true),
     QGRID_ELITE(EventImportance.CRITICAL, true),
     QCLOUD_TREND_TRADER(EventImportance.CRITICAL, true),
+    Q_ELITE(EventImportance.CRITICAL, true),
     QSCALPER(EventImportance.CRITICAL, true);
 
     private final EventImportance defaultImportance;
