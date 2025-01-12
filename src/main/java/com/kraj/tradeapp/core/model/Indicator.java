@@ -31,19 +31,32 @@ public enum Indicator {
     EXHAUSTION(EventImportance.MEDIUM, false),
     STACKED_IMBALANCES(EventImportance.MEDIUM, false),
     SMC_BREAKOUT(EventImportance.HIGH, false),
+    ALGO_ALPHA_SUPER_TREND(EventImportance.CRITICAL, false),
+    SUPERTREND(EventImportance.HIGH, false),
+    PIVOT_POINT_STRATEGY(EventImportance.HIGH, false),
+    UT_BOT(EventImportance.HIGH, false),
     PRICE_DROP_DETECTOR(EventImportance.CRITICAL, false),
     IFVG_DETECTOR(EventImportance.CRITICAL, false),
     FVG_REJECTION_DETECTOR(EventImportance.CRITICAL, false),
     DISPLACEMENT_DETECTOR(EventImportance.CRITICAL, false),
+    QUANTVUE_PROV2(EventImportance.CRITICAL, false),
+    QUANTVUE_MOMENTUM_V2(EventImportance.CRITICAL, false),
+    QUANTVUE_QGRID(EventImportance.CRITICAL, false),
+    QUANTVUE_ORACLE_SQUEEZE(EventImportance.CRITICAL, false),
+    QUANTVUE_QCVD(EventImportance.CRITICAL, false),
     UNKNOWN(EventImportance.TRIVIAL, false),
 
     //below are strategies, but adding here for simplicity
-    QKRONOS(EventImportance.CRITICAL, true),
-    QSUMO(EventImportance.CRITICAL, true),
-    QGRID_ELITE(EventImportance.CRITICAL, true),
-    QCLOUD_TREND_TRADER(EventImportance.CRITICAL, true),
-    Q_ELITE(EventImportance.CRITICAL, true),
-    QSCALPER(EventImportance.CRITICAL, true);
+    QUANTVUE_QKRONOS(EventImportance.CRITICAL, true),
+    QSUQUANTVUE_QSUMOMO(EventImportance.CRITICAL, true),
+    QUANTVUE_QGRID_ELITE(EventImportance.CRITICAL, true),
+    QUANTVUE_QCLOUD_TREND_TRACER(EventImportance.CRITICAL, true),
+    QUANTVUE_QELITE(EventImportance.CRITICAL, true),
+    QUANTVUE_QSCALPER(EventImportance.CRITICAL, true),
+
+    LUXALGO_OSCILLATOR_MATRIX(EventImportance.CRITICAL, true),
+    LUXALGO_PAC(EventImportance.CRITICAL, true),
+    LUXALGO_SO(EventImportance.CRITICAL, true);
 
     private final EventImportance defaultImportance;
 
@@ -56,7 +69,10 @@ public enum Indicator {
 
     public static Indicator fromString(@Nullable String indicator) {
         for (Indicator i : Indicator.values()) {
-            if (StringUtils.equalsAnyIgnoreCase(i.name(), indicator)) {
+            if (
+                StringUtils.equalsAnyIgnoreCase(i.name(), indicator) ||
+                StringUtils.equalsAnyIgnoreCase(i.name().replace("_", ""), indicator)
+            ) {
                 return i;
             }
         }

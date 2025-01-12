@@ -2,6 +2,7 @@ package com.kraj.tradeapp.core.model.dto;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
+import java.util.Map;
 import lombok.Builder;
 import lombok.Data;
 
@@ -10,36 +11,25 @@ import lombok.Data;
 public class NotificationEventDto {
 
     private Long id;
-
-    private LocalDateTime datetime;
-
+    private String datetime;
     private String symbol;
-
     private String source;
-
     private String indicator;
-
-    private String derivedValue;
-
     private String direction;
-
-    private String category;
-
-    private String rawMsg;
-
+    private String indicatorSubCategory;
+    private String rawAlertMsg;
+    private String rawPayload;
     private BigDecimal price;
-
     private String interval;
-
-    private LocalDateTime created;
-
-    private LocalDateTime lastUpdated;
-
-    private boolean strategy;
-
-    private String importance;
-
+    private String candleType;
+    private String created;
+    private String lastUpdated;
+    private BigDecimal score;
+    private boolean isStrategy;
+    private String strategyName;
+    private String strategyProcessStatus;
+    private String strategyProcessedAt;
+    private String strategyProcessMsg;
+    private Map<String, Object> additionalData;
     private String sinceCreatedStr;
-
-    private String tradeAction;
 }

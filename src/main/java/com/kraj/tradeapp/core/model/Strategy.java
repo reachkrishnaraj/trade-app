@@ -8,7 +8,7 @@ public enum Strategy {
     NONE;
 
     public static Strategy fromString(String strategy) {
-        if (strategy == null) {
+        if (StringUtils.isBlank(strategy)) {
             return NONE;
         }
         for (Strategy s : Strategy.values()) {

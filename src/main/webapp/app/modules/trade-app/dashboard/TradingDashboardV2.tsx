@@ -7,6 +7,7 @@ import { Stomp } from '@stomp/stompjs';
 import EventTable from './EventTable';
 import EventTableV2 from './EventTableV2';
 import AccTradesTable from './AccTradesTable';
+import IndicatorMainTableV2 from './IndicatorMainTableV2';
 import SignalsTable from './SignalsTable';
 import { useParams } from 'react-router-dom';
 import 'bootstrap/dist/css/bootstrap.min.css';
@@ -45,14 +46,18 @@ const TradingDashboardV2: React.FC = () => {
 
   const [events, setEvents] = useState<Event[]>();
   const [eventsByInterval, setEventsByInterval] = useState<EventsByTimeInterval>({});
-
-  useEffect(() => {
-    console.log('Symbol is 1:', symbol);
-  }, []);
+  const [mainData, setMainData] = useState({
+    symbol: symbol,
+  });
 
   useEffect(() => {
     console.log('Symbol is 2:', symbol);
     if (!symbol) return;
+
+    setMainData(prev => ({
+      ...prev,
+      symbol: symbol,
+    }));
 
     const sock = new SockJS(WS_URL);
     const stompClient = Stomp.over(sock);
@@ -126,7 +131,6 @@ const TradingDashboardV2: React.FC = () => {
           </Card>
         </Col>
       </Row>
-
       {/* Signals Section */}
       <Row className="mb-4">
         <Col>
@@ -140,7 +144,6 @@ const TradingDashboardV2: React.FC = () => {
           </Card>
         </Col>
       </Row>
-
       {/* Events Section */}
       <Row>
         <Col>
@@ -165,6 +168,19 @@ const TradingDashboardV2: React.FC = () => {
                   ))}
                 </Tab.Content>
               </Tab.Container>
+            </Card.Body>
+          </Card>
+        </Col>
+      </Row>
+      Indicator Section
+      <Row className="mb-4">
+        <Col>
+          <Card>
+            <Card.Header className="bg-primary text-white">
+              <Card.Title className="mb-0">Indicator Analysis</Card.Title>
+            </Card.Header>
+            <Card.Body>
+              <IndicatorMainTableV2 symbol={symbol} wsUrl={WS_URL} />
             </Card.Body>
           </Card>
         </Col>

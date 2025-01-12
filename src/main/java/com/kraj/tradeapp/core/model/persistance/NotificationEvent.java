@@ -1,6 +1,5 @@
 package com.kraj.tradeapp.core.model.persistance;
 
-import com.kraj.tradeapp.core.model.*;
 import jakarta.persistence.*;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
@@ -16,6 +15,8 @@ import lombok.NoArgsConstructor;
         @Index(name = "idx_event_datetime", columnList = "event_datetime"),
         @Index(name = "idx_symbol", columnList = "symbol"),
         @Index(name = "idx_interval", columnList = "interval"),
+        @Index(name = "idx_candle_type", columnList = "candle_type"),
+        @Index(name = "idx_trade_signal_process_status", columnList = "trade_signal_process_status"),
     }
 )
 @Data
@@ -41,17 +42,23 @@ public class NotificationEvent {
     @Column(nullable = false)
     private String indicator;
 
-    @Column(name = "derived_value", nullable = false)
-    private String derivedValue;
+    @Column(nullable = false, name = "indicator_display_name")
+    private String indicatorDisplayName;
 
     @Column(nullable = false)
     private String direction;
 
-    @Column(nullable = false)
-    private String category;
+    @Column(nullable = false, name = "indicator_sub_category")
+    private String indicatorSubCategory;
 
-    @Column(name = "raw_msg", nullable = false)
-    private String rawMsg;
+    @Column(nullable = false, name = "indicator_sub_category_display_name")
+    private String indicatorSubCategoryDisplayName;
+
+    @Column(name = "raw_alert_msg", nullable = false)
+    private String rawAlertMsg;
+
+    @Column(name = "raw_payload", nullable = false)
+    private String rawPayload;
 
     @Column(precision = 15, scale = 2, nullable = false)
     private BigDecimal price;
@@ -59,22 +66,34 @@ public class NotificationEvent {
     @Column(nullable = false)
     private String interval;
 
+    @Column(nullable = false, name = "candle_type")
+    private String candleType;
+
     @Column(name = "created_ts", nullable = false)
     private LocalDateTime created;
 
     @Column(name = "lastupdated_ts", nullable = false)
     private LocalDateTime lastUpdated;
 
-    @Column(nullable = false)
-    private String importance;
+    @Column(nullable = false, name = "trade_signal_process_status")
+    private String tradeSignalProcessStatus;
 
     @Column(nullable = false)
-    private String tradeAction;
+    private BigDecimal score;
+
+    @Column(nullable = false, name = "min_score")
+    private BigDecimal minScore;
+
+    @Column(nullable = false, name = "max_score")
+    private BigDecimal maxScore;
+
+    @Column(nullable = false, name = "score_percent")
+    private BigDecimal scorePercent;
 
     @Column(name = "is_strategy", nullable = false)
     private boolean isStrategy;
 
-    @Column(nullable = false, name = "strategy_name")
+    @Column(name = "strategy_name")
     private String strategyName;
 
     @Column(nullable = false, name = "strategy_process_status")
@@ -85,4 +104,7 @@ public class NotificationEvent {
 
     @Column(name = "strategy_process_msg")
     private String strategyProcessMsg;
+
+    @Column(name = "is_alertable", nullable = false)
+    private boolean isAlertable;
 }

@@ -44,3 +44,64 @@ export interface AccTrade {
 export interface EventsByTimeInterval {
   [key: string]: Event[];
 }
+
+export interface IndicatorSubCategoryScoreRecord {
+  key: string;
+  symbol: string;
+  candleType: string;
+  interval: string;
+  indicatorName: string;
+  indicatorDisplayName: string;
+  name: string;
+  displayName: string;
+  minScore: string;
+  maxScore: string;
+  score: string;
+  direction: string;
+  lastMsg: string;
+  lastMsgDateTime: string;
+  isStrategy: boolean;
+  strategyName: string;
+}
+
+export interface IndicatorScoreRecord {
+  symbol: string;
+  key: string;
+  candleType: string;
+  interval: string;
+  name: string;
+  displayName: string;
+  dateTime: string;
+  minScore: string;
+  maxScore: string;
+  score: string;
+  direction: string;
+  lastMsg: string;
+  subCategoryScores: IndicatorSubCategoryScoreRecord[];
+}
+
+export interface CandleIntervalGroupedRecord {
+  symbol: string;
+  key: string;
+  candleType: string;
+  interval: string;
+  direction: string;
+  lastMsg: string;
+  lastMsgDateTime: string;
+  minScore: string;
+  maxScore: string;
+  score: string;
+  dateTime: string;
+  indicatorScoreRecords: IndicatorScoreRecord[];
+}
+
+export interface TradeSignalScoreSnapshot {
+  id: string;
+  symbol: string;
+  dateTime: string;
+  candleIntervalGroupedRecords: CandleIntervalGroupedRecord[];
+  minScore: string;
+  maxScore: string;
+  score: string;
+  direction: string;
+}

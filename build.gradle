@@ -173,6 +173,9 @@ dependencies {
     testImplementation "org.testcontainers:testcontainers"
     implementation "org.springframework.boot:spring-boot-starter-websocket"
     implementation "org.springframework.security:spring-security-messaging"
+    implementation 'org.springframework.boot:spring-boot-starter-data-mongodb'
+
+    implementation 'com.opencsv:opencsv:5.7.1'
     // jhipster-needle-gradle-dependency - JHipster will add additional dependencies here
 }
 

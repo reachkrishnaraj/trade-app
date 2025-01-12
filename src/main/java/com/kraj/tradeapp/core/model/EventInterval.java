@@ -5,6 +5,7 @@ import jakarta.validation.constraints.Null;
 import org.apache.commons.lang3.StringUtils;
 
 public enum EventInterval {
+    S30("30s"),
     M1("1m"),
     M2("2m"),
     M3("3m"),

@@ -21,6 +21,11 @@ logging:
     com.kraj.tradeapp: DEBUG
 
 spring:
+  data:
+    mongodb:
+      uri: mongodb://mongo:aFQXUVQFDLroMWIpcrOjakxiCHyDSPZs@roundhouse.proxy.rlwy.net:38925
+      database: trade_app_prod
+
   devtools:
     restart:
       enabled: true
@@ -41,6 +46,8 @@ spring:
       auto-commit: false
   liquibase:
     enabled: true
+    showSummary: VERBOSE
+    showSummaryOutput: ALL
     # Remove 'faker' if you do not want the sample data to be loaded automatically
     contexts: dev, faker
     drop-first: true
@@ -103,3 +110,4 @@ jhipster:
 # ===================================================================
 
 # application:
+

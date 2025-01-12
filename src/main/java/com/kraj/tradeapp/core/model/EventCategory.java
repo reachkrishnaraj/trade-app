@@ -1,6 +1,7 @@
 package com.kraj.tradeapp.core.model;
 
-public enum SignalCategory {
+public enum EventCategory {
+    SIGNAL,
     DIRECTION,
     INTERNAL_BOS,
     EXTERNAL_BOS,
@@ -12,4 +13,5 @@ public enum SignalCategory {
     BIG_TRADES,
     CUSTOM,
     CLASSIC,
+    PRICE_ACTION,
 }

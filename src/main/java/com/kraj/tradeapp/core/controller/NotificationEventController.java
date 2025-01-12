@@ -20,7 +20,7 @@ public class NotificationEventController {
 
     private final NotificationProcessorService notificationProcessorService;
 
-    @PostMapping("/notificationEvents")
+    @PostMapping("/receiveEvents")
     public ResponseEntity<Void> createNotificationEvent(@RequestBody String payload) {
         notificationProcessorService.queueAndProcessNotification(payload);
         return ResponseEntity.status(HttpStatus.CREATED).build();

@@ -3,7 +3,12 @@
                    xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
                    http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-4.15.xsd">
 
-    <changeSet id="create-notification-event" author="krishna">
+    <changeSet id="trade_app_def_seq_id" author="krishna">
+        <createSequence sequenceName="trade_app_def_seq" startValue="2000" incrementBy="50" />
+    </changeSet>
+
+    <!-- Create main table -->
+    <changeSet id="create-notification-event-updated" author="krishna">
         <createTable tableName="notification_events">
             <column name="id" type="BIGINT" autoIncrement="true">
                 <constraints primaryKey="true" nullable="false"/>
@@ -20,16 +25,22 @@
             <column name="indicator" type="VARCHAR(255)">
                 <constraints nullable="false"/>
             </column>
-            <column name="derived_value" type="VARCHAR(255)">
+            <column name="indicator_display_name" type="VARCHAR(255)">
                 <constraints nullable="false"/>
             </column>
             <column name="direction" type="VARCHAR(255)">
                 <constraints nullable="false"/>
             </column>
-            <column name="category" type="VARCHAR(255)">
+            <column name="indicator_sub_category" type="VARCHAR(255)">
                 <constraints nullable="false"/>
             </column>
-            <column name="raw_msg" type="VARCHAR(255)">
+            <column name="indicator_sub_category_display_name" type="VARCHAR(255)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="raw_alert_msg" type="VARCHAR(255)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="raw_payload" type="VARCHAR(255)">
                 <constraints nullable="false"/>
             </column>
             <column name="price" type="DECIMAL(15, 2)">
@@ -38,19 +49,31 @@
             <column name="interval" type="VARCHAR(255)">
                 <constraints nullable="false"/>
             </column>
+            <column name="candle_type" type="VARCHAR(255)">
+                <constraints nullable="false"/>
+            </column>
             <column name="created_ts" type="TIMESTAMP">
                 <constraints nullable="false"/>
             </column>
             <column name="lastupdated_ts" type="TIMESTAMP">
                 <constraints nullable="false"/>
             </column>
+            <column name="score" type="DECIMAL(15, 2)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="min_score" type="DECIMAL(15, 2)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="max_score" type="DECIMAL(15, 2)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="score_percent" type="DECIMAL(15, 2)">
+                <constraints nullable="false"/>
+            </column>
             <column name="is_strategy" type="BOOLEAN">
                 <constraints nullable="false"/>
             </column>
-            <column name="importance" type="VARCHAR(255)">
-                <constraints nullable="false"/>
-            </column>
-            <column name="trade_action" type="VARCHAR(255)">
+            <column name="is_alertable" type="BOOLEAN">
                 <constraints nullable="false"/>
             </column>
             <column name="strategy_name" type="VARCHAR(255)">
@@ -65,12 +88,16 @@
             <column name="strategy_process_msg" type="VARCHAR(255)">
                 <constraints nullable="true"/>
             </column>
+            <column name="trade_signal_process_status" type="VARCHAR(255)">
+                <constraints nullable="false"/>
+            </column>
         </createTable>
 
-        <loadData file="classpath:config/liquibase/data/notification_event_data.csv"
-                  tableName="notification_events"
-                  separator=","/>
+<!--        <loadData file="classpath:config/liquibase/data/notification_event_data.csv"-->
+<!--                  tableName="notification_events"-->
+<!--                  separator=","/>-->
     </changeSet>
+
     <changeSet id="recreate-idx-event-datetime" author="krishna">
         <!-- Drop the index if it exists -->
         <preConditions onFail="MARK_RAN">
@@ -109,6 +136,34 @@
         <!-- Create the index -->
         <createIndex indexName="idx_interval" tableName="notification_events">
             <column name="interval"/>
+        </createIndex>
+    </changeSet>
+
+    <!-- Recreate idx_interval -->
+    <changeSet id="recreate-idx-candle-type" author="krishna">
+        <!-- Drop the index if it exists -->
+        <preConditions onFail="MARK_RAN">
+            <indexExists indexName="idx_candle_type" tableName="notification_events"/>
+        </preConditions>
+        <dropIndex indexName="idx_candle_type" tableName="notification_events"/>
+
+        <!-- Create the index -->
+        <createIndex indexName="idx_candle_type" tableName="notification_events">
+            <column name="candle_type"/>
+        </createIndex>
+    </changeSet>
+
+    <!-- Recreate idx_interval -->
+    <changeSet id="recreate-idx-trade-signal-process-status" author="krishna">
+        <!-- Drop the index if it exists -->
+        <preConditions onFail="MARK_RAN">
+            <indexExists indexName="idx_trade_signal_process_status" tableName="notification_events"/>
+        </preConditions>
+        <dropIndex indexName="idx_trade_signal_process_status" tableName="notification_events"/>
+
+        <!-- Create the index -->
+        <createIndex indexName="idx_trade_signal_process_status" tableName="notification_events">
+            <column name="trade_signal_process_status"/>
         </createIndex>
     </changeSet>
 </databaseChangeLog>

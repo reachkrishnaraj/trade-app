@@ -1,0 +1,199 @@
+param_indicator_name,param_indicator_display_name,description,param_match_type,param_msg,param_interval,val_sub_category,val_sub_category_display_name,val_is_skip_scoring,val_score,val_is_alertable
+BJ_KEY_LEVELS,BJ Key Levels,,STARTS_WITH,Resistance broke on,ANY,BJ_KL_SUPPORT_RESISTANCE,BJ Key Level SR,,3,TRUE
+BJ_KEY_LEVELS,BJ Key Levels,,STARTS_WITH,Support broke on,ANY,BJ_KL_SUPPORT_RESISTANCE,BJ Key Level SR,,-3,TRUE
+BJ_KEY_LEVELS,BJ Key Levels,,STARTS_WITH,Pushing Off Key Level Support on,ANY,BJ_KL_SUPPORT_RESISTANCE,BJ Key Level SR,TRUE,0,
+BJ_KEY_LEVELS,BJ Key Levels,,STARTS_WITH,Pushing Off Key Level Resistance on,ANY,BJ_KL_SUPPORT_RESISTANCE,BJ Key Level SR,TRUE,0,
+BJ_KEY_LEVELS,BJ Key Levels,,STARTS_WITH,False Break Down on,ANY,BJ_KL_SUPPORT_RESISTANCE,BJ Key Level SR,,0,
+BJ_KEY_LEVELS,BJ Key Levels,,STARTS_WITH,False Break Up on,ANY,BJ_KL_SUPPORT_RESISTANCE,BJ Key Level SR,,0,
+BJ_KEY_LEVELS,BJ Key Levels,,STARTS_WITH,Breakout on,ANY,BJ_KL_SUPPORT_RESISTANCE,BJ Key Level SR,,5,TRUE
+BJ_KEY_LEVELS,BJ Key Levels,,STARTS_WITH,Breakdown on,ANY,BJ_KL_SUPPORT_RESISTANCE,BJ Key Level SR,,-5,TRUE
+####,,,,,,,,,,
+LUXALGO_OSCILLATOR_MATRIX,Luxalgo Oscillator Matrix,,FULL_MATCH,Hyper Wave oscillator upward signal,ANY,LUXALGO_OSCILLATOR_MATRIX_HW,Luxalgo Oscillator Matrix Hyperwave,,1,
+LUXALGO_OSCILLATOR_MATRIX,Luxalgo Oscillator Matrix,,FULL_MATCH,Oversold Hyper Wave oscillator upward signal,ANY,LUXALGO_OSCILLATOR_MATRIX_HW,Luxalgo Oscillator Matrix Hyperwave,,3,TRUE
+LUXALGO_OSCILLATOR_MATRIX,Luxalgo Oscillator Matrix,,FULL_MATCH,Oversold Hyper Wave oscillator upward signal,ANY,LUXALGO_OSCILLATOR_MATRIX_HW,Luxalgo Oscillator Matrix Hyperwave,,-1,
+LUXALGO_OSCILLATOR_MATRIX,Luxalgo Oscillator Matrix,,FULL_MATCH,Overbought Hyper Wave oscillator downward signal,ANY,LUXALGO_OSCILLATOR_MATRIX_HW,Luxalgo Oscillator Matrix Hyperwave,,-3,TRUE
+LUXALGO_OSCILLATOR_MATRIX,Luxalgo Oscillator Matrix,,FULL_MATCH,Bullish reversal,ANY,LUXALGO_OSCILLATOR_MATRIX_REV,Luxalgo Oscillator Matrix Reversals,,3,TRUE
+LUXALGO_OSCILLATOR_MATRIX,Luxalgo Oscillator Matrix,,FULL_MATCH,Bullish reversal +,ANY,LUXALGO_OSCILLATOR_MATRIX_REV,Luxalgo Oscillator Matrix Reversals,,1,
+LUXALGO_OSCILLATOR_MATRIX,Luxalgo Oscillator Matrix,,FULL_MATCH,Bearish reversal,ANY,LUXALGO_OSCILLATOR_MATRIX_REV,Luxalgo Oscillator Matrix Reversals,,-1,
+LUXALGO_OSCILLATOR_MATRIX,Luxalgo Oscillator Matrix,,FULL_MATCH,Bearish reversal +,ANY,LUXALGO_OSCILLATOR_MATRIX_REV,Luxalgo Oscillator Matrix Reversals,,-3,TRUE
+LUXALGO_OSCILLATOR_MATRIX,Luxalgo Oscillator Matrix,,FULL_MATCH,Bullish Divergence,ANY,LUXALGO_OSCILLATOR_MATRIX_DIV,Luxalgo Oscillator Matrix Divergence,,1,
+LUXALGO_OSCILLATOR_MATRIX,Luxalgo Oscillator Matrix,,FULL_MATCH,Bearish Divergence,ANY,LUXALGO_OSCILLATOR_MATRIX_DIV,Luxalgo Oscillator Matrix Divergence,,-1,
+LUXALGO_OSCILLATOR_MATRIX,Luxalgo Oscillator Matrix,,FULL_MATCH,Strong Bullish Confluence,ANY,LUXALGO_OSCILLATOR_MATRIX_CONF,Luxalgo Oscillator Matrix Confluence,,3,TRUE
+LUXALGO_OSCILLATOR_MATRIX,Luxalgo Oscillator Matrix,,FULL_MATCH,Weak Bullish Confluence,ANY,LUXALGO_OSCILLATOR_MATRIX_CONF,Luxalgo Oscillator Matrix Confluence,,1,
+LUXALGO_OSCILLATOR_MATRIX,Luxalgo Oscillator Matrix,,FULL_MATCH,Strong Bearish Confluence,ANY,LUXALGO_OSCILLATOR_MATRIX_CONF,Luxalgo Oscillator Matrix Confluence,,-3,TRUE
+LUXALGO_OSCILLATOR_MATRIX,Luxalgo Oscillator Matrix,,FULL_MATCH,Weak Bearish Confluence,ANY,LUXALGO_OSCILLATOR_MATRIX_CONF,Luxalgo Oscillator Matrix Confluence,,-1,
+LUXALGO_OSCILLATOR_MATRIX,Luxalgo Oscillator Matrix,,FULL_MATCH,Bullish Overflow,ANY,LUXALGO_OSCILLATOR_MATRIX_OVERALL,Luxalgo Oscillator Matrix Overall Signal,,3,TRUE
+LUXALGO_OSCILLATOR_MATRIX,Luxalgo Oscillator Matrix,,FULL_MATCH,Bearish Overflow,ANY,LUXALGO_OSCILLATOR_MATRIX_OVERALL,Luxalgo Oscillator Matrix Overall Signal,,-3,TRUE
+####,,,,,,,,,,
+LUXALGO_PAC,Luxalgo Price Action Concepts,Triggers on the event of an internal bullish break of structure (BOS),STARTS_WITH,Internal bullish BOS formed,ANY,LUXALGO_PAC_I_BOS,Luxalgo PAC I-BoS,,1,
+LUXALGO_PAC,Luxalgo Price Action Concepts,Triggers on the event of an internal bullish change of character (CHOCH),STARTS_WITH,Internal bullish CHoCH formed,ANY,LUXALGO_PAC_I_CHOCH,Luxalgo PAC I-ChoCH,,1,
+LUXALGO_PAC,Luxalgo Price Action Concepts,Triggers on the event of a Supported internal bullish change of character (CHOCH+),STARTS_WITH,Internal bullish CHoCH+ formed,ANY,LUXALGO_PAC_I_CHOCH,Luxalgo PAC I-ChoCH,,3,TRUE
+LUXALGO_PAC,Luxalgo Price Action Concepts,Triggers on the event of an internal bearish break of structure (BOS),STARTS_WITH,Internal bearish BOS formed,ANY,LUXALGO_PAC_I_BOS,Luxalgo PAC I-BoS,,-1,
+LUXALGO_PAC,Luxalgo Price Action Concepts,Triggers on the event of an internal bearish change of character (CHOCH),STARTS_WITH,Internal bearish CHoCH formed,ANY,LUXALGO_PAC_I_CHOCH,Luxalgo PAC I-ChoCH,,-1,
+LUXALGO_PAC,Luxalgo Price Action Concepts,Triggers on the event of a Supported internal bearish change of character (CHOCH+),STARTS_WITH,Internal bearish CHoCH+ formed,ANY,LUXALGO_PAC_I_CHOCH,Luxalgo PAC I-ChoCH,,-3,TRUE
+LUXALGO_PAC,Luxalgo Price Action Concepts,Triggers on the event of a swing bullish break of structure (BOS),STARTS_WITH,Bullish BOS formed,ANY,LUXALGO_PAC_S_BOS,Luxalgo PAC Swing-BoS,,1,
+LUXALGO_PAC,Luxalgo Price Action Concepts,Triggers on the event of a swing bullish change of character (CHOCH),STARTS_WITH,Bullish CHoCH formed,ANY,LUXALGO_PAC_S_CHOCH,Luxalgo PAC Swing-ChoCH,,1,
+LUXALGO_PAC,Luxalgo Price Action Concepts,Triggers on the event of a Supported swing bullish change of character (CHOCH+),STARTS_WITH,Bullish CHoCH+ formed,ANY,LUXALGO_PAC_S_CHOCH_PLUS,Luxalgo PAC Swing-ChoCH+,,3,TRUE
+LUXALGO_PAC,Luxalgo Price Action Concepts,Triggers on the event of a swing bearish break of structure (BOS),STARTS_WITH,Bearish BOS formed,ANY,LUXALGO_PAC_S_BOS,Luxalgo PAC Swing-BoS,,-1,
+LUXALGO_PAC,Luxalgo Price Action Concepts,Triggers on the event of a swing bearish change of character (CHOCH),STARTS_WITH,Bearish CHoCH formed,ANY,LUXALGO_PAC_S_CHOCH,Luxalgo PAC Swing-ChoCH,,-1,
+LUXALGO_PAC,Luxalgo Price Action Concepts,Triggers on the event of a Supported swing bearish change of character (CHOCH+),STARTS_WITH,Bearish CHoCH+ formed,ANY,LUXALGO_PAC_S_CHOCH_PLUS,Luxalgo PAC Swing-ChoCH+,,-3,TRUE
+LUXALGO_PAC,Luxalgo Price Action Concepts,Triggers on the event of an equal high (EQH),STARTS_WITH,Equal highs formed,ANY,LUXALGO_PAC_OTHER,Luxalgo PAC Equal H/L,TRUE,0,
+LUXALGO_PAC,Luxalgo Price Action Concepts,Triggers on the event of an equal low (EQL),STARTS_WITH,Equal lows formed,ANY,LUXALGO_PAC_OTHER,Luxalgo PAC Equal H/L,TRUE,0,
+LUXALGO_PAC,Luxalgo Price Action Concepts,Triggers when a new bullish order block is created,STARTS_WITH,New Bullish Order Block,ANY,LUXALGO_PAC_OB,Luxalgo PAC OB,,1,
+LUXALGO_PAC,Luxalgo Price Action Concepts,Triggers when a new bearish order block is created,STARTS_WITH,New Bearish Order Block,ANY,LUXALGO_PAC_OB,Luxalgo PAC OB,,-1,
+LUXALGO_PAC,Luxalgo Price Action Concepts,Triggers when a bullish order block (visible or not) is mitigated,STARTS_WITH,Bullish Order Block Mitigated,ANY,LUXALGO_PAC_OB,Luxalgo PAC OB,,1,
+LUXALGO_PAC,Luxalgo Price Action Concepts,Triggers when a bearish order block (visible or not) is mitigated,STARTS_WITH,Bearish Order Block Mitigated,ANY,LUXALGO_PAC_OB,Luxalgo PAC OB,,-1,
+LUXALGO_PAC,Luxalgo Price Action Concepts,Triggers when a bullish order block (visible or not) becomes a breaker block,STARTS_WITH,New Bullish Breaker Block,ANY,LUXALGO_PAC_BB,Luxalgo PAC BB,TRUE,1,
+LUXALGO_PAC,Luxalgo Price Action Concepts,Triggers when a bearish order block (visible or not) becomes a breaker block,STARTS_WITH,New Bearish Breaker Block,ANY,LUXALGO_PAC_BB,Luxalgo PAC BB,TRUE,-1,
+LUXALGO_PAC,Luxalgo Price Action Concepts,Triggers when the price is located within a bullish order block (visible or not),STARTS_WITH,Within Bullish Block,ANY,LUXALGO_PAC_OB,Luxalgo PAC OB,TRUE,1,
+LUXALGO_PAC,Luxalgo Price Action Concepts,Triggers when the price is located within a bearish order block (visible or not),STARTS_WITH,Within Bearish Block,ANY,LUXALGO_PAC_OB,Luxalgo PAC OB,TRUE,-1,
+LUXALGO_PAC,Luxalgo Price Action Concepts,Triggers when the price enters a bullish order block (visible or not),STARTS_WITH,Bullish Block Entered,ANY,LUXALGO_PAC_OB,Luxalgo PAC OB,TRUE,0,
+LUXALGO_PAC,Luxalgo Price Action Concepts,Triggers when the price enters a bearish order block (visible or not),STARTS_WITH,Bearish Block Entered,ANY,LUXALGO_PAC_OB,Luxalgo PAC OB,TRUE,0,
+LUXALGO_PAC,Luxalgo Price Action Concepts,Triggers when a new bullish imbalance is detected,STARTS_WITH,Bullish Imbalance,ANY,LUXALGO_PAC_IMBALANCE,Luxalgo PAC Imbalance,TRUE,1,
+LUXALGO_PAC,Luxalgo Price Action Concepts,Triggers when a new bearish imbalance is detected,STARTS_WITH,Bearish Imbalance,ANY,LUXALGO_PAC_IMBALANCE,Luxalgo PAC Imbalance,TRUE,-1,
+LUXALGO_PAC,Luxalgo Price Action Concepts,Triggers when a bullish imbalance (visible or not) is mitigated,STARTS_WITH,Mitigated bullish imbalance,ANY,LUXALGO_PAC_IMBALANCE,Luxalgo PAC Imbalance,TRUE,0,
+LUXALGO_PAC,Luxalgo Price Action Concepts,Triggers when a bearish imbalance (visible or not) is mitigated,STARTS_WITH,Mitigated bearish imbalance,ANY,LUXALGO_PAC_IMBALANCE,Luxalgo PAC Imbalance,TRUE,0,
+LUXALGO_PAC,Luxalgo Price Action Concepts,Triggers when an upward trendline is broken,STARTS_WITH,Price broke up-trendline,ANY,LUXALGO_PAC_TREND,Luxalgo PAC Trendline,,-1,
+LUXALGO_PAC,Luxalgo Price Action Concepts,Triggers when a downward trendline is broken,STARTS_WITH,Price broke down-trendline,ANY,LUXALGO_PAC_TREND,Luxalgo PAC Trendline,,1,
+LUXALGO_PAC,Luxalgo Price Action Concepts,Triggers when a new bullish liquidity grab is detected,STARTS_WITH,Bullish Grab,ANY,LUXALGO_PAC_LIQ,Luxalgo PAC Liq,,1,
+LUXALGO_PAC,Luxalgo Price Action Concepts,Triggers when a new bearish liquidity grab is detected,STARTS_WITH,Bearish Grab,ANY,LUXALGO_PAC_LIQ,Luxalgo PAC Liq,,-1,
+LUXALGO_PAC,Luxalgo Price Action Concepts,,STARTS_WITH,Exit Bullish Block,ANY,LUXALGO_PAC_OB,Luxalgo PAC OB,TRUE,0,
+LUXALGO_PAC,Luxalgo Price Action Concepts,,STARTS_WITH,"Exit Bearish Block [top, bottom]",ANY,LUXALGO_PAC_OB,Luxalgo PAC OB,TRUE,0,
+LUXALGO_PAC,Luxalgo Price Action Concepts,,STARTS_WITH,Entered bullish imbalance,ANY,LUXALGO_PAC_IMBALANCE,Luxalgo PAC Imbalance,TRUE,0,
+LUXALGO_PAC,Luxalgo Price Action Concepts,,STARTS_WITH,Within bullish imbalance,ANY,LUXALGO_PAC_IMBALANCE,Luxalgo PAC Imbalance,TRUE,0,
+LUXALGO_PAC,Luxalgo Price Action Concepts,,STARTS_WITH,Exit bullish imbalance,ANY,LUXALGO_PAC_IMBALANCE,Luxalgo PAC Imbalance,TRUE,0,
+LUXALGO_PAC,Luxalgo Price Action Concepts,,STARTS_WITH,Entered bearish imbalance,ANY,LUXALGO_PAC_IMBALANCE,Luxalgo PAC Imbalance,TRUE,0,
+LUXALGO_PAC,Luxalgo Price Action Concepts,,STARTS_WITH,Within bearish imbalance,ANY,LUXALGO_PAC_IMBALANCE,Luxalgo PAC Imbalance,TRUE,0,
+LUXALGO_PAC,Luxalgo Price Action Concepts,,STARTS_WITH,Exit bearish imbalance,ANY,LUXALGO_PAC_IMBALANCE,Luxalgo PAC Imbalance,TRUE,0,
+###,,,,,,,,,,
+LUXALGO_SO,Luxalgo Signals and Overlay,Triggers when a normal bullish Confirmation signal is displayed,FULL_MATCH,Bullish Confirmation,ANY,LUXALGO_SO_CONFIRMATION,Luxalgo SO Confirmation,,1,
+LUXALGO_SO,Luxalgo Price Action Concepts,Triggers when a normal bearish Confirmation signal is displayed,FULL_MATCH,Bearish Confirmation,ANY,LUXALGO_SO_CONFIRMATION,Luxalgo SO Confirmation,,-1,
+LUXALGO_SO,Luxalgo Price Action Concepts,Triggers when a bullish Confirmation+ signal is displayed,FULL_MATCH,Bullish Confirmation+,ANY,LUXALGO_SO_CONFIRMATION,Luxalgo SO Confirmation,,3,TRUE
+LUXALGO_SO,Luxalgo Price Action Concepts,Triggers when a bearish Confirmation+ signal is displayed,FULL_MATCH,Bearish Confirmation+,ANY,LUXALGO_SO_CONFIRMATION,Luxalgo SO Confirmation,,-3,TRUE
+LUXALGO_SO,Luxalgo Price Action Concepts,Triggers when a bullish exit signal is displayed,FULL_MATCH,Bullish Exit,ANY,LUXALGO_SO_CONFIRMATION,Luxalgo SO Confirmation,,0,
+LUXALGO_SO,Luxalgo Price Action Concepts,Triggers when a bearish exit signal is displayed,FULL_MATCH,Bearish Exit,ANY,LUXALGO_SO_CONFIRMATION,Luxalgo SO Confirmation,,0,
+LUXALGO_SO,Luxalgo Price Action Concepts,Triggers once the Trend Catcher starts decreasing (switch from green to red),FULL_MATCH,Trend Catcher Down,ANY,LUXALGO_SO_TREND_CATCHER,Luxalgo SO Trend Catcher,,-1,
+LUXALGO_SO,Luxalgo Price Action Concepts,Triggers once the Trend Catcher starts rising (switch from red to green),FULL_MATCH,Trend Catcher Up,ANY,LUXALGO_SO_TREND_CATCHER,Luxalgo SO Trend Catcher,,1,
+LUXALGO_SO,Luxalgo Price Action Concepts,Triggers once the Trend Tracer starts decreasing (switch from green to red),FULL_MATCH,Trend Tracer Down,ANY,LUXALGO_SO_TREND_TRACER,Luxalgo SO Trend Tracer,,-1,
+LUXALGO_SO,Luxalgo Price Action Concepts,Triggers once the Trend Tracer starts rising (switch from red to green),FULL_MATCH,Trend Tracer Up,ANY,LUXALGO_SO_TREND_TRACER,Luxalgo SO Trend Tracer,,1,
+LUXALGO_SO,Luxalgo Price Action Concepts,Triggers when a strong bullish Confirmation signal is displayed,FULL_MATCH,Bullish +,ANY,LUXALGO_SO_CONFIRMATION,Luxalgo SO Confirmation,,3,TRUE
+LUXALGO_SO,Luxalgo Price Action Concepts,Triggers when a strong bearish Confirmation signal is displayed,FULL_MATCH,Bearish +,ANY,LUXALGO_SO_CONFIRMATION,Luxalgo SO Confirmation,,-3,TRUE
+LUXALGO_SO,Luxalgo Price Action Concepts,Triggers when a normal bullish Contrarian signal is displayed,FULL_MATCH,Bullish Contrarian,ANY,LUXALGO_SO_CONTRARIAN,Luxalgo SO Contrarian,,1,
+LUXALGO_SO,Luxalgo Price Action Concepts,Triggers when a normal bearish Contrarian signal is displayed,FULL_MATCH,Bearish Contrarian,ANY,LUXALGO_SO_CONTRARIAN,Luxalgo SO Contrarian,,-1,
+LUXALGO_SO,Luxalgo Price Action Concepts,Triggers when a strong bullish Contrarian signal is displayed,FULL_MATCH,Bullish Contrarian+,ANY,LUXALGO_SO_CONTRARIAN,Luxalgo SO Contrarian,,3,TRUE
+LUXALGO_SO,Luxalgo Price Action Concepts,Triggers when a strong bearish Contrarian signal is displayed,FULL_MATCH,Bearish Contrarian+,ANY,LUXALGO_SO_CONTRARIAN,Luxalgo SO Contrarian,,-3,TRUE
+LUXALGO_SO,Luxalgo Price Action Concepts,Triggers when a bullish exit signal is displayed,FULL_MATCH,Bullish Exit,ANY,LUXALGO_SO_CONFIRMATION,Luxalgo SO Confirmation,,0,
+LUXALGO_SO,Luxalgo Price Action Concepts,Triggers when a bearish exit signal is displayed,FULL_MATCH,Bearish Exit,ANY,LUXALGO_SO_CONFIRMATION,Luxalgo SO Confirmation,,0,
+LUXALGO_SO,Luxalgo Price Action Concepts,Triggers when a take profit is reached,JAVA_REGEX,TP\d+ Reached,ANY,LUXALGO_SO_TP_EXIT,Luxalgo SO Take Profit,,0,
+LUXALGO_SO,Luxalgo Price Action Concepts,Triggers when a stop loss is reached,JAVA_REGEX,SL\d+ Reached,ANY,LUXALGO_SO_STOP_EXIT,Luxalgo SO Stop Exit,,0,
+LUXALGO_SO,Luxalgo Price Action Concepts,Triggers when a weak bullish trend turns strong (purple candle switch to green),FULL_MATCH,Bullish Turn +,ANY,LUXALGO_SO_CONFIRMATION,Luxalgo SO Confirmation,,3,TRUE
+LUXALGO_SO,Luxalgo Price Action Concepts,Triggers when a weak bearish trend turns strong (purple candle switch to red),FULL_MATCH,Bearish Turn +,ANY,LUXALGO_SO_CONFIRMATION,Luxalgo SO Confirmation,,-3,TRUE
+####,####,,,,,,,,,
+QUANTVUE_PROV2,Quantvue Pro V2,,FULL_MATCH,Qcloud BULL,ANY,QUANTVUE_QCLOUD,Quantvue Qcloud,,1,
+QUANTVUE_PROV2,Quantvue Pro V2,,FULL_MATCH,Qcloud BEAR,ANY,QUANTVUE_QCLOUD,Quantvue Qcloud,,-1,
+QUANTVUE_PROV2,Quantvue Pro V2,,FULL_MATCH,Qband BULL,ANY,QUANTVUE_QBAND,Quantvue QBand,,1,
+QUANTVUE_PROV2,Quantvue Pro V2,,FULL_MATCH,Qband BEAR,ANY,QUANTVUE_QBAND,Quantvue QBand,,-1,
+QUANTVUE_PROV2,Quantvue Pro V2,,FULL_MATCH,Qwave BULL on Crossover Lower Band,ANY,QUANTVUE_QWAVE,Quantvue QWave,,2,
+QUANTVUE_PROV2,Quantvue Pro V2,,FULL_MATCH,Qwave BEAR on Crossover Lower Band,ANY,QUANTVUE_QWAVE,Quantvue QWave,,-2,
+QUANTVUE_PROV2,Quantvue Pro V2,,FULL_MATCH,Qwave BULL,ANY,QUANTVUE_QWAVE,Quantvue QWave,,1,
+QUANTVUE_PROV2,Quantvue Pro V2,,FULL_MATCH,Qwave BEAR,ANY,QUANTVUE_QWAVE,Quantvue QWave,,-1,
+QUANTVUE_PROV2,Quantvue Pro V2,,FULL_MATCH,Qwave BULL ADD,ANY,QUANTVUE_QWAVE,Quantvue QWave,,1,
+QUANTVUE_PROV2,Quantvue Pro V2,,FULL_MATCH,Qwave BEAR ADD,ANY,QUANTVUE_QWAVE,Quantvue QWave,,-1,
+QUANTVUE_PROV2,Quantvue Pro V2,,FULL_MATCH,Qline BULL,ANY,QUANTVUE_QLINE,Quantvue QLine,,1,
+QUANTVUE_PROV2,Quantvue Pro V2,,FULL_MATCH,Qline BEAR,ANY,QUANTVUE_QLINE,Quantvue QLine,,-1,
+##,##,,,,,,,,,
+QUANTVUE_MOMENTUM_V2,Quantvue Momentum V2,,CONTAINS,Regular Bullish,ANY,QUANTVUE_MOMENTUM_V2,Quantvue Momentum V2,,2,
+QUANTVUE_MOMENTUM_V2,Quantvue Momentum V2,,CONTAINS,Regular Bearish,ANY,QUANTVUE_MOMENTUM_V2,Quantvue Momentum V2,,-2,
+QUANTVUE_MOMENTUM_V2,Quantvue Momentum V2,,CONTAINS,Hidden Bullish,ANY,QUANTVUE_MOMENTUM_V2,Quantvue Momentum V2,,1,
+QUANTVUE_MOMENTUM_V2,Quantvue Momentum V2,,CONTAINS,Hidden Bearish,ANY,QUANTVUE_MOMENTUM_V2,Quantvue Momentum V2,,-1,
+QUANTVUE_MOMENTUM_V2,Quantvue Momentum V2,,CONTAINS,Main Line Entering Oversold,ANY,QUANTVUE_MOMENTUM_V2,Quantvue Momentum V2,,2,
+QUANTVUE_MOMENTUM_V2,Quantvue Momentum V2,,CONTAINS,Signal Line Entering Oversold,ANY,QUANTVUE_MOMENTUM_V2,Quantvue Momentum V2,,1,
+QUANTVUE_MOMENTUM_V2,Quantvue Momentum V2,,CONTAINS,Green Dot While Oversold,ANY,QUANTVUE_MOMENTUM_V2,Quantvue Momentum V2,,3,
+QUANTVUE_MOMENTUM_V2,Quantvue Momentum V2,,CONTAINS,Green Dot Anytime,ANY,QUANTVUE_MOMENTUM_V2,Quantvue Momentum V2,,1,
+QUANTVUE_MOMENTUM_V2,Quantvue Momentum V2,,CONTAINS,Main Line Entering Overbought,ANY,QUANTVUE_MOMENTUM_V2,Quantvue Momentum V2,,-1,
+QUANTVUE_MOMENTUM_V2,Quantvue Momentum V2,,CONTAINS,Signal Line Entering Overbought,ANY,QUANTVUE_MOMENTUM_V2,Quantvue Momentum V2,,-2,
+QUANTVUE_MOMENTUM_V2,Quantvue Momentum V2,,CONTAINS,Red Dot While Overbought,ANY,QUANTVUE_MOMENTUM_V2,Quantvue Momentum V2,,-3,TRUE
+QUANTVUE_MOMENTUM_V2,Quantvue Momentum V2,,CONTAINS,Red Dot Anytime,ANY,QUANTVUE_MOMENTUM_V2,Quantvue Momentum V2,,-1,
+####,####,,,,,,,,,
+QUANTVUE_QGRID,Quantvue Qgrid,,FULL_MATCH,QGrid Bull,ANY,QUANTVUE_QGRID,Quantvue Qgrid,,1,
+QUANTVUE_QGRID,Quantvue Qgrid,,FULL_MATCH,QGrid Bear,ANY,QUANTVUE_QGRID,Quantvue Qgrid,,-1,
+QUANTVUE_QGRID,Quantvue Qgrid,,FULL_MATCH,QGrid Bull Add,ANY,QUANTVUE_QGRID,Quantvue Qgrid,,2,
+QUANTVUE_QGRID,Quantvue Qgrid,,FULL_MATCH,QGrid Bear Add,ANY,QUANTVUE_QGRID,Quantvue Qgrid,,-2,
+####,####,,,,,,,,,
+QUANTVUE_ORACLE_SQUEEZE,Quantvue Oracle Squeeze,,FULL_MATCH,BUY SIGNAL,ANY,QUANTVUE_ORACLE_SQUEEZE,Quantvue Oracle Squeeze,,1,
+QUANTVUE_ORACLE_SQUEEZE,Quantvue Oracle Squeeze,,FULL_MATCH,SELL SIGNAL,ANY,QUANTVUE_ORACLE_SQUEEZE,Quantvue Oracle Squeeze,,-1,
+####,####,,,,,,,,,
+QUANTVUE_QCVD,Quantvue Cumulative Volume Delta,,FULL_MATCH,LONG CONDITION,ANY,QUANTVUE_QCVD,Quantvue CVD,,1,
+QUANTVUE_QCVD,Quantvue Cumulative Volume Delta,,FULL_MATCH,SHORT CONDITION,ANY,QUANTVUE_QCVD,Quantvue CVD,,-1,
+####,####,,,,,,,,,
+QUANTVUE_QELITE,Quantvue Q Elite,,FULL_MATCH,LONG CONDITION,ANY,QUANTVUE_QELITE,Quantvue QElite,,1,
+QUANTVUE_QELITE,Quantvue Q Elite,,FULL_MATCH,SHORT CONDITION,ANY,QUANTVUE_QELITE,Quantvue QElite,,-1,
+####,####,,,,,,,,,
+QUANTVUE_QKRONOS,Quantvue QKronos,,FULL_MATCH,LONG_ENTRY,ANY,QUANTVUE_QKRONOS,Quantvue QKronos,,5,TRUE
+QUANTVUE_QKRONOS,Quantvue QKronos,,FULL_MATCH,LONG_TIER_EXIT,ANY,QUANTVUE_QKRONOS,Quantvue QKronos,TRUE,0,
+QUANTVUE_QKRONOS,Quantvue QKronos,,FULL_MATCH,REGULAR_LONG_EXIT,ANY,QUANTVUE_QKRONOS,Quantvue QKronos,,0,
+QUANTVUE_QKRONOS,Quantvue QKronos,,FULL_MATCH,SHORT_ENTRY,ANY,QUANTVUE_QKRONOS,Quantvue QKronos,,-5,TRUE
+QUANTVUE_QKRONOS,Quantvue QKronos,,FULL_MATCH,SHORT_TIER_EXIT,ANY,QUANTVUE_QKRONOS,Quantvue QKronos,TRUE,0,
+QUANTVUE_QKRONOS,Quantvue QKronos,,FULL_MATCH,REGULAR_SHORT_EXIT,ANY,QUANTVUE_QKRONOS,Quantvue QKronos,,0,
+QUANTVUE_QKRONOS,Quantvue QKronos,,FULL_MATCH,LONG_ALWAYS_IN_ENTRY,ANY,QUANTVUE_QKRONOS,Quantvue QKronos,TRUE,0,
+QUANTVUE_QKRONOS,Quantvue QKronos,,FULL_MATCH,LONG_PARTIAL_PROFIT,ANY,QUANTVUE_QKRONOS,Quantvue QKronos,TRUE,0,
+QUANTVUE_QKRONOS,Quantvue QKronos,,FULL_MATCH,SHORT_ALWAYS_IN_ENTRY,ANY,QUANTVUE_QKRONOS,Quantvue QKronos,TRUE,0,
+QUANTVUE_QKRONOS,Quantvue QKronos,,FULL_MATCH,SHORT_PARTIAL_PROFIT,ANY,QUANTVUE_QKRONOS,Quantvue QKronos,TRUE,0,
+QUANTVUE_QKRONOS,Quantvue QKronos,,FULL_MATCH,END_OF_DAY_EXIT,ANY,QUANTVUE_QKRONOS,Quantvue QKronos,,0,
+QUANTVUE_QKRONOS,Quantvue QKronos,,FULL_MATCH,PROFIT_LOSS_TRADE_LIMIT_CLOSE,ANY,QUANTVUE_QKRONOS,Quantvue QKronos,,0,
+####,,,,,,,,,,
+QUANTVUE_QSUMO,Quantvue QSumo,,FULL_MATCH,LONG_ENTRY,ANY,QUANTVUE_QSUMO,Quantvue QSumo,,5,TRUE
+QUANTVUE_QSUMO,Quantvue QSumo,,FULL_MATCH,LONG_TIER_EXIT,ANY,QUANTVUE_QSUMO,Quantvue QSumo,TRUE,0,
+QUANTVUE_QSUMO,Quantvue QSumo,,FULL_MATCH,REGULAR_LONG_EXIT,ANY,QUANTVUE_QSUMO,Quantvue QSumo,,0,
+QUANTVUE_QSUMO,Quantvue QSumo,,FULL_MATCH,SHORT_ENTRY,ANY,QUANTVUE_QSUMO,Quantvue QSumo,,-5,TRUE
+QUANTVUE_QSUMO,Quantvue QSumo,,FULL_MATCH,SHORT_TIER_EXIT,ANY,QUANTVUE_QSUMO,Quantvue QSumo,TRUE,0,
+QUANTVUE_QSUMO,Quantvue QSumo,,FULL_MATCH,REGULAR_SHORT_EXIT,ANY,QUANTVUE_QSUMO,Quantvue QSumo,,0,
+QUANTVUE_QSUMO,Quantvue QSumo,,FULL_MATCH,LONG_ALWAYS_IN_ENTRY,ANY,QUANTVUE_QSUMO,Quantvue QSumo,TRUE,0,
+QUANTVUE_QSUMO,Quantvue QSumo,,FULL_MATCH,LONG_PARTIAL_PROFIT,ANY,QUANTVUE_QSUMO,Quantvue QSumo,TRUE,0,
+QUANTVUE_QSUMO,Quantvue QSumo,,FULL_MATCH,SHORT_ALWAYS_IN_ENTRY,ANY,QUANTVUE_QSUMO,Quantvue QSumo,TRUE,0,
+QUANTVUE_QSUMO,Quantvue QSumo,,FULL_MATCH,SHORT_PARTIAL_PROFIT,ANY,QUANTVUE_QSUMO,Quantvue QSumo,TRUE,0,
+QUANTVUE_QSUMO,Quantvue QSumo,,FULL_MATCH,END_OF_DAY_EXIT,ANY,QUANTVUE_QSUMO,Quantvue QSumo,,0,
+QUANTVUE_QSUMO,Quantvue QSumo,,FULL_MATCH,PROFIT_LOSS_TRADE_LIMIT_CLOSE,ANY,QUANTVUE_QSUMO,Quantvue QSumo,,0,
+####,,,,,,,,,,
+QUANTVUE_QCLOUD_TREND_TRACER,Quantvue Cloud Trend Tracer,,FULL_MATCH,REGULAR_MODE_LONG_ENTRY,ANY,QUANTVUE_QTREND_TRACER,Quantvue Trend Tracer,,5,TRUE
+QUANTVUE_QCLOUD_TREND_TRACER,Quantvue Cloud Trend Tracer,,FULL_MATCH,REGULAR_MODE_LONG_EXIT,ANY,QUANTVUE_QTREND_TRACER,Quantvue Trend Tracer,,0,
+QUANTVUE_QCLOUD_TREND_TRACER,Quantvue Cloud Trend Tracer,,FULL_MATCH,REGULAR_MODE_SHORT_ENTRY,ANY,QUANTVUE_QTREND_TRACER,Quantvue Trend Tracer,,-5,TRUE
+QUANTVUE_QCLOUD_TREND_TRACER,Quantvue Cloud Trend Tracer,,FULL_MATCH,REGULAR_MODE_SHORT_EXIT,ANY,QUANTVUE_QTREND_TRACER,Quantvue Trend Tracer,,0,
+QUANTVUE_QCLOUD_TREND_TRACER,Quantvue Cloud Trend Tracer,,FULL_MATCH,END_OF_DAY_EXIT,ANY,QUANTVUE_QTREND_TRACER,Quantvue Trend Tracer,,0,
+####,,,,,,,,,,
+QUANTVUE_QGRID_ELITE,Quantvue Qgrid Elite,,FULL_MATCH,LONG_ENTRY_QGRID,ANY,QUANTVUE_QGRID_ELITE,Quantvue Qgrid Elite,,5,TRUE
+QUANTVUE_QGRID_ELITE,Quantvue Qgrid Elite,,FULL_MATCH,SHORT_ENTRY_QGRID,ANY,QUANTVUE_QGRID_ELITE,Quantvue Qgrid Elite,,-5,TRUE
+QUANTVUE_QGRID_ELITE,Quantvue Qgrid Elite,,FULL_MATCH,LONG_ADD_QGRID,ANY,QUANTVUE_QGRID_ELITE,Quantvue Qgrid Elite,,5,TRUE
+QUANTVUE_QGRID_ELITE,Quantvue Qgrid Elite,,FULL_MATCH,SHORT_ADD_QGRID,ANY,QUANTVUE_QGRID_ELITE,Quantvue Qgrid Elite,,-5,TRUE
+QUANTVUE_QGRID_ELITE,Quantvue Qgrid Elite,,FULL_MATCH,LONG_SCALPER_ENTRY,ANY,QUANTVUE_QGRID_ELITE,Quantvue Qgrid Elite,,5,TRUE
+QUANTVUE_QGRID_ELITE,Quantvue Qgrid Elite,,FULL_MATCH,SHORT_SCALPER_ENTRY,ANY,QUANTVUE_QGRID_ELITE,Quantvue Qgrid Elite,,-5,TRUE
+QUANTVUE_QGRID_ELITE,Quantvue Qgrid Elite,,FULL_MATCH,ALL_EXITS,ANY,QUANTVUE_QGRID_ELITE,Quantvue Qgrid Elite,,0,
+####,,,,,,,,,,
+QUANTVUE_QSCALPER,Quantvue QScalper,,FULL_MATCH,END_OF_DAY_EXIT,ANY,QUANTVUE_QSCALPER,Quantvue QScalper,,0,
+QUANTVUE_QSCALPER,Quantvue QScalper,,FULL_MATCH,LONG_ENTRY,ANY,QUANTVUE_QSCALPER,Quantvue QScalper,,5,TRUE
+QUANTVUE_QSCALPER,Quantvue QScalper,,FULL_MATCH,LONG_EXIT,ANY,QUANTVUE_QSCALPER,Quantvue QScalper,,0,
+QUANTVUE_QSCALPER,Quantvue QScalper,,FULL_MATCH,SHORT_ENTRY,ANY,QUANTVUE_QSCALPER,Quantvue QScalper,,-5,TRUE
+QUANTVUE_QSCALPER,Quantvue QScalper,,FULL_MATCH,SHORT_EXIT,ANY,QUANTVUE_QSCALPER,Quantvue QScalper,,0,
+####,,,,,,,,,,
+SMC_BREAKOUT,SMC Breakout,,FULL_MATCH,BUY,ANY,SMC_BREAKOUT,SMC Breakout,,3,
+SMC_BREAKOUT,SMC Breakout,,FULL_MATCH,SELL,ANY,SMC_BREAKOUT,SMC Breakout,,-3,
+####,,,,,,,,,,
+ALGO_ALPHA_ST,Algo Alpha Supertrend,,FULL_MATCH,BULLISH TREND SHIFT,ANY,ALGO_ALPHA_ST,Algo Alpha Supertrend,,3,TRUE
+ALGO_ALPHA_ST,Algo Alpha Supertrend,,FULL_MATCH,BEARISH TREND SHIFT,ANY,ALGO_ALPHA_ST,Algo Alpha Supertrend,,-3,TRUE
+####,,,,,,,,,,
+SUPERTREND,Supertrend,,FULL_MATCH,SuperTrend BUY,ANY,SUPERTREND,Supertrend,,3,TRUE
+SUPERTREND,Supertrend,,FULL_MATCH,SuperTrend SELL,ANY,SUPERTREND,Supertrend,,-3,TRUE
+SUPERTREND,Supertrend,,FULL_MATCH,SuperTrend Direction Change,ANY,SUPERTREND,Supertrend,,0,
+####,,,,,,,,,,
+PIVOT_POINT_ST,Pivot Point Supertrend,,FULL_MATCH,BUY SIGNAL,ANY,PIVOT_POINT_ST,Pivot Point Supertrend,,3,TRUE
+PIVOT_POINT_ST,Pivot Point Supertrend,,FULL_MATCH,SELL SIGNAL,ANY,PIVOT_POINT_ST,Pivot Point Supertrend,,-3,TRUE
+PIVOT_POINT_ST,Pivot Point Supertrend,,FULL_MATCH,TREND CHANGED,ANY,PIVOT_POINT_ST,Pivot Point Supertrend,,0,
+####,,,,,,,,,,
+UT_BOT,UT Bot,,FULL_MATCH,UT LONG,ANY,UT_BOT,UT Bot,,3,TRUE
+UT_BOT,UT Bot,,FULL_MATCH,UT SHORT,ANY,UT_BOT,UT Bot,,-3,TRUE
+####,,,,,,,,,,
+CONSOLIDATION_ZONE,Consolidation Zone,,FULL_MATCH,BREAKOUT UP,ANY,CONSOLIDATION_ZONE,Consolidation Zone,,1,
+CONSOLIDATION_ZONE,Consolidation Zone,,FULL_MATCH,BREAKOUT DOWN,ANY,CONSOLIDATION_ZONE,Consolidation Zone,,-1,
+####,,,,,,,,,,
+SR_CHANNEL_V2,SR Channel V2,,FULL_MATCH,Resistance Broken,ANY,SR_CHANNEL_V2,SR Channel V2,,3,TRUE
+SR_CHANNEL_V2,SR Channel V2,,FULL_MATCH,Support Broken,ANY,SR_CHANNEL_V2,SR Channel V2,,-3,TRUE
