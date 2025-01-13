@@ -240,6 +240,7 @@ const IndicatorMainTableV2: React.FC<IndicatorMainTableProps> = ({ symbol, wsUrl
               <div className="d-flex align-items-center gap-2">
                 <Badge bg="secondary">{groupRecord.candleType}</Badge>
                 <Badge bg="info">{groupRecord.interval}</Badge>
+                <Badge bg="info">{groupRecord.direction}</Badge>
                 <span className={`text-${getScoreColor(groupRecord.score, groupRecord.minScore, groupRecord.maxScore)}`}>
                   Score: {groupRecord.score}, {groupRecord.scorePercentage}
                 </span>
