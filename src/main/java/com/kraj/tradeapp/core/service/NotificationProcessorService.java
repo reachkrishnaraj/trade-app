@@ -49,7 +49,7 @@ public class NotificationProcessorService implements ApplicationListener<Applica
         this.event = event;
     }
 
-    @Scheduled(fixedDelay = 500)
+    @Scheduled(fixedDelay = 1000)
     public void processTradingViewNotification() {
         if (!EVENT_PROCESSOR_LOCK.tryLock()) {
             return;

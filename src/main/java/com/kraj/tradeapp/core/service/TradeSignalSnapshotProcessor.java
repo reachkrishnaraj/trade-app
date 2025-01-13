@@ -45,7 +45,7 @@ public class TradeSignalSnapshotProcessor {
         eventProcessCueQueue.add(true);
     }
 
-    @Scheduled(fixedRate = 500)
+    @Scheduled(fixedRate = 5000)
     public void processEventJob() {
         try {
             if (!EVENT_PROCESSOR_JOB_LOCK.tryLock()) {
