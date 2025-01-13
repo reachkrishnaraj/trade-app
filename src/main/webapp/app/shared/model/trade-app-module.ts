@@ -58,6 +58,7 @@ export interface IndicatorSubCategoryScoreRecord {
   maxScore: string;
   score: string;
   direction: string;
+  scorePercentage: string;
   lastMsg: string;
   lastMsgDateTime: string;
   isStrategy: boolean;
@@ -76,6 +77,7 @@ export interface IndicatorScoreRecord {
   maxScore: string;
   score: string;
   direction: string;
+  scorePercentage: string;
   lastMsg: string;
   subCategoryScores: IndicatorSubCategoryScoreRecord[];
 }
@@ -91,6 +93,7 @@ export interface CandleIntervalGroupedRecord {
   minScore: string;
   maxScore: string;
   score: string;
+  scorePercentage: string;
   dateTime: string;
   indicatorScoreRecords: IndicatorScoreRecord[];
 }
@@ -104,4 +107,5 @@ export interface TradeSignalScoreSnapshot {
   maxScore: string;
   score: string;
   direction: string;
+  scorePercentage: string;
 }

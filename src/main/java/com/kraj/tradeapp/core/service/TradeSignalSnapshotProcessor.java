@@ -153,6 +153,7 @@ public class TradeSignalSnapshotProcessor {
             matchingIndicatorSubCategoryScoreRecord.getMaxScore(),
             matchingIndicatorSubCategoryScoreRecord.getScore()
         );
+        matchingIndicatorSubCategoryScoreRecord.setScorePercentage(subcategoryScorePercent);
         matchingIndicatorSubCategoryScoreRecord.setDirection(ScoringService.categorizeScore(subcategoryScorePercent).name());
         matchingIndicatorSubCategoryScoreRecord.setLastMsg(event.getRawAlertMsg());
         matchingIndicatorSubCategoryScoreRecord.setLastMsgDateTime(CommonUtil.getNYLocalDateTimeNow().toString());
@@ -183,6 +184,7 @@ public class TradeSignalSnapshotProcessor {
             matchingIndicatorScoreRecord.getMaxScore(),
             matchingIndicatorScoreRecord.getScore()
         );
+        matchingIndicatorScoreRecord.setScorePercentage(indicatorScorePercent);
         matchingIndicatorScoreRecord.setDirection(ScoringService.categorizeScore(indicatorScorePercent).name());
 
         //replace the indicator record in the candle type interval grouped record
@@ -208,6 +210,7 @@ public class TradeSignalSnapshotProcessor {
             matchingCandleTypeIntervalGroupedRecord.getMaxScore(),
             matchingCandleTypeIntervalGroupedRecord.getScore()
         );
+        matchingCandleTypeIntervalGroupedRecord.setScorePercentage(candleTypeIntervalScorePercentage);
         matchingCandleTypeIntervalGroupedRecord.setDirection(ScoringService.categorizeScore(candleTypeIntervalScorePercentage).name());
 
         //replace the candle type interval grouped record in the snapshot
@@ -236,6 +239,7 @@ public class TradeSignalSnapshotProcessor {
             snapshot.getMaxScore(),
             snapshot.getScore()
         );
+        snapshot.setScorePercentage(scorePercentage);
         snapshot.setDirection(ScoringService.categorizeScore(scorePercentage).name());
 
         //update the id with new snapshot id

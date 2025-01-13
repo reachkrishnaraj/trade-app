@@ -35,6 +35,8 @@ public class IndicatorScoreRecord {
 
     private BigDecimal score;
 
+    private BigDecimal scorePercentage;
+
     private String direction;
 
     private String lastMsg;

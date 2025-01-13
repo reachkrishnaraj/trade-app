@@ -37,5 +37,7 @@ public class TradeSignalScoreSnapshot {
 
     private BigDecimal score;
 
+    private BigDecimal scorePercentage;
+
     private String direction;
 }

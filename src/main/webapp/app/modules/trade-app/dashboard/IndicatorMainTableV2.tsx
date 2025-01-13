@@ -241,7 +241,7 @@ const IndicatorMainTableV2: React.FC<IndicatorMainTableProps> = ({ symbol, wsUrl
                 <Badge bg="secondary">{groupRecord.candleType}</Badge>
                 <Badge bg="info">{groupRecord.interval}</Badge>
                 <span className={`text-${getScoreColor(groupRecord.score, groupRecord.minScore, groupRecord.maxScore)}`}>
-                  Score: {groupRecord.score}
+                  Score: {groupRecord.score}, {groupRecord.scorePercentage}
                 </span>
               </div>
               <DirectionIcon direction={groupRecord.direction} />
@@ -255,7 +255,7 @@ const IndicatorMainTableV2: React.FC<IndicatorMainTableProps> = ({ symbol, wsUrl
                     <h5 className="mb-0">{indicator.displayName}</h5>
                     <div className="d-flex align-items-center gap-3">
                       <span className={`text-${getScoreColor(indicator.score, indicator.minScore, indicator.maxScore)}`}>
-                        Score: {indicator.score}
+                        Score: {indicator.score}, {indicator.scorePercentage}
                       </span>
                       <DirectionIcon direction={indicator.direction} />
                       <FontAwesomeIcon icon={expandedSections[indicator.key] ? faChevronUp : faChevronDown} />
@@ -276,7 +276,7 @@ const IndicatorMainTableV2: React.FC<IndicatorMainTableProps> = ({ symbol, wsUrl
                           <div className="col-md-4">
                             <div className="fw-bold">{subScore.displayName}</div>
                             <div className={`text-${getScoreColor(subScore.score, subScore.minScore, subScore.maxScore)}`}>
-                              Score: {subScore.score}
+                              Score: {subScore.score}, {subScore.scorePercentage}
                             </div>
                           </div>
                           <div className="col-md-4">

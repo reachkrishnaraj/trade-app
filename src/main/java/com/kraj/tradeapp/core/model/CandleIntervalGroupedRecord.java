@@ -35,6 +35,8 @@ public class CandleIntervalGroupedRecord {
 
     private BigDecimal score;
 
+    private BigDecimal scorePercentage;
+
     private LocalDateTime dateTime;
 
     private List<IndicatorScoreRecord> indicatorScoreRecords;
