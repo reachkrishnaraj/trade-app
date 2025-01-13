@@ -186,6 +186,7 @@ public class TradeSignalSnapshotProcessor {
         );
         matchingIndicatorScoreRecord.setScorePercentage(indicatorScorePercent);
         matchingIndicatorScoreRecord.setDirection(ScoringService.categorizeScore(indicatorScorePercent).name());
+        matchingIndicatorScoreRecord.setLastMsg(event.getRawAlertMsg());
 
         //replace the indicator record in the candle type interval grouped record
         List<IndicatorScoreRecord> indicatorScoreRecords = matchingCandleTypeIntervalGroupedRecord.getIndicatorScoreRecords();
