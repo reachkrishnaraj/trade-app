@@ -72,6 +72,6 @@ public interface NotificationEventRepository extends JpaRepository<NotificationE
         Pageable pageable
     );
 
-    @Query("SELECT ne FROM NotificationEvent ne WHERE ne.tradeSignalProcessStatus = 'PENDING' AND ne.datetime BETWEEN :start AND :end")
+    @Query("SELECT ne FROM NotificationEvent ne WHERE ne.tradeSignalProcessStatus = 'PENDING' AND ne.created BETWEEN :start AND :end")
     List<NotificationEvent> findEventsPendingTradeSignalProcessing(@Param("start") LocalDateTime start, @Param("end") LocalDateTime end);
 }
