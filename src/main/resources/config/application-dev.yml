@@ -45,7 +45,7 @@ spring:
       poolName: Hikari
       auto-commit: false
   liquibase:
-    enabled: true
+    enabled: false
     showSummary: VERBOSE
     showSummaryOutput: ALL
     # Remove 'faker' if you do not want the sample data to be loaded automatically

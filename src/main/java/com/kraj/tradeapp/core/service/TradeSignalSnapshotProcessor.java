@@ -51,10 +51,10 @@ public class TradeSignalSnapshotProcessor {
             if (!EVENT_PROCESSOR_JOB_LOCK.tryLock()) {
                 return;
             }
-            if (eventProcessCueQueue.isEmpty()) {
-                EVENT_PROCESSOR_JOB_LOCK.unlock();
-                return;
-            }
+            //            if (eventProcessCueQueue.isEmpty()) {
+            //                EVENT_PROCESSOR_JOB_LOCK.unlock();
+            //                return;
+            //            }
 
             List<NotificationEvent> notificationEvents = notificationEventRepository.findEventsPendingTradeSignalProcessing(
                 LocalDateTime.now().minusHours(1),
