@@ -98,6 +98,7 @@ public class TradeSignalSnapshotProcessor {
         if (mayBeLatest.isEmpty()) {
             log.info("No latest snapshot found for symbol {}, starting snapshot from now", event.getSymbol());
             snapshot = TradeSignalScoreSnapshot.builder()
+                .id(UUID.randomUUID().toString())
                 .symbol(event.getSymbol())
                 .dateTime(CommonUtil.getNYLocalDateTimeNow())
                 .candleIntervalGroupedRecords(new ArrayList<>())
@@ -236,9 +237,9 @@ public class TradeSignalSnapshotProcessor {
             snapshot.getScore()
         );
         snapshot.setDirection(ScoringService.categorizeScore(scorePercentage).name());
-        //derive the direction based on the total score
-        //TO-DO: derive the direction based on the min max
 
+        //update the id with new snapshot id
+        snapshot.setId(UUID.randomUUID().toString());
         tradeSignalScoreSnapshotRepository.save(snapshot);
         TradeSignalScoreSnapshotLatest tradeSignalScoreSnapshotLatest = TradeSignalScoreSnapshotLatest.builder()
             .latestRecordId(snapshot.getId())
