@@ -12,6 +12,7 @@ import java.time.Instant;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
+import java.time.temporal.ChronoUnit;
 import java.util.*;
 import java.util.concurrent.locks.ReentrantLock;
 import lombok.RequiredArgsConstructor;
@@ -103,16 +104,23 @@ public class NotificationProcessorService implements ApplicationListener<Applica
         @Nullable
         String eventDateTimeStr = getValueFor(PayloadKey.TIME, payloadMap).orElse(ZonedDateTime.now().toString());
 
-        LocalDateTime eventDateTime = !StringUtils.isNumeric(eventDateTimeStr)
-            ? (ZonedDateTime.parse(eventDateTimeStr).withZoneSameInstant(ZoneId.of("America/New_York")).toLocalDateTime())
-            : LocalDateTime.ofEpochSecond(
-                Long.parseLong(eventDateTimeStr),
-                0,
-                ZoneId.of("America/New_York").getRules().getOffset(Instant.now())
-            );
-
-        //String tradeActionStr = StringUtils.isNotBlank(payloadMap.get("t_action")) ? payloadMap.get("t_action") : TradeAction.NONE.name();
-        //TradeAction tradeAction = TradeAction.fromString(tradeActionStr);
+        LocalDateTime eventDateTime = null;
+        if (StringUtils.isNumeric(eventDateTimeStr)) {
+            ChronoUnit chronoUnit = determineTimeUnit(Long.parseLong(eventDateTimeStr));
+            eventDateTime = chronoUnit == ChronoUnit.MILLIS
+                ? LocalDateTime.ofInstant(Instant.ofEpochMilli(Long.parseLong(eventDateTimeStr)), ZoneId.of("America/New_York"))
+                : chronoUnit == ChronoUnit.SECONDS
+                    ? LocalDateTime.ofEpochSecond(
+                        Long.parseLong(eventDateTimeStr),
+                        0,
+                        ZoneId.of("America/New_York").getRules().getOffset(Instant.now())
+                    )
+                    : LocalDateTime.now();
+        } else {
+            eventDateTime = ZonedDateTime.parse(eventDateTimeStr).withZoneSameInstant(ZoneId.of("America/New_York")).toLocalDateTime();
+        }
+        //stale event, set to now
+        eventDateTime = eventDateTime.isBefore(LocalDateTime.now().minusDays(1)) ? LocalDateTime.now() : eventDateTime;
 
         @Nullable
         String strategyStr = getValueFor(PayloadKey.STRATEGY, payloadMap).filter(StringUtils::isNotBlank).orElse(null);
@@ -318,5 +326,15 @@ public class NotificationProcessorService implements ApplicationListener<Applica
             .sinceCreatedStr(sinceCreatedStr)
             .sinceCreatedStr(sinceCreatedStr)
             .build();
+    }
+
+    public static ChronoUnit determineTimeUnit(long numericValue) {
+        if (numericValue > 1_000_000_000_000L) {
+            return ChronoUnit.MILLIS;
+        } else if (numericValue > 1_000_000_000L) {
+            return ChronoUnit.SECONDS;
+        } else {
+            return ChronoUnit.FOREVER;
+        }
     }
 }

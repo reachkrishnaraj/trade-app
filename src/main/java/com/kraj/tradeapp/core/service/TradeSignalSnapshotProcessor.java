@@ -57,8 +57,8 @@ public class TradeSignalSnapshotProcessor {
             //            }
 
             List<NotificationEvent> notificationEvents = notificationEventRepository.findEventsPendingTradeSignalProcessing(
-                LocalDateTime.now().minusHours(1),
-                LocalDateTime.now()
+                LocalDateTime.now(),
+                LocalDateTime.now().minusHours(1)
             );
             if (notificationEvents.isEmpty()) {
                 EVENT_PROCESSOR_JOB_LOCK.unlock();
