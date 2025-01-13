@@ -8,6 +8,7 @@ import com.kraj.tradeapp.core.repository.NotificationEventRepository;
 import com.kraj.tradeapp.core.repository.TradeSignalRepository;
 import jakarta.annotation.Nullable;
 import java.math.BigDecimal;
+import java.time.Instant;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
@@ -99,12 +100,16 @@ public class NotificationProcessorService implements ApplicationListener<Applica
 
         //String derivedValue = getDerivedValue(indicator, payloadMap);
 
-        String eventDateTimeStr = getValueFor(PayloadKey.TIME, payloadMap)
-            .filter(StringUtils::isNotBlank)
-            .orElse(ZonedDateTime.now().toString());
-        LocalDateTime eventDateTime = ZonedDateTime.parse(eventDateTimeStr)
-            .withZoneSameInstant(ZoneId.of("America/New_York"))
-            .toLocalDateTime();
+        @Nullable
+        String eventDateTimeStr = getValueFor(PayloadKey.TIME, payloadMap).orElse(ZonedDateTime.now().toString());
+
+        LocalDateTime eventDateTime = !StringUtils.isNumeric(eventDateTimeStr)
+            ? (ZonedDateTime.parse(eventDateTimeStr).withZoneSameInstant(ZoneId.of("America/New_York")).toLocalDateTime())
+            : LocalDateTime.ofEpochSecond(
+                Long.parseLong(eventDateTimeStr),
+                0,
+                ZoneId.of("America/New_York").getRules().getOffset(Instant.now())
+            );
 
         //String tradeActionStr = StringUtils.isNotBlank(payloadMap.get("t_action")) ? payloadMap.get("t_action") : TradeAction.NONE.name();
         //TradeAction tradeAction = TradeAction.fromString(tradeActionStr);
