@@ -26,7 +26,7 @@ public class TradeSignalScoreSnapshot {
     @Indexed
     private String symbol;
 
-    @Indexed(expireAfterSeconds = 180 * 24 * 60 * 60) // 180 days
+    @Indexed(expireAfterSeconds = 2 * 24 * 60 * 60) // 2 days
     private LocalDateTime dateTime;
 
     private List<CandleIntervalGroupedRecord> candleIntervalGroupedRecords;
