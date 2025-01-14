@@ -4,7 +4,6 @@ import { Event, TradeSignal, AccTrade, EventsByTimeInterval } from 'app/shared/m
 import SockJS from 'sockjs-client';
 import { Storage } from 'react-jhipster';
 import { Stomp } from '@stomp/stompjs';
-import EventTable from './EventTable';
 import EventTableV2 from './EventTableV2';
 import AccTradesTable from './AccTradesTable';
 import IndicatorMainTableV2 from './IndicatorMainTableV2';
@@ -110,7 +109,7 @@ const TradingDashboardV2: React.FC = () => {
     });
     console.log('Events By Timeframe:', JSON.stringify(events));
     //filter for strategy events using isStrategy flag
-    const strategyEvents = events?.filter(event => event.strategy);
+    const strategyEvents = events?.filter(event => event.strategyName);
     console.log('Strategy Events length:', JSON.stringify(strategyEvents));
     eventsByTimeframe['Strategy'] = strategyEvents || [];
     setEventsByInterval(eventsByTimeframe);

@@ -66,14 +66,14 @@ const EventTable: React.FC<EventTableProps> = ({ data }) => {
         {sortedData.map((event, index) => (
           <tr key={index}>
             <td>{event.indicator}</td>
-            <td>{event.category}</td>
+            <td>{event.indicatorSubCategory}</td>
             <td>{event.interval}</td>
             <td>{event.direction}</td>
             <td>{event.price}</td>
             <td>{event.symbol}</td>
             <td>{getHumanReadableDate(event.datetime)}</td>
             <td>{event.sinceCreatedStr}</td>
-            <td style={{ maxWidth: '300px', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{event.rawMsg}</td>
+            <td style={{ maxWidth: '300px', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{event.rawAlertMsg}</td>
           </tr>
         ))}
         {data.length === 0 && (

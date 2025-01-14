@@ -274,8 +274,7 @@ public class NotificationProcessorService implements ApplicationListener<Applica
     }
 
     public List<NotificationEventDto> getNotificationEvents(String symbol, LocalDateTime from, LocalDateTime to) {
-        return new ArrayList<>();
-        //return notificationEventRepository.getBetweenDatetime(symbol, from, to).stream().map(this::getDto).toList();
+        return notificationEventRepository.getBetweenDatetime(symbol, from, to).stream().map(this::getDto).toList();
     }
 
     public List<NotificationEventDto> getNotificationEventsForInterval(
@@ -308,8 +307,10 @@ public class NotificationProcessorService implements ApplicationListener<Applica
             .symbol(event.getSymbol())
             .source(event.getSource())
             .indicator(event.getIndicator())
+            .indicatorDisplayName(event.getIndicatorDisplayName())
             .direction(event.getDirection())
             .indicatorSubCategory(event.getIndicatorSubCategory())
+            .indicatorSubCategoryDisplayName(event.getIndicatorSubCategoryDisplayName())
             .rawAlertMsg(event.getRawAlertMsg())
             .rawPayload(event.getRawPayload())
             .price(event.getPrice())

@@ -1,21 +1,31 @@
 export interface Event {
   id: number;
-  datetime: string; // Use ISO string for LocalDateTime
+  datetime: string; // LocalDateTime
   symbol: string;
   source: string;
   indicator: string;
-  derivedValue: string;
+  indicatorDisplayName: string;
   direction: string;
-  category: string;
-  rawMsg: string;
-  price: string;
+  indicatorSubCategory: string;
+  indicatorSubCategoryDisplayName: string;
+  rawAlertMsg: string;
+  rawPayload: string;
+  price: string; // BigDecimal
   interval: string;
-  created: string;
-  lastUpdated: string;
-  strategy: boolean;
-  importance: string;
-  sinceCreatedStr: string;
-  tradeAction: string;
+  candleType: string;
+  created: string; // LocalDateTime
+  lastUpdated: string; // LocalDateTime
+  tradeSignalProcessStatus: string;
+  score: string; // BigDecimal
+  minScore: string; // BigDecimal
+  maxScore: string; // BigDecimal
+  scorePercent: string; // BigDecimal
+  isStrategy: boolean;
+  strategyName: string | null;
+  strategyProcessStatus: string;
+  strategyProcessedAt: string | null; // Optional LocalDateTime
+  strategyProcessMsg: string | null;
+  isAlertable: boolean;
 }
 
 export interface TradeSignal {

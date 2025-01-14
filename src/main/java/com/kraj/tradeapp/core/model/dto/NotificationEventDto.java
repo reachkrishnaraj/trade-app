@@ -15,8 +15,10 @@ public class NotificationEventDto {
     private String symbol;
     private String source;
     private String indicator;
+    private String indicatorDisplayName;
     private String direction;
     private String indicatorSubCategory;
+    private String indicatorSubCategoryDisplayName;
     private String rawAlertMsg;
     private String rawPayload;
     private BigDecimal price;
