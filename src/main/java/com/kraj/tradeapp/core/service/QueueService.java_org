@@ -14,7 +14,7 @@ public class QueueService {
     private final QueueRepository queueRepository;
 
     public List<QueueRecord> findPendingRecords() {
-        LocalDateTime cutoffTime = LocalDateTime.now().minusSeconds(20);
+        LocalDateTime cutoffTime = CommonUtil.getNYLocalDateTimeNow().minusSeconds(20);
         return queueRepository.findByStatusAndCreatedBefore("PENDING", cutoffTime);
     }
 

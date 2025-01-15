@@ -1,5 +1,6 @@
 package com.kraj.tradeapp.core.controller;
 
+import com.kraj.tradeapp.core.model.CommonUtil;
 import com.kraj.tradeapp.core.model.dashboard.ui.dto.CurrentTradeUI;
 import com.kraj.tradeapp.core.model.dashboard.ui.dto.EventsUI;
 import com.kraj.tradeapp.core.model.dashboard.ui.dto.TradingSignalUI;
@@ -33,8 +34,8 @@ public class DashboardController {
     public ResponseEntity<List<NotificationEventDto>> getNotificationEvents(@PathVariable String symbol) {
         List<NotificationEventDto> events = notificationProcessorService.getNotificationEvents(
             symbol,
-            LocalDateTime.now().minusHours(24),
-            LocalDateTime.now()
+            CommonUtil.getNYLocalDateTimeNow().minusHours(24),
+            CommonUtil.getNYLocalDateTimeNow()
         );
         return ResponseEntity.ok(events);
     }

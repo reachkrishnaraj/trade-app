@@ -57,8 +57,8 @@ public class TradeSignalSnapshotProcessor {
             //            }
 
             List<NotificationEvent> notificationEvents = notificationEventRepository.findEventsPendingTradeSignalProcessing(
-                LocalDateTime.now().minusHours(4),
-                LocalDateTime.now()
+                CommonUtil.getNYLocalDateTimeNow().minusHours(4),
+                CommonUtil.getNYLocalDateTimeNow()
             );
             if (notificationEvents.isEmpty()) {
                 EVENT_PROCESSOR_JOB_LOCK.unlock();
@@ -362,7 +362,7 @@ public class TradeSignalSnapshotProcessor {
             .score(event.getScore())
             .direction(event.getDirection())
             .lastMsg(event.getRawAlertMsg())
-            .lastMsgDateTime(ZonedDateTime.now().toString())
+            .lastMsgDateTime(CommonUtil.getNYLocalDateTimeNow().toString())
             .isStrategy(event.isStrategy())
             .strategyName(event.getStrategyName())
             .build();

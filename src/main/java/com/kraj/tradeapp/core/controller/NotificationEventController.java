@@ -1,5 +1,6 @@
 package com.kraj.tradeapp.core.controller;
 
+import com.kraj.tradeapp.core.model.CommonUtil;
 import com.kraj.tradeapp.core.model.dto.NotificationEventDto;
 import com.kraj.tradeapp.core.model.persistance.NotificationEvent;
 import com.kraj.tradeapp.core.model.persistance.TradeSignal;
@@ -30,8 +31,8 @@ public class NotificationEventController {
     public ResponseEntity<List<NotificationEventDto>> getNotificationEvents(@PathVariable String symbol) {
         List<NotificationEventDto> events = notificationProcessorService.getNotificationEvents(
             symbol,
-            LocalDateTime.now().minusHours(24),
-            LocalDateTime.now()
+            CommonUtil.getNYLocalDateTimeNow().minusHours(24),
+            CommonUtil.getNYLocalDateTimeNow()
         );
         return ResponseEntity.ok(events);
     }
