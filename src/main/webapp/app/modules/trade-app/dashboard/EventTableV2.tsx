@@ -1,5 +1,5 @@
 import React, { useState, useMemo } from 'react';
-import { createColumnHelper, useReactTable, getSortedRowModel, getCoreRowModel, flexRender } from '@tanstack/react-table';
+import { createColumnHelper, useReactTable, getSortedRowModel, getCoreRowModel, flexRender, PaginationState } from '@tanstack/react-table';
 import { format, isWithinInterval, parseISO, startOfDay, endOfDay } from 'date-fns';
 import DatePicker from 'react-datepicker';
 import Select from 'react-select';
@@ -25,19 +25,34 @@ const timePresets = [
   { label: '24H', hours: 24 },
 ];
 
+const ITEMS_PER_PAGE = 50;
+
+const candleTypes = [
+  { value: 'CLASSIC', label: 'Classic' },
+  { value: 'HEIKIN_ASHI', label: 'Heiken Ashi' },
+  { value: 'RENKO_8B', label: 'Renko 8B' },
+  { value: 'RENKO_5B', label: 'Renko 5B' },
+  { value: 'RENKO_4B', label: 'Renko 4B' },
+  { value: 'RENKO_2B', label: 'Renko 2B' },
+  { value: 'RENKO_1B', label: 'Renko 1B' },
+];
+
 const EventTableV2: React.FC<EventTableProps> = ({ data }) => {
   const columnHelper = createColumnHelper<Event>();
 
   // Filter states (selected values)
   const [selectedIndicators, setSelectedIndicators] = useState<SelectOption[]>([]);
   const [selectedCategories, setSelectedCategories] = useState<SelectOption[]>([]);
+  const [selectedCandleTypes, setSelectedCandleTypes] = useState<SelectOption[]>([]);
   const [startDate, setStartDate] = useState<Date | null>(null);
   const [endDate, setEndDate] = useState<Date | null>(null);
+  const [currentPage, setCurrentPage] = useState(0);
 
   // Applied filter states (values used for actual filtering)
   const [appliedFilters, setAppliedFilters] = useState({
     indicators: [] as SelectOption[],
     categories: [] as SelectOption[],
+    candleTypes: [] as SelectOption[],
     startDate: null as Date | null,
     endDate: null as Date | null,
   });
@@ -83,20 +98,25 @@ const EventTableV2: React.FC<EventTableProps> = ({ data }) => {
   const resetFilters = () => {
     setSelectedIndicators([]);
     setSelectedCategories([]);
+    setSelectedCandleTypes([]);
     setStartDate(null);
     setEndDate(null);
+    setCurrentPage(0);
     setAppliedFilters({
       indicators: [],
       categories: [],
+      candleTypes: [],
       startDate: null,
       endDate: null,
     });
   };
 
   const applyFilters = () => {
+    setCurrentPage(0);
     setAppliedFilters({
       indicators: selectedIndicators,
       categories: selectedCategories,
+      candleTypes: selectedCandleTypes,
       startDate,
       endDate,
     });
@@ -110,6 +130,8 @@ const EventTableV2: React.FC<EventTableProps> = ({ data }) => {
       const categoryMatch =
         appliedFilters.categories.length === 0 ||
         appliedFilters.categories.some(cat => cat.value === event.indicatorSubCategoryDisplayName);
+      const candleTypeMatch =
+        appliedFilters.candleTypes.length === 0 || appliedFilters.candleTypes.some(type => type.value === event.candleType);
 
       // Check date range
       let dateMatch = true;
@@ -127,9 +149,16 @@ const EventTableV2: React.FC<EventTableProps> = ({ data }) => {
         }
       }
 
-      return indicatorMatch && categoryMatch && dateMatch;
+      return indicatorMatch && categoryMatch && candleTypeMatch && dateMatch;
     });
-  }, [data, appliedFilters]);
+  }, [data, appliedFilters, startDate, endDate]);
+
+  const paginatedData = useMemo(() => {
+    const startIndex = currentPage * ITEMS_PER_PAGE;
+    return filteredData.slice(startIndex, startIndex + ITEMS_PER_PAGE);
+  }, [filteredData, currentPage]);
+
+  const pageCount = Math.ceil(filteredData.length / ITEMS_PER_PAGE);
 
   const columns = [
     columnHelper.accessor('indicatorDisplayName', {
@@ -137,6 +166,9 @@ const EventTableV2: React.FC<EventTableProps> = ({ data }) => {
     }),
     columnHelper.accessor('indicatorSubCategoryDisplayName', {
       header: () => <span>Category</span>,
+    }),
+    columnHelper.accessor('candleType', {
+      header: () => <span>Candle Type</span>,
     }),
     columnHelper.accessor('interval', {
       header: () => <span>Interval</span>,
@@ -167,7 +199,7 @@ const EventTableV2: React.FC<EventTableProps> = ({ data }) => {
   ];
 
   const table = useReactTable({
-    data: filteredData,
+    data: paginatedData,
     columns,
     getCoreRowModel: getCoreRowModel(),
     getSortedRowModel: getSortedRowModel(),
@@ -186,12 +218,71 @@ const EventTableV2: React.FC<EventTableProps> = ({ data }) => {
     return { backgroundColor: 'white' };
   };
 
+  const renderPagination = () => {
+    const pages = [];
+    const maxVisiblePages = 5;
+    let startPage = Math.max(0, currentPage - Math.floor(maxVisiblePages / 2));
+    let endPage = Math.min(pageCount - 1, startPage + maxVisiblePages - 1);
+
+    if (endPage - startPage + 1 < maxVisiblePages) {
+      startPage = Math.max(0, endPage - maxVisiblePages + 1);
+    }
+
+    for (let i = startPage; i <= endPage; i++) {
+      pages.push(
+        <button
+          key={i}
+          className={`btn btn-sm ${currentPage === i ? 'btn-primary' : 'btn-outline-primary'}`}
+          onClick={() => setCurrentPage(i)}
+        >
+          {i + 1}
+        </button>,
+      );
+    }
+
+    return (
+      <div className="d-flex justify-content-center gap-2 mt-3">
+        <button
+          className="btn btn-sm btn-outline-primary"
+          onClick={() => setCurrentPage(p => Math.max(0, p - 1))}
+          disabled={currentPage === 0}
+        >
+          Previous
+        </button>
+        {startPage > 0 && (
+          <>
+            <button className="btn btn-sm btn-outline-primary" onClick={() => setCurrentPage(0)}>
+              1
+            </button>
+            {startPage > 1 && <span className="align-self-center">...</span>}
+          </>
+        )}
+        {pages}
+        {endPage < pageCount - 1 && (
+          <>
+            {endPage < pageCount - 2 && <span className="align-self-center">...</span>}
+            <button className="btn btn-sm btn-outline-primary" onClick={() => setCurrentPage(pageCount - 1)}>
+              {pageCount}
+            </button>
+          </>
+        )}
+        <button
+          className="btn btn-sm btn-outline-primary"
+          onClick={() => setCurrentPage(p => Math.min(pageCount - 1, p + 1))}
+          disabled={currentPage === pageCount - 1}
+        >
+          Next
+        </button>
+      </div>
+    );
+  };
+
   return (
     <>
       <Card className="mb-3">
         <Card.Body>
           <div className="row">
-            <div className="col-md-6 mb-3">
+            <div className="col-md-4 mb-3">
               <label className="form-label">Filter by Indicators</label>
               <Select
                 isMulti
@@ -203,7 +294,7 @@ const EventTableV2: React.FC<EventTableProps> = ({ data }) => {
                 classNamePrefix="select"
               />
             </div>
-            <div className="col-md-6 mb-3">
+            <div className="col-md-4 mb-3">
               <label className="form-label">Filter by Categories</label>
               <Select
                 isMulti
@@ -211,6 +302,18 @@ const EventTableV2: React.FC<EventTableProps> = ({ data }) => {
                 value={selectedCategories}
                 onChange={newValue => setSelectedCategories(newValue as SelectOption[])}
                 placeholder="Select categories..."
+                className="basic-multi-select"
+                classNamePrefix="select"
+              />
+            </div>
+            <div className="col-md-4 mb-3">
+              <label className="form-label">Filter by Candle Type</label>
+              <Select
+                isMulti
+                options={candleTypes}
+                value={selectedCandleTypes}
+                onChange={newValue => setSelectedCandleTypes(newValue as SelectOption[])}
+                placeholder="Select candle types..."
                 className="basic-multi-select"
                 classNamePrefix="select"
               />
@@ -288,7 +391,7 @@ const EventTableV2: React.FC<EventTableProps> = ({ data }) => {
           <div className="row">
             <div className="col">
               <small className="text-muted">
-                Showing {filteredData.length} of {data.length} events
+                Showing {paginatedData.length} of {filteredData.length} events (page {currentPage + 1} of {pageCount})
               </small>
             </div>
           </div>
@@ -316,7 +419,7 @@ const EventTableV2: React.FC<EventTableProps> = ({ data }) => {
               ))}
             </tr>
           ))}
-          {filteredData.length === 0 && (
+          {paginatedData.length === 0 && (
             <tr>
               <td colSpan={columns.length} className="text-center">
                 No events found
@@ -325,6 +428,7 @@ const EventTableV2: React.FC<EventTableProps> = ({ data }) => {
           )}
         </tbody>
       </Table>
+      {renderPagination()}
     </>
   );
 };

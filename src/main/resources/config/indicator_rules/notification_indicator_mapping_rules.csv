@@ -70,8 +70,6 @@ LUXALGO_SO,Luxalgo Signals and Overlay,Triggers when a normal bullish Confirmati
 LUXALGO_SO,Luxalgo Signals and Overlay,Triggers when a normal bearish Confirmation signal is displayed,FULL_MATCH,Bearish Confirmation,ANY,LUXALGO_SO_CONFIRMATION,Luxalgo SO Confirmation,,-1,
 LUXALGO_SO,Luxalgo Signals and Overlay,Triggers when a bullish Confirmation+ signal is displayed,FULL_MATCH,Bullish Confirmation+,ANY,LUXALGO_SO_CONFIRMATION,Luxalgo SO Confirmation,,3,TRUE
 LUXALGO_SO,Luxalgo Signals and Overlay,Triggers when a bearish Confirmation+ signal is displayed,FULL_MATCH,Bearish Confirmation+,ANY,LUXALGO_SO_CONFIRMATION,Luxalgo SO Confirmation,,-3,TRUE
-LUXALGO_SO,Luxalgo Signals and Overlay,Triggers when a bullish exit signal is displayed,FULL_MATCH,Bullish Exit,ANY,LUXALGO_SO_CONFIRMATION,Luxalgo SO Confirmation,,0,
-LUXALGO_SO,Luxalgo Signals and Overlay,Triggers when a bearish exit signal is displayed,FULL_MATCH,Bearish Exit,ANY,LUXALGO_SO_CONFIRMATION,Luxalgo SO Confirmation,,0,
 LUXALGO_SO,Luxalgo Signals and Overlay,Triggers once the Trend Catcher starts decreasing (switch from green to red),FULL_MATCH,Trend Catcher Down,ANY,LUXALGO_SO_TREND_CATCHER,Luxalgo SO Trend Catcher,,-1,
 LUXALGO_SO,Luxalgo Signals and Overlay,Triggers once the Trend Catcher starts rising (switch from red to green),FULL_MATCH,Trend Catcher Up,ANY,LUXALGO_SO_TREND_CATCHER,Luxalgo SO Trend Catcher,,1,
 LUXALGO_SO,Luxalgo Signals and Overlay,Triggers once the Trend Tracer starts decreasing (switch from green to red),FULL_MATCH,Trend Tracer Down,ANY,LUXALGO_SO_TREND_TRACER,Luxalgo SO Trend Tracer,,-1,
@@ -82,8 +80,8 @@ LUXALGO_SO,Luxalgo Signals and Overlay,Triggers when a normal bullish Contrarian
 LUXALGO_SO,Luxalgo Signals and Overlay,Triggers when a normal bearish Contrarian signal is displayed,FULL_MATCH,Bearish Contrarian,ANY,LUXALGO_SO_CONTRARIAN,Luxalgo SO Contrarian,,-1,
 LUXALGO_SO,Luxalgo Signals and Overlay,Triggers when a strong bullish Contrarian signal is displayed,FULL_MATCH,Bullish Contrarian+,ANY,LUXALGO_SO_CONTRARIAN,Luxalgo SO Contrarian,,3,TRUE
 LUXALGO_SO,Luxalgo Signals and Overlay,Triggers when a strong bearish Contrarian signal is displayed,FULL_MATCH,Bearish Contrarian+,ANY,LUXALGO_SO_CONTRARIAN,Luxalgo SO Contrarian,,-3,TRUE
-LUXALGO_SO,Luxalgo Signals and Overlay,Triggers when a bullish exit signal is displayed,FULL_MATCH,Bullish Exit,ANY,LUXALGO_SO_CONFIRMATION,Luxalgo SO Confirmation,,0,
-LUXALGO_SO,Luxalgo Signals and Overlay,Triggers when a bearish exit signal is displayed,FULL_MATCH,Bearish Exit,ANY,LUXALGO_SO_CONFIRMATION,Luxalgo SO Confirmation,,0,
+LUXALGO_SO,Luxalgo Signals and Overlay,Triggers when a bullish exit signal is displayed,CONTAINS,Bullish Exit,ANY,LUXALGO_SO_CONFIRMATION,Luxalgo SO Confirmation,,0,
+LUXALGO_SO,Luxalgo Signals and Overlay,Triggers when a bearish exit signal is displayed,CONTAINS,Bearish Exit,ANY,LUXALGO_SO_CONFIRMATION,Luxalgo SO Confirmation,,0,
 LUXALGO_SO,Luxalgo Signals and Overlay,Triggers when a take profit is reached,JAVA_REGEX,TP\d+ Reached,ANY,LUXALGO_SO_TP_EXIT,Luxalgo SO Take Profit,,0,
 LUXALGO_SO,Luxalgo Signals and Overlay,Triggers when a stop loss is reached,JAVA_REGEX,SL\d+ Reached,ANY,LUXALGO_SO_STOP_EXIT,Luxalgo SO Stop Exit,,0,
 LUXALGO_SO,Luxalgo Signals and Overlay,Triggers when a weak bullish trend turns strong (purple candle switch to green),FULL_MATCH,Bullish Turn +,ANY,LUXALGO_SO_CONFIRMATION,Luxalgo SO Confirmation,,3,TRUE
@@ -200,3 +198,6 @@ SR_CHANNEL_V2,SR Channel V2,,FULL_MATCH,Support Broken,ANY,SR_CHANNEL_V2,SR Chan
 ###,,,,,,,,,,
 BPR_DETECTOR,BPR,,FULL_MATCH,New Bullish BPR,ANY,BPR,BPR,,1,
 BPR_DETECTOR,BPR,,FULL_MATCH,New Bearish BPR,ANY,BPR,BPR,,-1,
+###,,,,,,,,,,
+LUXALGO_IFVG,Luxalgo I-FVG,,FULL_MATCH,Bullish IFvg Signal,ANY,LUXALGO_IFVG,Luxalgo I-FVG,,1,
+LUXALGO_IFVG,Luxalgo I-FVG,,FULL_MATCH,Bearish IFvg Signal,ANY,LUXALGO_IFVG,Luxalgo I-FVG,,-1,
