@@ -56,7 +56,8 @@ public enum Indicator {
 
     LUXALGO_OSCILLATOR_MATRIX(EventImportance.CRITICAL, true),
     LUXALGO_PAC(EventImportance.CRITICAL, true),
-    LUXALGO_SO(EventImportance.CRITICAL, true);
+    LUXALGO_SO(EventImportance.CRITICAL, true),
+    LUXALGO_IFVG(EventImportance.CRITICAL, true);
 
     private final EventImportance defaultImportance;
 
