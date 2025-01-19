@@ -9,6 +9,9 @@ services:
       - MANAGEMENT_PROMETHEUS_METRICS_EXPORT_ENABLED=true
       - SPRING_DATASOURCE_URL=jdbc:postgresql://postgresql:5432/tradeApp
       - SPRING_LIQUIBASE_URL=jdbc:postgresql://postgresql:5432/tradeApp
+      - TELEGRAMBOT_TOKEN
+      - SPRING_DATASOURCE_USERNAME
+      - SPRING_DATASOURCE_PASSWORD
     ports:
       - 127.0.0.1:8080:8080
     healthcheck:
