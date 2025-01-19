@@ -237,3 +237,8 @@ openai:
     temperature: 0.7
     maxTokens: 300
     systemMessage: 'You are an expert trading signal analyzer. Analyze the following signals and recommend BUY or SELL decisions with reasoning.'
+
+  logging:
+    level:
+      org.mongodb.driver: INFO
+      okhttp3: INFO

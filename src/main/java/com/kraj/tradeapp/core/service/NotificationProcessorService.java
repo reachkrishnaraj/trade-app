@@ -34,6 +34,7 @@ public class NotificationProcessorService implements ApplicationListener<Applica
     private final NotificationEventRepository notificationEventRepository;
     private final TradeSignalRepository tradeSignalRepository;
     private final ScoringService scoringService;
+    private final TelegramBotConfig telegramBotConfig;
     //private final QueueRepository queueRepository;
 
     private static final String CUSTOM_PAYLOAD_SEPARATOR = "|";
@@ -65,6 +66,7 @@ public class NotificationProcessorService implements ApplicationListener<Applica
             processTradingViewNotificationPriv(payload);
             mainEventQueue.poll();
         } catch (Exception e) {
+            telegramBotConfig.sendMessageToAllChatIds("Error processing event:%s, added to failure queue".formatted(payload));
             failedEventsQueue.offer(payload);
             mainEventQueue.poll();
             throw new RuntimeException("Error processing event:%s, added to failure queue".formatted(payload), e);
@@ -131,6 +133,10 @@ public class NotificationProcessorService implements ApplicationListener<Applica
         IndicatorMsgRule msgRule = scoringService
             .findMatchingIndicatorEventRule(indicator.name(), rawAlertMsg)
             .orElseThrow(() -> new RuntimeException("No matching rule found"));
+
+        if (msgRule.isAlertable()) {
+            telegramBotConfig.sendMessageToAllChatIds("Alertable event found: %s".formatted(rawAlertMsg));
+        }
 
         boolean isSkipScoring =
             StringUtils.isNotBlank(msgRule.getIsSkipScoring()) && StringUtils.equalsIgnoreCase(msgRule.getIsSkipScoring(), "true");

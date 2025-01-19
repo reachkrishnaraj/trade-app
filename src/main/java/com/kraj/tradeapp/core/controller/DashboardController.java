@@ -9,7 +9,6 @@ import com.kraj.tradeapp.core.model.persistance.mongodb.TradeSignalScoreSnapshot
 import com.kraj.tradeapp.core.service.DashboardService;
 import com.kraj.tradeapp.core.service.NotificationProcessorService;
 import com.kraj.tradeapp.core.service.TradeSignalSnapshotProcessor;
-import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 import lombok.RequiredArgsConstructor;

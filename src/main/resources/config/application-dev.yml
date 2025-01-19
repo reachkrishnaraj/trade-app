@@ -37,9 +37,6 @@ spring:
       indent-output: true
   datasource:
     type: com.zaxxer.hikari.HikariDataSource
-    url: jdbc:postgresql://ep-empty-sound-a1950e7l.ap-southeast-1.aws.neon.tech/trade_app_db
-    username: trade_app_db_owner
-    password: 1zVK2AmjUFCs
     sslmode: require
     hikari:
       poolName: Hikari

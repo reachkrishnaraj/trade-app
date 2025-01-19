@@ -160,32 +160,34 @@ public class ScoringService {
             if (matchType == AlertMessageMatchType.UNKNOWN) {
                 throw new RuntimeException("Invalid match type: " + rule.getMatchType());
             }
+            boolean isSkipScoring = rule.getIsSkipScoring() != null && rule.getIsSkipScoring().equalsIgnoreCase("true");
             switch (matchType) {
                 case STARTS_WITH:
                     if (StringUtils.startsWithIgnoreCase(message.trim(), rule.getAlertMessage().trim())) {
-                        rule.setScoreRangeMax(getMatchingMaxScore(rule));
-                        rule.setScoreRangeMin(getMatchingMinScore(rule));
+                        rule.setScoreRangeMax(getMatchingMaxScore(rule).orElse(new BigDecimal("0")));
+                        rule.setScoreRangeMin(getMatchingMinScore(rule).orElse(new BigDecimal("0")));
+
                         return Optional.of(rule);
                     }
                     break;
                 case FULL_MATCH:
                     if (StringUtils.equalsIgnoreCase(rule.getAlertMessage(), message.trim())) {
-                        rule.setScoreRangeMax(getMatchingMaxScore(rule));
-                        rule.setScoreRangeMin(getMatchingMinScore(rule));
+                        rule.setScoreRangeMax(getMatchingMaxScore(rule).orElse(new BigDecimal("0")));
+                        rule.setScoreRangeMin(getMatchingMinScore(rule).orElse(new BigDecimal("0")));
                         return Optional.of(rule);
                     }
                     break;
                 case JAVA_REGEX:
                     if (message.matches(rule.getAlertMessage())) {
-                        rule.setScoreRangeMax(getMatchingMaxScore(rule));
-                        rule.setScoreRangeMin(getMatchingMinScore(rule));
+                        rule.setScoreRangeMax(getMatchingMaxScore(rule).orElse(new BigDecimal("0")));
+                        rule.setScoreRangeMin(getMatchingMinScore(rule).orElse(new BigDecimal("0")));
                         return Optional.of(rule);
                     }
                     break;
                 case CONTAINS:
                     if (StringUtils.containsIgnoreCase(message, rule.getAlertMessage())) {
-                        rule.setScoreRangeMax(getMatchingMaxScore(rule));
-                        rule.setScoreRangeMin(getMatchingMinScore(rule));
+                        rule.setScoreRangeMax(getMatchingMaxScore(rule).orElse(new BigDecimal("0")));
+                        rule.setScoreRangeMin(getMatchingMinScore(rule).orElse(new BigDecimal("0")));
                         return Optional.of(rule);
                     }
                     break;
@@ -196,38 +198,18 @@ public class ScoringService {
         throw new RuntimeException("No matching rule found for indicator: " + indicatorName + " and message: " + message);
     }
 
-    private BigDecimal getMatchingMinScore(IndicatorMsgRule rule) {
+    private Optional<BigDecimal> getMatchingMinScore(IndicatorMsgRule rule) {
         String key = getIndicatorRangeMapKey(rule.getIndicatorName(), rule.getSubCategory());
-        return Optional.ofNullable(subCategoryRangeMap.get(key))
-            .map(IndicatorSubCategoryRange::getMinScore)
-            .orElseThrow(
-                () ->
-                    new RuntimeException(
-                        "No matching sub category found for indicator: " +
-                        rule.getIndicatorName() +
-                        " and sub category: " +
-                        rule.getSubCategory()
-                    )
-            );
+        return Optional.ofNullable(subCategoryRangeMap.get(key)).map(IndicatorSubCategoryRange::getMinScore);
         //    return indicatorSubCategoryRangeList.stream().filter(subCategoryRange -> StringUtils.equalsIgnoreCase(subCategoryRange.getSubCategory(), rule.getSubCategory()))
         //        .findFirst()
         //        .map(IndicatorSubCategoryRange::getMinScore)
         //        .orElseThrow(() -> new RuntimeException("No matching sub category found for indicator: " + rule.getIndicatorName() + " and sub category: " + rule.getSubCategory()));
     }
 
-    private BigDecimal getMatchingMaxScore(IndicatorMsgRule rule) {
+    private Optional<BigDecimal> getMatchingMaxScore(IndicatorMsgRule rule) {
         String key = getIndicatorRangeMapKey(rule.getIndicatorName(), rule.getSubCategory());
-        return Optional.ofNullable(subCategoryRangeMap.get(key))
-            .map(IndicatorSubCategoryRange::getMaxScore)
-            .orElseThrow(
-                () ->
-                    new RuntimeException(
-                        "No matching sub category found for indicator: " +
-                        rule.getIndicatorName() +
-                        " and sub category: " +
-                        rule.getSubCategory()
-                    )
-            );
+        return Optional.ofNullable(subCategoryRangeMap.get(key)).map(IndicatorSubCategoryRange::getMaxScore);
         //        return indicatorSubCategoryRangeList.stream().filter(subCategoryRange -> StringUtils.equalsIgnoreCase(subCategoryRange.getSubCategory(), rule.getSubCategory()))
         //            .findFirst()
         //            .map(IndicatorSubCategoryRange::getMaxScore)
