@@ -20,7 +20,11 @@ jib {
         ports = ["8080"]
         environment = [
             SPRING_OUTPUT_ANSI_ENABLED: "ALWAYS",
-            JHIPSTER_SLEEP: "0"
+            JHIPSTER_SLEEP: "0",
+            SPRING_DATASOURCE_URL: ${findProperty('SPRING_DATASOURCE_URL') ?: 'jdbc:postgresql://localhost:5432/tradeapp'},
+            SPRING_DATASOURCE_USERNAME: ${findProperty('SPRING_DATASOURCE_USERNAME') ?: 'tradeapp'},
+            SPRING_DATASOURCE_PASSWORD: ${findProperty('SPRING_DATASOURCE_PASSWORD') ?: 'tradeapp'},
+            TELEGRAMBOT_TOKEN: ${findProperty('TELEGRAMBOT_TOKEN') ?: 'telegrambot'},
         ]
         creationTime = "USE_CURRENT_TIMESTAMP"
         user = 1000
