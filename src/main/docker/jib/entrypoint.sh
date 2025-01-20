@@ -1,5 +1,11 @@
 #!/bin/bash
 
+## echo all available env vars
+
+echo "TELEGRAMBOT_TOKEN=${TELEGRAMBOT_TOKEN}"
+echo "- SPRING_DATASOURCE_USERNAME=${SPRING_DATASOURCE_USERNAME}"
+echo "- SPRING_DATASOURCE_PASSWORD=${SPRING_DATASOURCE_PASSWORD}"
+echo "- SPRING_DATASOURCE_URL=${SPRING_DATASOURCE_URL}"
 echo "The application will start in ${JHIPSTER_SLEEP}s..." && sleep ${JHIPSTER_SLEEP}
 
 # usage: file_env VAR [DEFAULT]
