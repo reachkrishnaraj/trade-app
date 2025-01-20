@@ -1,2 +1,6 @@
 org.springframework.test.context.ContextCustomizerFactory = com.kraj.tradeapp.\
     config.SqlTestContainersSpringContextCustomizerFactory
+
+org.springframework.context.ApplicationListener=\
+com.kraj.tradeapp.EnvironmentPreparedListener
+
