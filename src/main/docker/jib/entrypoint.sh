@@ -34,6 +34,7 @@ file_env() {
     unset "$fileVar"
 }
 
+file_env 'SPRING_DATASOURCE_URL'
 file_env 'SPRING_DATASOURCE_USERNAME'
 file_env 'SPRING_DATASOURCE_PASSWORD'
 file_env 'SPRING_LIQUIBASE_URL'
