@@ -4,6 +4,12 @@
 ARG VARIANT="17"
 FROM mcr.microsoft.com/vscode/devcontainers/java:0-${VARIANT}
 
+##added by me. set in railway
+ARG SPRING_DATASOURCE_URL
+ARG SPRING_DATASOURCE_USERNAME
+ARG SPRING_DATASOURCE_PASSWORD
+ARG TELEGRAMBOT_TOKEN
+
 # [Option] Install Maven
 ARG INSTALL_MAVEN="false"
 ARG MAVEN_VERSION=""
