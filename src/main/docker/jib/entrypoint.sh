@@ -42,4 +42,6 @@ file_env 'SPRING_LIQUIBASE_USER'
 file_env 'SPRING_LIQUIBASE_PASSWORD'
 file_env 'JHIPSTER_REGISTRY_PASSWORD'
 
+export KRAJ_VAR_TEST="test_val"
+export TELEGRAMBOT_TOKEN=${TELEGRAMBOT_TOKEN}
 exec java ${JAVA_OPTS} -noverify -XX:+AlwaysPreTouch -Djava.security.egd=file:/dev/./urandom -cp /app/resources/:/app/classes/:/app/libs/* "com.kraj.tradeapp.TradeApp"  "$@"

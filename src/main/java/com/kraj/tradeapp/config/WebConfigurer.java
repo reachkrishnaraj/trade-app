@@ -44,18 +44,21 @@ public class WebConfigurer implements ServletContextInitializer, WebServerFactor
         String username = env.getProperty("SPRING_DATASOURCE_USERNAME");
         String password = env.getProperty("SPRING_DATASOURCE_PASSWORD");
         String railwayServiceName = env.getProperty("$RAILWAY_SERVICE_NAME");
+        String KRAJ_VAR_TEST = env.getProperty("KRAJ_VAR_TEST");
 
         log.info("SPRING_DATASOURCE_URL: {}", datasourceUrl);
         log.info("SPRING_DATASOURCE_USERNAME: {}", username);
         log.info("SPRING_DATASOURCE_PASSWORD: {}", password);
         log.info("TELEGRAMBOT_TOKEN: {}", telegramBotToken);
         log.info("railwayServiceName: {}", railwayServiceName);
+        log.info("KRAJ_VAR_TEST: {}", KRAJ_VAR_TEST);
 
         System.out.println("SPRING_DATASOURCE_URL: " + datasourceUrl);
         System.out.println("SPRING_DATASOURCE_USERNAME: " + username);
         System.out.println("SPRING_DATASOURCE_PASSWORD: " + password);
         System.out.println("TELEGRAMBOT_TOKEN: " + telegramBotToken);
         System.out.println("railwayServiceName: " + railwayServiceName);
+        System.out.println("KRAJ_VAR_TEST: " + KRAJ_VAR_TEST);
         if (env.getActiveProfiles().length != 0) {
             log.info("Web application configuration, using profiles: {}", (Object[]) env.getActiveProfiles());
         }
