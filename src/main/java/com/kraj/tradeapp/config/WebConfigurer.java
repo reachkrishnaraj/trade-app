@@ -14,6 +14,7 @@ import org.springframework.boot.web.servlet.server.ConfigurableServletWebServerF
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.env.Environment;
+import org.springframework.core.env.StandardEnvironment;
 import org.springframework.util.CollectionUtils;
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
@@ -40,11 +41,24 @@ public class WebConfigurer implements ServletContextInitializer, WebServerFactor
     @Override
     public void onStartup(ServletContext servletContext) {
         String datasourceUrl = env.getProperty("SPRING_DATASOURCE_URL");
-        String telegramBotToken = env.getProperty("TELEGRAMBOT_TOKEN");
+        String telegramBotToken = env.getProperty("telegrambot.token");
         String username = env.getProperty("SPRING_DATASOURCE_USERNAME");
         String password = env.getProperty("SPRING_DATASOURCE_PASSWORD");
         String railwayServiceName = env.getProperty("$RAILWAY_SERVICE_NAME");
-        String KRAJ_VAR_TEST = env.getProperty("KRAJ_VAR_TEST");
+        String KRAJ_VAR_TEST = env.getProperty("kraj.var.test");
+        StandardEnvironment standardEnvironment = (StandardEnvironment) env;
+        standardEnvironment
+            .getSystemProperties()
+            .forEach((key, value) -> {
+                System.out.println("System property: " + key + " = " + value);
+                log.info("System property: {} = {}", key, value);
+            });
+        standardEnvironment
+            .getPropertySources()
+            .forEach(propertySource -> {
+                System.out.println("Property source: " + propertySource.getName());
+                log.info("Property source: {}", propertySource.getName());
+            });
 
         log.info("SPRING_DATASOURCE_URL: {}", datasourceUrl);
         log.info("SPRING_DATASOURCE_USERNAME: {}", username);
