@@ -39,6 +39,20 @@ public class WebConfigurer implements ServletContextInitializer, WebServerFactor
 
     @Override
     public void onStartup(ServletContext servletContext) {
+        String datasourceUrl = env.getProperty("SPRING_DATASOURCE_URL");
+        String telegramBotToken = env.getProperty("TELEGRAMBOT_TOKEN");
+        String username = env.getProperty("SPRING_DATASOURCE_USERNAME");
+        String password = env.getProperty("SPRING_DATASOURCE_PASSWORD");
+
+        log.info("SPRING_DATASOURCE_URL: {}", datasourceUrl);
+        log.info("SPRING_DATASOURCE_USERNAME: {}", username);
+        log.info("SPRING_DATASOURCE_PASSWORD: {}", password);
+        log.info("TELEGRAMBOT_TOKEN: {}", telegramBotToken);
+
+        System.out.println("SPRING_DATASOURCE_URL: " + datasourceUrl);
+        System.out.println("SPRING_DATASOURCE_USERNAME: " + username);
+        System.out.println("SPRING_DATASOURCE_PASSWORD: " + password);
+        System.out.println("TELEGRAMBOT_TOKEN: " + telegramBotToken);
         if (env.getActiveProfiles().length != 0) {
             log.info("Web application configuration, using profiles: {}", (Object[]) env.getActiveProfiles());
         }
