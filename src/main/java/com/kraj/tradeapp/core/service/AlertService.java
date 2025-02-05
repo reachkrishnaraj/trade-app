@@ -23,10 +23,17 @@ public class AlertService {
     //    }
 
     public void handleDirectTradingViewAlertSimple() {
-        twilioService.sendVoiceMessage("Price reached target", "+917305989831");
-        twilioService.sendTextMessage("Price reached target", "+917305989831");
+        sendMessage(() -> twilioService.sendVoiceMessage("Price reached target", "+917305989831"), "voice", "+917305989831");
+        sendMessage(() -> twilioService.sendTextMessage("Price reached target", "+917305989831"), "text", "+917305989831");
+        sendMessage(() -> twilioService.sendTextMessage("Price reached target", "+14083486083"), "text", "+14083486083");
+        sendMessage(() -> twilioService.sendVoiceMessage("Price reached target", "+14083486083"), "voice", "+14083486083");
+    }
 
-        twilioService.sendVoiceMessage("Price reached target", "+14083486083");
-        twilioService.sendTextMessage("Price reached target", "+14083486083");
+    private void sendMessage(Runnable action, String type, String number) {
+        try {
+            action.run();
+        } catch (Exception e) {
+            System.err.println("Failed to send " + type + " message to " + number + ": " + e.getMessage());
+        }
     }
 }
