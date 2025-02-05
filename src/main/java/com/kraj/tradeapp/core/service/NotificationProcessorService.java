@@ -14,6 +14,7 @@ import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.time.temporal.ChronoUnit;
 import java.util.*;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.locks.ReentrantLock;
 import lombok.RequiredArgsConstructor;
 import org.apache.commons.lang3.StringUtils;
@@ -40,6 +41,7 @@ public class NotificationProcessorService implements ApplicationListener<Applica
     private static final String CUSTOM_PAYLOAD_SEPARATOR = "|";
     private final Queue<String> mainEventQueue = new LinkedList<>();
     private final Queue<String> failedEventsQueue = new LinkedList<>();
+    private final ConcurrentHashMap<Long, List<String>> qKronosBuckets = new ConcurrentHashMap<>();
 
     public void queueAndProcessNotification(String payload) {
         mainEventQueue.offer(payload);
@@ -107,22 +109,29 @@ public class NotificationProcessorService implements ApplicationListener<Applica
         String eventDateTimeStr = getValueFor(PayloadKey.TIME, payloadMap).orElse(ZonedDateTime.now().toString());
 
         LocalDateTime eventDateTime = null;
-        //        if (StringUtils.isNumeric(eventDateTimeStr)) {
-        //            ChronoUnit chronoUnit = determineTimeUnit(Long.parseLong(eventDateTimeStr));
-        //            eventDateTime = chronoUnit == ChronoUnit.MILLIS
-        //                ? LocalDateTime.ofInstant(Instant.ofEpochMilli(Long.parseLong(eventDateTimeStr)), ZoneId.of("America/New_York"))
-        //                : chronoUnit == ChronoUnit.SECONDS
-        //                    ? LocalDateTime.ofEpochSecond(
-        //                        Long.parseLong(eventDateTimeStr),
-        //                        0,
-        //                        ZoneId.of("America/New_York").getRules().getOffset(Instant.now())
-        //                    )
-        //                    : LocalDateTime.now();
-        //        } else {
-        //            eventDateTime = ZonedDateTime.parse(eventDateTimeStr).withZoneSameInstant(ZoneId.of("America/New_York")).toLocalDateTime();
-        //        }
+        if (StringUtils.isNumeric(eventDateTimeStr)) {
+            ChronoUnit chronoUnit = determineTimeUnit(Long.parseLong(eventDateTimeStr));
+            eventDateTime = chronoUnit == ChronoUnit.MILLIS
+                ? LocalDateTime.ofInstant(Instant.ofEpochMilli(Long.parseLong(eventDateTimeStr)), ZoneId.of("America/New_York"))
+                : chronoUnit == ChronoUnit.SECONDS
+                    ? LocalDateTime.ofEpochSecond(
+                        Long.parseLong(eventDateTimeStr),
+                        0,
+                        ZoneId.of("America/New_York").getRules().getOffset(Instant.now())
+                    )
+                    : LocalDateTime.now();
+        } else {
+            eventDateTime = ZonedDateTime.parse(eventDateTimeStr).withZoneSameInstant(ZoneId.of("America/New_York")).toLocalDateTime();
+        }
         //stale event, set to now
-        eventDateTime = CommonUtil.getNYLocalDateTimeNow();
+        //eventDateTime = CommonUtil.getNYLocalDateTimeNow();
+
+        if (indicator == Indicator.QUANTVUE_QKRONOS) {
+            long epochSecondsWithDelay = eventDateTime.toEpochSecond(ZoneId.of("America/New_York").getRules().getOffset(Instant.now())) + 5;
+            long epochSecond = eventDateTime.toEpochSecond(ZoneId.of("America/New_York").getRules().getOffset(Instant.now()));
+            qKronosBuckets.computeIfAbsent(epochSecond, k -> new ArrayList<>()).add(payload);
+            return;
+        }
 
         @Nullable
         String strategyStr = getValueFor(PayloadKey.STRATEGY, payloadMap).filter(StringUtils::isNotBlank).orElse(null);
@@ -234,7 +243,7 @@ public class NotificationProcessorService implements ApplicationListener<Applica
 
     //message format:
     //PAYLOAD=CUSTOM|indicator=Q_LINE|price=500.00|time=2021-09-01T14:00:00Z|strategyName=QUANTVUE_QKRONOS|symbol=SPY|source=TV|interval=1m|candleType=CLASSIC|isStrategy=true
-    private Map<String, String> getPayloadMap(String payload) {
+    public Map<String, String> getPayloadMap(String payload) {
         if (StringUtils.trim(payload).isEmpty()) {
             return new HashMap<>();
         }
@@ -255,7 +264,7 @@ public class NotificationProcessorService implements ApplicationListener<Applica
         return payloadMap;
     }
 
-    private Optional<String> getValueFor(PayloadKey payloadKey, Map<String, String> payloadMap) {
+    public Optional<String> getValueFor(PayloadKey payloadKey, Map<String, String> payloadMap) {
         return Optional.ofNullable(payloadMap.get(payloadKey.getKeyName()));
     }
 
