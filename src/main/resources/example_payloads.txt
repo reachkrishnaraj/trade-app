@@ -1,0 +1,92 @@
+PAC - 1m, classic:
+PAYLOAD=CUSTOM|indicator=LUXALGO_PAC|priceOpen={open}|priceLow={low}|priceHigh={high}|priceClose={close}|price={close}|time={time}|strategyName=NONE|symbol=NQ|source=TV|interval=1m|candleType=CLASSIC|isStrategy=false|msg={default}
+
+PAC - 2m, classic:
+PAYLOAD=CUSTOM|indicator=LUXALGO_PAC|priceOpen={open}|priceLow={low}|priceHigh={high}|priceClose={close}|price={close}|time={time}|strategyName=NONE|symbol=NQ|source=TV|interval=2m|candleType=CLASSIC|isStrategy=false|msg={default}
+
+PAC - 3m, classic:
+PAYLOAD=CUSTOM|indicator=LUXALGO_PAC|priceOpen={open}|priceLow={low}|priceHigh={high}|priceClose={close}|price={close}|time={time}|strategyName=NONE|symbol=NQ|source=TV|interval=3m|candleType=CLASSIC|isStrategy=false|msg={default}
+
+PAC - 5m, classic:
+PAYLOAD=CUSTOM|indicator=LUXALGO_PAC|priceOpen={open}|priceLow={low}|priceHigh={high}|priceClose={close}|price={close}|time={time}|strategyName=NONE|symbol=NQ|source=TV|interval=5m|candleType=CLASSIC|isStrategy=false|msg={default}
+
+PAC - 15m, classic:
+PAYLOAD=CUSTOM|indicator=LUXALGO_PAC|priceOpen={open}|priceLow={low}|priceHigh={high}|priceClose={close}|price={close}|time={time}|strategyName=NONE|symbol=NQ|source=TV|interval=15m|candleType=CLASSIC|isStrategy=false|msg={default}
+
+PAC - 30m, classic:
+PAYLOAD=CUSTOM|indicator=LUXALGO_PAC|priceOpen={open}|priceLow={low}|priceHigh={high}|priceClose={close}|price={close}|time={time}|strategyName=NONE|symbol=NQ|source=TV|interval=30m|candleType=CLASSIC|isStrategy=false|msg={default}
+
+PAC -1h, classic:
+PAYLOAD=CUSTOM|indicator=LUXALGO_PAC|priceOpen={open}|priceLow={low}|priceHigh={high}|priceClose={close}|price={close}|time={time}|strategyName=NONE|symbol=NQ|source=TV|interval=1h|candleType=CLASSIC|isStrategy=false|msg={default}
+
+PAC - 4h, classic:
+PAYLOAD=CUSTOM|indicator=LUXALGO_PAC|priceOpen={open}|priceLow={low}|priceHigh={high}|priceClose={close}|price={close}|time={time}|strategyName=NONE|symbol=NQ|source=TV|interval=4h|candleType=CLASSIC|isStrategy=false|msg={default}
+
+
+
+LuxAlgo Sigals & Overlay 1m, classic:
+PAYLOAD=CUSTOM|indicator=LUXALGO_SO|priceOpen={open}|priceLow={low}|priceHigh={high}|priceClose={close}|price={close}|time={time}|strategyName=NONE|symbol=NQ|source=TV|interval=1m|candleType=CLASSIC|isStrategy=false|msg={default}
+
+LuxAlgo Sigals & Overlay 2m, classic:
+PAYLOAD=CUSTOM|indicator=LUXALGO_SO|priceOpen={open}|priceLow={low}|priceHigh={high}|priceClose={close}|price={close}|time={time}|strategyName=NONE|symbol=NQ|source=TV|interval=2m|candleType=CLASSIC|isStrategy=false|msg={default}
+
+LuxAlgo Sigals & Overlay 3m, classic:
+PAYLOAD=CUSTOM|indicator=LUXALGO_SO|priceOpen={open}|priceLow={low}|priceHigh={high}|priceClose={close}|price={close}|time={time}|strategyName=NONE|symbol=NQ|source=TV|interval=3m|candleType=CLASSIC|isStrategy=false|msg={default}
+
+LuxAlgo Sigals & Overlay 5m, classic:
+PAYLOAD=CUSTOM|indicator=LUXALGO_SO|priceOpen={open}|priceLow={low}|priceHigh={high}|priceClose={close}|price={close}|time={time}|strategyName=NONE|symbol=NQ|source=TV|interval=5m|candleType=CLASSIC|isStrategy=false|msg={default}
+
+LuxAlgo Sigals & Overlay 15m, classic:
+PAYLOAD=CUSTOM|indicator=LUXALGO_SO|priceOpen={open}|priceLow={low}|priceHigh={high}|priceClose={close}|price={close}|time={time}|strategyName=NONE|symbol=NQ|source=TV|interval=15m|candleType=CLASSIC|isStrategy=false|msg={default}
+
+LuxAlgo Sigals & Overlay 30m, classic:
+PAYLOAD=CUSTOM|indicator=LUXALGO_SO|priceOpen={open}|priceLow={low}|priceHigh={high}|priceClose={close}|price={close}|time={time}|strategyName=NONE|symbol=NQ|source=TV|interval=30m|candleType=CLASSIC|isStrategy=false|msg={default}
+
+LuxAlgo Sigals & Overlay 1h, classic:
+PAYLOAD=CUSTOM|indicator=LUXALGO_SO|priceOpen={open}|priceLow={low}|priceHigh={high}|priceClose={close}|price={close}|time={time}|strategyName=NONE|symbol=NQ|source=TV|interval=1h|candleType=CLASSIC|isStrategy=false|msg={default}
+
+
+
+LuxAlgo Oscillator 1m, classic:
+PAYLOAD=CUSTOM|indicator=LUXALGO_OSCILLATOR_MATRIX|priceOpen={open}|priceLow={low}|priceHigh={high}|priceClose={close}|price={close}|time={time}|strategyName=NONE|symbol=NQ|source=TV|interval=1m|candleType=CLASSIC|isStrategy=false|msg={default}
+
+LuxAlgo Oscillator 2m, classic:
+PAYLOAD=CUSTOM|indicator=LUXALGO_OSCILLATOR_MATRIX|priceOpen={open}|priceLow={low}|priceHigh={high}|priceClose={close}|price={close}|time={time}|strategyName=NONE|symbol=NQ|source=TV|interval=2m|candleType=CLASSIC|isStrategy=false|msg={default}
+
+LuxAlgo Oscillator 3m, classic:
+PAYLOAD=CUSTOM|indicator=LUXALGO_OSCILLATOR_MATRIX|priceOpen={open}|priceLow={low}|priceHigh={high}|priceClose={close}|price={close}|time={time}|strategyName=NONE|symbol=NQ|source=TV|interval=3m|candleType=CLASSIC|isStrategy=false|msg={default}
+
+LuxAlgo Oscillator 5m, classic:
+PAYLOAD=CUSTOM|indicator=LUXALGO_OSCILLATOR_MATRIX|priceOpen={open}|priceLow={low}|priceHigh={high}|priceClose={close}|price={close}|time={time}|strategyName=NONE|symbol=NQ|source=TV|interval=5m|candleType=CLASSIC|isStrategy=false|msg={default}
+
+LuxAlgo Oscillator 15m, classic:
+PAYLOAD=CUSTOM|indicator=LUXALGO_OSCILLATOR_MATRIX|priceOpen={open}|priceLow={low}|priceHigh={high}|priceClose={close}|price={close}|time={time}|strategyName=NONE|symbol=NQ|source=TV|interval=15m|candleType=CLASSIC|isStrategy=false|msg={default}
+
+LuxAlgo Oscillator 30m, classic:
+PAYLOAD=CUSTOM|indicator=LUXALGO_OSCILLATOR_MATRIX|priceOpen={open}|priceLow={low}|priceHigh={high}|priceClose={close}|price={close}|time={time}|strategyName=NONE|symbol=NQ|source=TV|interval=30m|candleType=CLASSIC|isStrategy=false|msg={default}
+
+LuxAlgo Oscillator 1h, classic:
+PAYLOAD=CUSTOM|indicator=LUXALGO_OSCILLATOR_MATRIX|priceOpen={open}|priceLow={low}|priceHigh={high}|priceClose={close}|price={close}|time={time}|strategyName=NONE|symbol=NQ|source=TV|interval=1h|candleType=CLASSIC|isStrategy=false|msg={default}
+
+Bullish BPR:
+PAYLOAD=CUSTOM|indicator=BPR_DETECTOR|price={{close}}|time={{time}}|strategyName=none|symbol=NQ|source=TV|interval=5m|candleType=CLASSIC|isStrategy=false|msg=New Bullish BPR
+
+Bearish BPR:
+PAYLOAD=CUSTOM|indicator=BPR_DETECTOR|price={{close}}|time={{time}}|strategyName=none|symbol=NQ|source=TV|interval=5m|candleType=CLASSIC|isStrategy=false|msg=New Bearish BPR
+
+iFVG Bull:
+PAYLOAD=CUSTOM|indicator=LUXALGO_IFVG|price={{close}}|time={{time}}|strategyName=none|symbol=NQ|source=TV|interval=15m|candleType=CLASSIC|isStrategy=false|msg=Bullish IFvg Signal
+
+iFVG Bear:
+PAYLOAD=CUSTOM|indicator=LUXALGO_IFVG|price={{close}}|time={{time}}|strategyName=none|symbol=NQ|source=TV|interval=15m|candleType=CLASSIC|isStrategy=false|msg=Bearish IFvg Signal
+
+
+TFO:
+PAYLOAD=CUSTOM|indicator=TFO_INVERSE_FVG|price={{close}}|time={{time}}|strategyName=none|symbol=NQ|source=TV|interval=15m|candleType=CLASSIC|isStrategy=false|msg=Regular FVG Rejected
+PAYLOAD=CUSTOM|indicator=TFO_INVERSE_FVG|price={{close}}|time={{time}}|strategyName=none|symbol=NQ|source=TV|interval=15m|candleType=CLASSIC|isStrategy=false|msg=Inverse FVG Rejected
+PAYLOAD=CUSTOM|indicator=TFO_INVERSE_FVG|price={{close}}|time={{time}}|strategyName=none|symbol=NQ|source=TV|interval=15m|candleType=CLASSIC|isStrategy=false|msg=Regular plus Inverse FVG Rejected
+
+TFO iFVG Bear:
+PAYLOAD=CUSTOM|indicator=TFO_INVERSE_FVG|price={{close}}|time={{time}}|strategyName=none|symbol=NQ|source=TV|interval=15m|candleType=CLASSIC|isStrategy=false|msg=Bearish IFvg Signal
+
+

@@ -84,7 +84,15 @@ public class NotificationProcessorService implements ApplicationListener<Applica
             return;
         }
 
-        BigDecimal price = getValueFor(PayloadKey.PRICE, payloadMap).map(BigDecimal::new).orElse(BigDecimal.ZERO);
+        BigDecimal priceVal = getValueFor(PayloadKey.PRICE, payloadMap)
+            .filter(StringUtils::isNumeric)
+            .map(BigDecimal::new)
+            .orElse(BigDecimal.ZERO);
+        BigDecimal priceClose = getValueFor(PayloadKey.PRICE_CLOSE, payloadMap)
+            .filter(StringUtils::isNumeric)
+            .map(BigDecimal::new)
+            .orElse(BigDecimal.ZERO);
+        BigDecimal price = priceVal.compareTo(BigDecimal.ZERO) == 0 ? priceClose : priceVal;
 
         String indicatorRaw = StringUtils.isNotBlank(payloadMap.get("indicator")) ? payloadMap.get("indicator") : "UNKNOWN";
         Indicator indicator = Indicator.fromString(indicatorRaw);

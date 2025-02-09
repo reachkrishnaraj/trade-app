@@ -5,6 +5,10 @@ import org.apache.commons.lang3.StringUtils;
 
 public enum PayloadKey {
     INDICATOR_NAME("indicator"),
+    PRICE_LOW("priceLow"),
+    PRICE_HIGH("priceHigh"),
+    PRICE_CLOSE("priceClose"),
+    PRICE_OPEN("priceOpen"),
     PRICE("price"),
     TIME("time"),
     STRATEGY("strategyName"),
