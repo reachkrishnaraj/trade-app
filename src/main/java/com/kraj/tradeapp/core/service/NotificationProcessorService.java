@@ -68,7 +68,7 @@ public class NotificationProcessorService implements ApplicationListener<Applica
             processTradingViewNotificationPriv(payload);
             mainEventQueue.poll();
         } catch (Exception e) {
-            telegramBotConfig.sendMessageToAllChatIds("Error processing event:%s, added to failure queue".formatted(payload));
+            telegramBotConfig.sendMessageToDefaultBotAllChatIds("Error processing event:%s, added to failure queue".formatted(payload));
             failedEventsQueue.offer(payload);
             mainEventQueue.poll();
             throw new RuntimeException("Error processing event:%s, added to failure queue".formatted(payload), e);
@@ -144,7 +144,7 @@ public class NotificationProcessorService implements ApplicationListener<Applica
             .orElseThrow(() -> new RuntimeException("No matching rule found"));
 
         if (msgRule.isAlertable()) {
-            telegramBotConfig.sendMessageToAllChatIds("Alertable event found: %s".formatted(rawAlertMsg));
+            telegramBotConfig.sendMessageToDefaultBotAllChatIds("Alertable event found: %s".formatted(rawAlertMsg));
         }
 
         boolean isSkipScoring =

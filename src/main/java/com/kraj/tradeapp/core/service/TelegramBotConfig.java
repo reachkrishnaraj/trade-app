@@ -7,13 +7,14 @@ import com.pengrad.telegrambot.request.SendMessage;
 import java.util.List;
 import lombok.Getter;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.context.annotation.Configuration;
 import org.springframework.stereotype.Component;
 
 @Component
 public class TelegramBotConfig implements TelegramBotGlobalPropertiesConfiguration {
 
     @Getter
-    @Value("${telegramBot.token}")
+    @Value("${bot.token}")
     private String token;
 
     public static TelegramBot telegramBot;
@@ -27,7 +28,7 @@ public class TelegramBotConfig implements TelegramBotGlobalPropertiesConfigurati
         });
     }
 
-    public void sendMessageToAllChatIds(String message) {
+    public void sendMessageToDefaultBotAllChatIds(String message) {
         chatIds.forEach(chatId -> {
             telegramBot.execute(new SendMessage(chatId, message));
         });

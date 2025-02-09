@@ -26,8 +26,6 @@ public class TwilioService {
             URI.create("http://demo.twilio.com/docs/voice.xml")
             //URI.create(tradeAppConfigOptions.getTwilioVoiceXmlUrl() + "/This_is_test_message") // TwiML URL
         ).create();
-
-        System.out.println(call.getSid());
     }
 
     public void sendTextMessage(String msgStr, String phoneNumber) {

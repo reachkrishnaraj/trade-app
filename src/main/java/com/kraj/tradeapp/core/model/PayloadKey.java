@@ -14,6 +14,8 @@ public enum PayloadKey {
     INTERVAL("interval"),
     CANDLE_TYPE("candleType"),
     IS_STRATEGY("isStrategy"),
+    TEXT_NUMBER("textNums"),
+    VOICE_NUMBER("voiceNums"),
     UNKNOWN("unknown");
 
     private final String keyName;

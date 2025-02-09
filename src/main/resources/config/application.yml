@@ -247,6 +247,7 @@ trade:
   app:
     options:
       twilioPhoneNumber: +18333707346
-      pathFlowSid:
       notificationPhoneNumbers: +14083486083
-      twilioVoiceXmlUrl: https://9cfc-115-97-2-160.ngrok-free.app/api/v1/twiml/voice
+
+telegramBot:
+  username: kraj_trades_bot
