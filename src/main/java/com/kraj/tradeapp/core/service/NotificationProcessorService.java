@@ -134,12 +134,12 @@ public class NotificationProcessorService implements ApplicationListener<Applica
         //stale event, set to now
         //eventDateTime = CommonUtil.getNYLocalDateTimeNow();
 
-        if (indicator == Indicator.QUANTVUE_QKRONOS) {
-            long epochSecondsWithDelay = eventDateTime.toEpochSecond(ZoneId.of("America/New_York").getRules().getOffset(Instant.now())) + 5;
-            long epochSecond = eventDateTime.toEpochSecond(ZoneId.of("America/New_York").getRules().getOffset(Instant.now()));
-            qKronosBuckets.computeIfAbsent(epochSecond, k -> new ArrayList<>()).add(payload);
-            return;
-        }
+        //        if (indicator == Indicator.QUANTVUE_QKRONOS) {
+        //            long epochSecondsWithDelay = eventDateTime.toEpochSecond(ZoneId.of("America/New_York").getRules().getOffset(Instant.now())) + 5;
+        //            long epochSecond = eventDateTime.toEpochSecond(ZoneId.of("America/New_York").getRules().getOffset(Instant.now()));
+        //            qKronosBuckets.computeIfAbsent(epochSecond, k -> new ArrayList<>()).add(payload);
+        //            return;
+        //        }
 
         @Nullable
         String strategyStr = getValueFor(PayloadKey.STRATEGY, payloadMap).filter(StringUtils::isNotBlank).orElse(null);
@@ -147,39 +147,43 @@ public class NotificationProcessorService implements ApplicationListener<Applica
 
         StrategyProcessStatus strategyProcessStatus = strategy == Strategy.NONE ? StrategyProcessStatus.NA : StrategyProcessStatus.PENDING;
 
-        IndicatorMsgRule msgRule = scoringService
-            .findMatchingIndicatorEventRule(indicator.name(), rawAlertMsg)
-            .orElseThrow(() -> new RuntimeException("No matching rule found"));
+        Optional<IndicatorMsgRule> mayBeMsgRule = scoringService.findMatchingIndicatorEventRule(indicator.name(), rawAlertMsg);
 
-        if (msgRule.isAlertable()) {
+        if (mayBeMsgRule.isPresent() && mayBeMsgRule.get().isAlertable()) {
             telegramBotConfig.sendMessageToDefaultBotAllChatIds("Alertable event found: %s".formatted(rawAlertMsg));
         }
 
         boolean isSkipScoring =
-            StringUtils.isNotBlank(msgRule.getIsSkipScoring()) && StringUtils.equalsIgnoreCase(msgRule.getIsSkipScoring(), "true");
+            mayBeMsgRule.isEmpty() ||
+            (StringUtils.isNotBlank(mayBeMsgRule.get().getIsSkipScoring()) &&
+                StringUtils.equalsIgnoreCase(mayBeMsgRule.get().getIsSkipScoring(), "true"));
 
-        BigDecimal scorePercent = isSkipScoring || msgRule.getScore() == null
+        @Nullable
+        BigDecimal scoreRangeMin = mayBeMsgRule.map(IndicatorMsgRule::getScoreRangeMin).orElse(null);
+        @Nullable
+        BigDecimal scoreRangeMax = mayBeMsgRule.map(IndicatorMsgRule::getScoreRangeMax).orElse(null);
+        @Nullable
+        BigDecimal score = mayBeMsgRule.map(IndicatorMsgRule::getScore).orElse(null);
+
+        BigDecimal scorePercent = (isSkipScoring || scoreRangeMin == null || scoreRangeMax == null || score == null)
             ? BigDecimal.ZERO
-            : ScoringService.calculateBipolarPercentage(msgRule.getScoreRangeMin(), msgRule.getScoreRangeMax(), msgRule.getScore());
-        Direction scoreDirection = isSkipScoring || msgRule.getScore() == null
-            ? Direction.UNKNOWN
-            : ScoringService.categorizeScore(scorePercent);
+            : ScoringService.calculateBipolarPercentage(scoreRangeMin, scoreRangeMax, score);
+
+        Direction scoreDirection = isSkipScoring || score == null ? Direction.UNKNOWN : ScoringService.categorizeScore(scorePercent);
 
         NotificationEvent notificationEvent = NotificationEvent.builder()
             .price(price)
             .symbol(symbol)
-            .minScore(msgRule.getScoreRangeMin())
-            .maxScore(msgRule.getScoreRangeMax())
-            .score(msgRule.getScore() == null ? BigDecimal.ZERO : msgRule.getScore())
+            .minScore(scoreRangeMin)
+            .maxScore(scoreRangeMax)
+            .score(score == null ? BigDecimal.ZERO : score)
             .scorePercent(scorePercent)
             .direction(scoreDirection.name())
             .created(CommonUtil.getNYLocalDateTimeNow())
             .lastUpdated(CommonUtil.getNYLocalDateTimeNow())
-            .indicatorSubCategory(msgRule.getSubCategory())
+            .indicatorSubCategory(mayBeMsgRule.map(IndicatorMsgRule::getSubCategory).orElse("UNKNOWN"))
             .indicatorSubCategoryDisplayName(
-                StringUtils.isNotBlank(msgRule.getIndicatorSubCategoryDisplayName())
-                    ? msgRule.getIndicatorSubCategoryDisplayName()
-                    : "UNKNOWN"
+                mayBeMsgRule.map(IndicatorMsgRule::getIndicatorSubCategoryDisplayName).filter(StringUtils::isNotBlank).orElse("UNKNOWN")
             )
             .rawAlertMsg(rawAlertMsg)
             .rawPayload(payload)
@@ -191,9 +195,11 @@ public class NotificationProcessorService implements ApplicationListener<Applica
             .source(source.name())
             .datetime(eventDateTime)
             .indicator(indicator.name())
-            .indicatorDisplayName(StringUtils.isNotBlank(msgRule.getIndicatorDisplayName()) ? msgRule.getIndicatorDisplayName() : "UNKNOWN")
+            .indicatorDisplayName(
+                mayBeMsgRule.map(IndicatorMsgRule::getIndicatorDisplayName).filter(StringUtils::isNotBlank).orElse("UNKNOWN")
+            )
             .tradeSignalProcessStatus(isSkipScoring ? ProcessingStatus.NOT_APPLICABLE.name() : ProcessingStatus.PENDING.name())
-            .isAlertable(msgRule.isAlertable())
+            .isAlertable(mayBeMsgRule.map(IndicatorMsgRule::isAlertable).orElse(false))
             .build();
         notificationEventRepository.save(notificationEvent);
         tradeSignalSnapshotProcessor.notifyEventForProcessing();
