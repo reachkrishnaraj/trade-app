@@ -85,11 +85,11 @@ public class NotificationProcessorService implements ApplicationListener<Applica
         }
 
         BigDecimal priceVal = getValueFor(PayloadKey.PRICE, payloadMap)
-            .filter(StringUtils::isNumeric)
+            .filter(CommonUtil::isNumeric)
             .map(BigDecimal::new)
             .orElse(BigDecimal.ZERO);
         BigDecimal priceClose = getValueFor(PayloadKey.PRICE_CLOSE, payloadMap)
-            .filter(StringUtils::isNumeric)
+            .filter(CommonUtil::isNumeric)
             .map(BigDecimal::new)
             .orElse(BigDecimal.ZERO);
         BigDecimal price = priceVal.compareTo(BigDecimal.ZERO) == 0 ? priceClose : priceVal;
@@ -117,7 +117,7 @@ public class NotificationProcessorService implements ApplicationListener<Applica
         String eventDateTimeStr = getValueFor(PayloadKey.TIME, payloadMap).orElse(ZonedDateTime.now().toString());
 
         ZonedDateTime eventDateTime = null;
-        if (StringUtils.isNumeric(eventDateTimeStr)) {
+        if (CommonUtil.isNumeric(eventDateTimeStr)) {
             ChronoUnit chronoUnit = determineTimeUnit(Long.parseLong(eventDateTimeStr));
             eventDateTime = chronoUnit == ChronoUnit.MILLIS
                 ? Instant.ofEpochMilli(Long.parseLong(eventDateTimeStr)).atZone(ZoneId.of("UTC"))

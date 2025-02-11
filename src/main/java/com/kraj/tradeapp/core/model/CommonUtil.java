@@ -1,8 +1,11 @@
 package com.kraj.tradeapp.core.model;
 
+import jakarta.annotation.Nullable;
+import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
+import org.apache.commons.lang3.StringUtils;
 
 public class CommonUtil {
 
@@ -14,5 +17,17 @@ public class CommonUtil {
 
     public static LocalDateTime getUTCNow() {
         return ZonedDateTime.now(ZoneId.of("UTC")).toLocalDateTime();
+    }
+
+    public static boolean isNumeric(@Nullable String str) {
+        if (StringUtils.isBlank(str) || str.isEmpty()) {
+            return false;
+        }
+        try {
+            new BigDecimal(str);
+            return true;
+        } catch (Exception e) {
+            return false;
+        }
     }
 }
