@@ -2,6 +2,7 @@ package com.kraj.tradeapp.core.repository;
 
 import com.kraj.tradeapp.core.model.persistance.NotificationEvent;
 import java.time.LocalDateTime;
+import java.time.ZonedDateTime;
 import java.util.List;
 import java.util.Optional;
 import org.springframework.data.domain.Pageable;
@@ -16,8 +17,8 @@ public interface NotificationEventRepository extends JpaRepository<NotificationE
     @Query("SELECT ne FROM NotificationEvent ne WHERE ne.symbol = :symbol AND ne.datetime BETWEEN :start AND :end")
     List<NotificationEvent> getBetweenDatetime(
         @Param("symbol") String symbol,
-        @Param("start") LocalDateTime start,
-        @Param("end") LocalDateTime end
+        @Param("start") ZonedDateTime start,
+        @Param("end") ZonedDateTime end
     );
 
     @Query(
@@ -63,7 +64,7 @@ public interface NotificationEventRepository extends JpaRepository<NotificationE
         @Param("interval") String interval
     );
 
-    List<NotificationEvent> findByDatetimeBetween(LocalDateTime start, LocalDateTime end);
+    List<NotificationEvent> findByDatetimeBetween(ZonedDateTime start, ZonedDateTime end);
 
     @Query("SELECT ne FROM NotificationEvent ne WHERE ne.indicator = :indicator AND ne.interval = :interval " + "ORDER BY ne.datetime DESC")
     List<NotificationEvent> findTopByIndicatorAndIntervalOrderByDatetimeDesc(
@@ -73,5 +74,5 @@ public interface NotificationEventRepository extends JpaRepository<NotificationE
     );
 
     @Query("SELECT ne FROM NotificationEvent ne WHERE ne.tradeSignalProcessStatus = 'PENDING' AND ne.created BETWEEN :start AND :end")
-    List<NotificationEvent> findEventsPendingTradeSignalProcessing(@Param("start") LocalDateTime start, @Param("end") LocalDateTime end);
+    List<NotificationEvent> findEventsPendingTradeSignalProcessing(@Param("start") ZonedDateTime start, @Param("end") ZonedDateTime end);
 }

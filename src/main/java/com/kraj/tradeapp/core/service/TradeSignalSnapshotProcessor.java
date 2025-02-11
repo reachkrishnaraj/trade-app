@@ -45,7 +45,7 @@ public class TradeSignalSnapshotProcessor {
         eventProcessCueQueue.add(true);
     }
 
-    @Scheduled(fixedRate = 30000) // 10 seconds
+    //@Scheduled(fixedRate = 30000) // 10 seconds
     public void processEventJob() {
         try {
             if (!EVENT_PROCESSOR_JOB_LOCK.tryLock()) {
@@ -57,8 +57,8 @@ public class TradeSignalSnapshotProcessor {
             //            }
 
             List<NotificationEvent> notificationEvents = notificationEventRepository.findEventsPendingTradeSignalProcessing(
-                CommonUtil.getNYLocalDateTimeNow().minusHours(4),
-                CommonUtil.getNYLocalDateTimeNow()
+                ZonedDateTime.now().minusHours(4),
+                ZonedDateTime.now()
             );
             if (notificationEvents.isEmpty()) {
                 EVENT_PROCESSOR_JOB_LOCK.unlock();
@@ -100,7 +100,7 @@ public class TradeSignalSnapshotProcessor {
             snapshot = TradeSignalScoreSnapshot.builder()
                 .id(UUID.randomUUID().toString())
                 .symbol(event.getSymbol())
-                .dateTime(CommonUtil.getNYLocalDateTimeNow())
+                .dateTime(ZonedDateTime.now())
                 .candleIntervalGroupedRecords(new ArrayList<>())
                 .minScore(event.getMinScore())
                 .maxScore(event.getMaxScore())
@@ -249,7 +249,7 @@ public class TradeSignalSnapshotProcessor {
         TradeSignalScoreSnapshotLatest tradeSignalScoreSnapshotLatest = TradeSignalScoreSnapshotLatest.builder()
             .latestRecordId(snapshot.getId())
             .symbol(snapshot.getSymbol())
-            .lastUpdated(CommonUtil.getNYLocalDateTimeNow())
+            .lastUpdated(ZonedDateTime.now())
             .build();
         tradeSignalScoreSnapshotLatestRepository.save(tradeSignalScoreSnapshotLatest);
     }
@@ -262,7 +262,7 @@ public class TradeSignalSnapshotProcessor {
             .interval(event.getInterval())
             .name(event.getIndicator())
             .displayName(event.getIndicatorDisplayName())
-            .dateTime(CommonUtil.getNYLocalDateTimeNow())
+            .dateTime(ZonedDateTime.now())
             .minScore(new BigDecimal(-1))
             .maxScore(new BigDecimal(1))
             .score(event.getScore())

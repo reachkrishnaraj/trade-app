@@ -4,6 +4,7 @@ import com.kraj.tradeapp.core.model.TradeAction;
 import jakarta.persistence.*;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
+import java.time.ZonedDateTime;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -24,7 +25,7 @@ public class TradeSignal {
     private Long id;
 
     @Column(nullable = false)
-    private LocalDateTime datetime;
+    private ZonedDateTime datetime;
 
     @Column(nullable = false, length = 50)
     private String symbol;
@@ -42,10 +43,10 @@ public class TradeSignal {
     private String source;
 
     @Column(name = "created_ts", nullable = false)
-    private LocalDateTime createdTs;
+    private ZonedDateTime createdTs;
 
     @Column(name = "lastupdated_ts", nullable = false)
-    private LocalDateTime lastUpdated;
+    private ZonedDateTime lastUpdated;
 
     @Column(nullable = false, name = "trade_action")
     private String tradeAction;
@@ -54,5 +55,5 @@ public class TradeSignal {
     private String status;
 
     @Column(name = "processed_at_ts", nullable = false)
-    private LocalDateTime processedAt;
+    private ZonedDateTime processedAt;
 }

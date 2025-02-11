@@ -7,6 +7,7 @@ import jakarta.persistence.EntityNotFoundException;
 import jakarta.transaction.Transactional;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
+import java.time.ZonedDateTime;
 import java.util.List;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -39,13 +40,13 @@ public class ComputedTradeSignalService {
 
     public TradeSignal createSignal(TradeSignalRequest request) {
         TradeSignal signal = new TradeSignal();
-        signal.setDatetime(LocalDateTime.now());
+        signal.setDatetime(ZonedDateTime.now());
         signal.setSymbol(request.getSymbol());
         signal.setConfidence(request.getConfidence());
         signal.setReason(request.getReason());
         signal.setSource(request.getSource());
-        signal.setCreatedTs(LocalDateTime.now());
-        signal.setLastUpdated(LocalDateTime.now());
+        signal.setCreatedTs(ZonedDateTime.now());
+        signal.setLastUpdated(ZonedDateTime.now());
         return tradeSignalRepository.save(signal);
     }
 
@@ -55,7 +56,7 @@ public class ComputedTradeSignalService {
         existingSignal.setConfidence(request.getConfidence());
         existingSignal.setReason(request.getReason());
         existingSignal.setSource(request.getSource());
-        existingSignal.setLastUpdated(LocalDateTime.now());
+        existingSignal.setLastUpdated(ZonedDateTime.now());
         return tradeSignalRepository.save(existingSignal);
     }
 

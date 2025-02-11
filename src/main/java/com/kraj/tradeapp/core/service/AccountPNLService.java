@@ -5,6 +5,7 @@ import com.kraj.tradeapp.core.repository.AccountPNLRepository;
 import jakarta.transaction.Transactional;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.ZonedDateTime;
 import java.util.List;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -35,7 +36,7 @@ public class AccountPNLService {
     }
 
     public AccountPNL createPNL(AccountPNL accountPNL) {
-        LocalDateTime currentTimestamp = LocalDateTime.now().withNano(0);
+        ZonedDateTime currentTimestamp = ZonedDateTime.now();
 
         if (accountPNL.getCreatedTs() == null) {
             accountPNL.setCreatedTs(currentTimestamp);
@@ -51,7 +52,7 @@ public class AccountPNLService {
             .findById(accountId)
             .orElseThrow(() -> new IllegalArgumentException("AccountPNL not found for accountId: " + accountId));
 
-        LocalDateTime currentTimestamp = LocalDateTime.now().withNano(0);
+        ZonedDateTime currentTimestamp = ZonedDateTime.now();
         accountPNL.setAccountId(accountId);
         accountPNL.setCreatedTs(existingAccountPNL.getCreatedTs());
         accountPNL.setLastUpdatedTs(currentTimestamp);

@@ -4,6 +4,7 @@ import com.kraj.tradeapp.core.model.CandleIntervalGroupedRecord;
 import com.kraj.tradeapp.core.model.IndicatorScoreRecord;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
+import java.time.ZonedDateTime;
 import java.util.List;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -27,7 +28,7 @@ public class TradeSignalScoreSnapshot {
     private String symbol;
 
     @Indexed(expireAfterSeconds = 2 * 24 * 60 * 60) // 2 days
-    private LocalDateTime dateTime;
+    private ZonedDateTime dateTime;
 
     private List<CandleIntervalGroupedRecord> candleIntervalGroupedRecords;
 

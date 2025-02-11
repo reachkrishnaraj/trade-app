@@ -3,6 +3,7 @@ package com.kraj.tradeapp.core.model.persistance;
 import jakarta.persistence.*;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
+import java.time.ZonedDateTime;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -38,7 +39,7 @@ public class Trade {
     private String signalId;
 
     @Column(nullable = false)
-    private LocalDateTime datetime;
+    private ZonedDateTime datetime;
 
     @Column(name = "account_id", nullable = false, length = 100)
     private String accountId;
@@ -62,8 +63,8 @@ public class Trade {
     private String tradeType;
 
     @Column(name = "created_ts", nullable = false)
-    private LocalDateTime createdTs;
+    private ZonedDateTime createdTs;
 
     @Column(name = "lastupdated_ts", nullable = false)
-    private LocalDateTime lastUpdatedTs;
+    private ZonedDateTime lastUpdatedTs;
 }

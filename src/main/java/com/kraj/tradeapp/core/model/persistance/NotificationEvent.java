@@ -2,7 +2,7 @@ package com.kraj.tradeapp.core.model.persistance;
 
 import jakarta.persistence.*;
 import java.math.BigDecimal;
-import java.time.LocalDateTime;
+import java.time.ZonedDateTime;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -31,7 +31,7 @@ public class NotificationEvent {
     private Long id;
 
     @Column(name = "event_datetime")
-    private LocalDateTime datetime;
+    private ZonedDateTime datetime;
 
     @Column(nullable = false)
     private String symbol;
@@ -70,10 +70,10 @@ public class NotificationEvent {
     private String candleType;
 
     @Column(name = "created_ts", nullable = false)
-    private LocalDateTime created;
+    private ZonedDateTime created;
 
     @Column(name = "lastupdated_ts", nullable = false)
-    private LocalDateTime lastUpdated;
+    private ZonedDateTime lastUpdated;
 
     @Column(nullable = false, name = "trade_signal_process_status")
     private String tradeSignalProcessStatus;
@@ -100,7 +100,7 @@ public class NotificationEvent {
     private String strategyProcessStatus;
 
     @Column(name = "strategy_processed_at")
-    private LocalDateTime strategyProcessedAt;
+    private ZonedDateTime strategyProcessedAt;
 
     @Column(name = "strategy_process_msg")
     private String strategyProcessMsg;

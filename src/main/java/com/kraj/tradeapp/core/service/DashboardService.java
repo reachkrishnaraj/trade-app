@@ -6,6 +6,7 @@ import com.kraj.tradeapp.core.model.dashboard.ui.dto.TradingSignalUI;
 import com.kraj.tradeapp.core.model.dto.NotificationEventDto;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
+import java.time.ZonedDateTime;
 import java.util.Arrays;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
@@ -111,8 +112,10 @@ public class DashboardService {
         for (String symbol : SUPPORTED_SYMBOLS) {
             List<NotificationEventDto> dtos = notificationProcessorService.getNotificationEvents(
                 symbol,
-                LocalDateTime.now().minusHours(24),
-                LocalDateTime.now()
+                ZonedDateTime.now().minusHours(24),
+                ZonedDateTime.now()
+                //                LocalDateTime.now().minusHours(24),
+                //                LocalDateTime.now()
             );
             messagingTemplate.convertAndSend("/topic/v2/events", dtos);
         }

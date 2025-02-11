@@ -9,6 +9,7 @@ import com.kraj.tradeapp.core.model.persistance.mongodb.TradeSignalScoreSnapshot
 import com.kraj.tradeapp.core.service.DashboardService;
 import com.kraj.tradeapp.core.service.NotificationProcessorService;
 import com.kraj.tradeapp.core.service.TradeSignalSnapshotProcessor;
+import java.time.ZonedDateTime;
 import java.util.List;
 import java.util.Optional;
 import lombok.RequiredArgsConstructor;
@@ -33,8 +34,10 @@ public class DashboardController {
     public ResponseEntity<List<NotificationEventDto>> getNotificationEvents(@PathVariable String symbol) {
         List<NotificationEventDto> events = notificationProcessorService.getNotificationEvents(
             symbol,
-            CommonUtil.getNYLocalDateTimeNow().minusHours(24),
-            CommonUtil.getNYLocalDateTimeNow()
+            ZonedDateTime.now().minusHours(24),
+            ZonedDateTime.now()
+            //            CommonUtil.getNYLocalDateTimeNow().minusHours(24),
+            //            CommonUtil.getNYLocalDateTimeNow()
         );
         return ResponseEntity.ok(events);
     }

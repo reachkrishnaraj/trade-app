@@ -116,20 +116,26 @@ public class NotificationProcessorService implements ApplicationListener<Applica
         @Nullable
         String eventDateTimeStr = getValueFor(PayloadKey.TIME, payloadMap).orElse(ZonedDateTime.now().toString());
 
-        LocalDateTime eventDateTime = null;
+        ZonedDateTime eventDateTime = null;
         if (StringUtils.isNumeric(eventDateTimeStr)) {
             ChronoUnit chronoUnit = determineTimeUnit(Long.parseLong(eventDateTimeStr));
             eventDateTime = chronoUnit == ChronoUnit.MILLIS
-                ? LocalDateTime.ofInstant(Instant.ofEpochMilli(Long.parseLong(eventDateTimeStr)), ZoneId.of("America/New_York"))
+                ? Instant.ofEpochMilli(Long.parseLong(eventDateTimeStr)).atZone(ZoneId.of("UTC"))
                 : chronoUnit == ChronoUnit.SECONDS
-                    ? LocalDateTime.ofEpochSecond(
-                        Long.parseLong(eventDateTimeStr),
-                        0,
-                        ZoneId.of("America/New_York").getRules().getOffset(Instant.now())
-                    )
-                    : LocalDateTime.now();
+                    ? Instant.ofEpochSecond(Long.parseLong(eventDateTimeStr)).atZone(ZoneId.of("UTC"))
+                    : ZonedDateTime.now();
+            //            eventDateTime = chronoUnit == ChronoUnit.MILLIS
+            //                ? LocalDateTime.ofInstant(Instant.ofEpochMilli(Long.parseLong(eventDateTimeStr)), ZoneId.of("America/New_York"))
+            //                : chronoUnit == ChronoUnit.SECONDS
+            //                    ? LocalDateTime.ofEpochSecond(
+            //                        Long.parseLong(eventDateTimeStr),
+            //                        0,
+            //                        ZoneId.of("America/New_York").getRules().getOffset(Instant.now())
+            //                    )
+            //                    : LocalDateTime.now();
         } else {
-            eventDateTime = ZonedDateTime.parse(eventDateTimeStr).withZoneSameInstant(ZoneId.of("America/New_York")).toLocalDateTime();
+            //eventDateTime = ZonedDateTime.parse(eventDateTimeStr).withZoneSameInstant(ZoneId.of("America/New_York")).toLocalDateTime();
+            eventDateTime = ZonedDateTime.now();
         }
         //stale event, set to now
         //eventDateTime = CommonUtil.getNYLocalDateTimeNow();
@@ -179,8 +185,8 @@ public class NotificationProcessorService implements ApplicationListener<Applica
             .score(score == null ? BigDecimal.ZERO : score)
             .scorePercent(scorePercent)
             .direction(scoreDirection.name())
-            .created(CommonUtil.getNYLocalDateTimeNow())
-            .lastUpdated(CommonUtil.getNYLocalDateTimeNow())
+            .created(ZonedDateTime.now())
+            .lastUpdated(ZonedDateTime.now())
             .indicatorSubCategory(mayBeMsgRule.map(IndicatorMsgRule::getSubCategory).orElse("UNKNOWN"))
             .indicatorSubCategoryDisplayName(
                 mayBeMsgRule.map(IndicatorMsgRule::getIndicatorSubCategoryDisplayName).filter(StringUtils::isNotBlank).orElse("UNKNOWN")
@@ -302,14 +308,14 @@ public class NotificationProcessorService implements ApplicationListener<Applica
         return payloadMap;
     }
 
-    public List<NotificationEventDto> getNotificationEvents(String symbol, LocalDateTime from, LocalDateTime to) {
+    public List<NotificationEventDto> getNotificationEvents(String symbol, ZonedDateTime from, ZonedDateTime to) {
         return notificationEventRepository.getBetweenDatetime(symbol, from, to).stream().map(this::getDto).toList();
     }
 
     public List<NotificationEventDto> getNotificationEventsForInterval(
         String symbol,
-        LocalDateTime from,
-        LocalDateTime to,
+        ZonedDateTime from,
+        ZonedDateTime to,
         EventInterval interval
     ) {
         return notificationEventRepository
@@ -331,7 +337,8 @@ public class NotificationProcessorService implements ApplicationListener<Applica
     }
 
     private NotificationEventDto getDto(NotificationEvent event) {
-        int minsSinceEventTime = (int) event.getDatetime().until(CommonUtil.getNYLocalDateTimeNow(), java.time.temporal.ChronoUnit.MINUTES);
+        //int minsSinceEventTime = (int) event.getDatetime().until(CommonUtil.getNYLocalDateTimeNow(), java.time.temporal.ChronoUnit.MINUTES);
+        int minsSinceEventTime = (int) event.getDatetime().until(ZonedDateTime.now(), java.time.temporal.ChronoUnit.MINUTES);
         int hoursSinceEventTime = minsSinceEventTime / 60;
         String sinceCreatedStr = hoursSinceEventTime > 0 ? hoursSinceEventTime + "hr(s) ago" : minsSinceEventTime + "min(s) ago";
         return NotificationEventDto.builder()

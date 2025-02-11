@@ -2,6 +2,7 @@ package com.kraj.tradeapp.core.model;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
+import java.time.ZonedDateTime;
 import java.util.List;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -27,7 +28,7 @@ public class IndicatorScoreRecord {
 
     private String displayName;
 
-    private LocalDateTime dateTime;
+    private ZonedDateTime dateTime;
 
     private BigDecimal minScore;
 

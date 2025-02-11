@@ -6,6 +6,7 @@ import com.kraj.tradeapp.core.model.persistance.NotificationEvent;
 import com.kraj.tradeapp.core.model.persistance.TradeSignal;
 import com.kraj.tradeapp.core.service.NotificationProcessorService;
 import java.time.LocalDateTime;
+import java.time.ZonedDateTime;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -31,8 +32,8 @@ public class NotificationEventController {
     public ResponseEntity<List<NotificationEventDto>> getNotificationEvents(@PathVariable String symbol) {
         List<NotificationEventDto> events = notificationProcessorService.getNotificationEvents(
             symbol,
-            CommonUtil.getNYLocalDateTimeNow().minusHours(24),
-            CommonUtil.getNYLocalDateTimeNow()
+            ZonedDateTime.now().minusHours(24),
+            ZonedDateTime.now()
         );
         return ResponseEntity.ok(events);
     }

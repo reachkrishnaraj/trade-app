@@ -4,6 +4,7 @@ import jakarta.persistence.*;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.ZonedDateTime;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -38,8 +39,8 @@ public class AccountPNL {
     private LocalDate date;
 
     @Column(name = "created_ts", nullable = false)
-    private LocalDateTime createdTs;
+    private ZonedDateTime createdTs;
 
     @Column(name = "lastupdated_ts", nullable = false)
-    private LocalDateTime lastUpdatedTs;
+    private ZonedDateTime lastUpdatedTs;
 }
