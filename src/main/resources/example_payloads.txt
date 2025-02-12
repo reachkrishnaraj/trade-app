@@ -86,7 +86,13 @@ PAYLOAD=CUSTOM|indicator=TFO_INVERSE_FVG|price={{close}}|time={{time}}|strategyN
 PAYLOAD=CUSTOM|indicator=TFO_INVERSE_FVG|price={{close}}|time={{time}}|strategyName=none|symbol=NQ|source=TV|interval=15m|candleType=CLASSIC|isStrategy=false|msg=Inverse FVG Rejected
 PAYLOAD=CUSTOM|indicator=TFO_INVERSE_FVG|price={{close}}|time={{time}}|strategyName=none|symbol=NQ|source=TV|interval=15m|candleType=CLASSIC|isStrategy=false|msg=Regular plus Inverse FVG Rejected
 
-TFO iFVG Bear:
-PAYLOAD=CUSTOM|indicator=TFO_INVERSE_FVG|price={{close}}|time={{time}}|strategyName=none|symbol=NQ|source=TV|interval=15m|candleType=CLASSIC|isStrategy=false|msg=Bearish IFvg Signal
+TFO iFVG:
+PAYLOAD=CUSTOM|indicator=TFO_INVERSE_FVG|price={{close}}|time={{time}}|strategyName=none|symbol=NQ|source=TV|interval=15m|candleType=CLASSIC|isStrategy=false|msg=Regular FVG Rejected
+PAYLOAD=CUSTOM|indicator=TFO_INVERSE_FVG|price={{close}}|time={{time}}|strategyName=none|symbol=NQ|source=TV|interval=15m|candleType=CLASSIC|isStrategy=false|msg=IFVG Rejected
+PAYLOAD=CUSTOM|indicator=TFO_INVERSE_FVG|price={{close}}|time={{time}}|strategyName=none|symbol=NQ|source=TV|interval=15m|candleType=CLASSIC|isStrategy=false|msg=Regular plus iFvg Rejected
+
+V Pattern Misu:
+PAYLOAD=CUSTOM|indicator=V_PATTERN_MISU|price={{close}}|time={{time}}|strategyName=none|symbol=NQ|source=TV|interval=2m|candleType=CLASSIC|isStrategy=false|msg=V Pattern detected
+PAYLOAD=CUSTOM|indicator=V_PATTERN_MISU|price={{close}}|time={{time}}|strategyName=none|symbol=NQ|source=TV|interval=2m|candleType=CLASSIC|isStrategy=false|msg=Inverse V Pattern detected
 
 

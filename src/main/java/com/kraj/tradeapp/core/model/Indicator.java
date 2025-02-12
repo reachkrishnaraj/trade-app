@@ -54,10 +54,11 @@ public enum Indicator {
     QUANTVUE_QELITE(EventImportance.CRITICAL, true),
     QUANTVUE_QSCALPER(EventImportance.CRITICAL, true),
 
-    LUXALGO_OSCILLATOR_MATRIX(EventImportance.CRITICAL, true),
-    LUXALGO_PAC(EventImportance.CRITICAL, true),
-    LUXALGO_SO(EventImportance.CRITICAL, true),
-    LUXALGO_IFVG(EventImportance.CRITICAL, true);
+    LUXALGO_OSCILLATOR_MATRIX(EventImportance.CRITICAL, false),
+    LUXALGO_PAC(EventImportance.CRITICAL, false),
+    LUXALGO_SO(EventImportance.CRITICAL, false),
+    LUXALGO_IFVG(EventImportance.CRITICAL, false),
+    TFO_IFVG(EventImportance.CRITICAL, false);
 
     private final EventImportance defaultImportance;
 

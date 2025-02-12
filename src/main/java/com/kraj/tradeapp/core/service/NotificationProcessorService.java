@@ -12,6 +12,7 @@ import java.time.Instant;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
+import java.time.format.DateTimeFormatter;
 import java.time.temporal.ChronoUnit;
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
@@ -343,7 +344,7 @@ public class NotificationProcessorService implements ApplicationListener<Applica
         String sinceCreatedStr = hoursSinceEventTime > 0 ? hoursSinceEventTime + "hr(s) ago" : minsSinceEventTime + "min(s) ago";
         return NotificationEventDto.builder()
             .id(event.getId())
-            .datetime(event.getDatetime().toString())
+            .datetime(event.getDatetime().format(DateTimeFormatter.ISO_OFFSET_DATE_TIME))
             .symbol(event.getSymbol())
             .source(event.getSource())
             .indicator(event.getIndicator())
@@ -356,8 +357,8 @@ public class NotificationProcessorService implements ApplicationListener<Applica
             .price(event.getPrice())
             .interval(event.getInterval())
             .candleType(event.getCandleType())
-            .created(event.getCreated().toString())
-            .lastUpdated(event.getLastUpdated().toString())
+            .created(event.getCreated().format(DateTimeFormatter.ISO_OFFSET_DATE_TIME))
+            .lastUpdated(event.getLastUpdated().format(DateTimeFormatter.ISO_OFFSET_DATE_TIME))
             .score(event.getScore())
             .isStrategy(event.isStrategy())
             .strategyName(event.getStrategyName())

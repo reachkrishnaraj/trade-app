@@ -89,7 +89,7 @@ const IndicatorMainTableV2: React.FC<IndicatorMainTableProps> = ({ symbol, wsUrl
     const indicators = new Set<string>();
     const subCategories = new Set<string>();
 
-    data.candleIntervalGroupedRecords.forEach(record => {
+    data?.candleIntervalGroupedRecords?.forEach(record => {
       candleTypes.add(record.candleType);
       intervals.add(record.interval);
 
@@ -151,19 +151,21 @@ const IndicatorMainTableV2: React.FC<IndicatorMainTableProps> = ({ symbol, wsUrl
   };
 
   const filterCandleIntervalRecords = (records: CandleIntervalGroupedRecord[]): CandleIntervalGroupedRecord[] => {
-    return records.filter(
-      record =>
-        (selectedCandleType === 'all' || record.candleType === selectedCandleType) &&
-        (selectedInterval === 'all' || record.interval === selectedInterval),
+    return (
+      records?.filter(
+        record =>
+          (selectedCandleType === 'all' || record.candleType === selectedCandleType) &&
+          (selectedInterval === 'all' || record.interval === selectedInterval),
+      ) || []
     );
   };
 
   const filterIndicators = (records: IndicatorScoreRecord[]): IndicatorScoreRecord[] => {
-    return records.filter(indicator => selectedIndicator === 'all' || indicator.name === selectedIndicator);
+    return records?.filter(indicator => selectedIndicator === 'all' || indicator.name === selectedIndicator) || [];
   };
 
   const filterSubCategories = (subCategories: IndicatorSubCategoryScoreRecord[]): IndicatorSubCategoryScoreRecord[] => {
-    return subCategories.filter(sub => selectedSubCategory === 'all' || sub.name === selectedSubCategory);
+    return subCategories?.filter(sub => selectedSubCategory === 'all' || sub.name === selectedSubCategory) || [];
   };
 
   if (!data) {
