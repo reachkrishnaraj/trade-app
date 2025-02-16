@@ -95,4 +95,5 @@ V Pattern Misu:
 PAYLOAD=CUSTOM|indicator=V_PATTERN_MISU|price={{close}}|time={{time}}|strategyName=none|symbol=NQ|source=TV|interval=2m|candleType=CLASSIC|isStrategy=false|msg=V Pattern detected
 PAYLOAD=CUSTOM|indicator=V_PATTERN_MISU|price={{close}}|time={{time}}|strategyName=none|symbol=NQ|source=TV|interval=2m|candleType=CLASSIC|isStrategy=false|msg=Inverse V Pattern detected
 
-
+QUANTVUE_QKRONOS:
+PAYLOAD=CUSTOM|indicator=QUANTVUE_QKRONOS|price={{close}}|time={{time}}|strategyName=QUANTVUE_QKRONOS_JT_ORIGINAL|symbol=MNQH5|source=TV|interval=1s|candleType=RENKO_8B|isStrategy=true|msg={{strategy.order.alert_message}}

@@ -14,32 +14,28 @@ import org.springframework.stereotype.Service;
 public class AlertService {
 
     private final TwilioService twilioService;
-    private final TelegramBotConfig telegramBotConfig;
-    private final NotificationProcessorService notificationProcessorService;
 
     private List<String> chatIds = List.of("5006562667");
 
     //payload: symbol=NQ|price=1234.5|msg=Price reached target test|textNums=+917305989831,+14083486083|voiceNums=+917305989831,+14083486083
     public void handleDirectTradingViewAlert(String message) {
-        Map<String, String> msgMap = notificationProcessorService.getPayloadMap(message);
-        String symbol = notificationProcessorService
-            .getValueFor(PayloadKey.SYMBOL, msgMap)
-            .orElseThrow(() -> new RuntimeException("Symbol not found in payload"));
-        String price = notificationProcessorService
-            .getValueFor(PayloadKey.PRICE, msgMap)
-            .orElseThrow(() -> new RuntimeException("Price not found in payload"));
-        String alertMsg = notificationProcessorService
-            .getValueFor(PayloadKey.ALERT_MESSAGE, msgMap)
-            .orElseThrow(() -> new RuntimeException("Symbol not found in payload"));
+        Map<String, String> msgMap = NotificationProcessorService.getPayloadMap(message);
+        String symbol = NotificationProcessorService.getValueFor(PayloadKey.SYMBOL, msgMap).orElseThrow(
+            () -> new RuntimeException("Symbol not found in payload")
+        );
+        String price = NotificationProcessorService.getValueFor(PayloadKey.PRICE, msgMap).orElseThrow(
+            () -> new RuntimeException("Price not found in payload")
+        );
+        String alertMsg = NotificationProcessorService.getValueFor(PayloadKey.ALERT_MESSAGE, msgMap).orElseThrow(
+            () -> new RuntimeException("Symbol not found in payload")
+        );
         @Nullable
-        String[] textNumbers = notificationProcessorService
-            .getValueFor(PayloadKey.TEXT_NUMBER, msgMap)
+        String[] textNumbers = NotificationProcessorService.getValueFor(PayloadKey.TEXT_NUMBER, msgMap)
             .filter(StringUtils::isNotBlank)
             .map(s -> s.split(","))
             .orElse(null);
         @Nullable
-        String[] voiceNumbers = notificationProcessorService
-            .getValueFor(PayloadKey.VOICE_NUMBER, msgMap)
+        String[] voiceNumbers = NotificationProcessorService.getValueFor(PayloadKey.VOICE_NUMBER, msgMap)
             .filter(StringUtils::isNotBlank)
             .map(s -> s.split(","))
             .orElse(null);

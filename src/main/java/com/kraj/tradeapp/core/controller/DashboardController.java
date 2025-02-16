@@ -6,9 +6,7 @@ import com.kraj.tradeapp.core.model.dashboard.ui.dto.EventsUI;
 import com.kraj.tradeapp.core.model.dashboard.ui.dto.TradingSignalUI;
 import com.kraj.tradeapp.core.model.dto.NotificationEventDto;
 import com.kraj.tradeapp.core.model.persistance.mongodb.TradeSignalScoreSnapshot;
-import com.kraj.tradeapp.core.service.DashboardService;
-import com.kraj.tradeapp.core.service.NotificationProcessorService;
-import com.kraj.tradeapp.core.service.TradeSignalSnapshotProcessor;
+import com.kraj.tradeapp.core.service.*;
 import java.time.ZonedDateTime;
 import java.util.List;
 import java.util.Optional;
@@ -24,6 +22,8 @@ public class DashboardController {
     private final DashboardService dashboardService;
     private final NotificationProcessorService notificationProcessorService;
     private final TradeSignalSnapshotProcessor tradeSignalSnapshotProcessor;
+    private final TradeAccountConfigService tradeAccountConfigService;
+    private final PickMyTradeService pickMyTradeService;
 
     @GetMapping("/current-trades")
     public ResponseEntity<List<CurrentTradeUI>> getCurrentTrades() {
@@ -56,5 +56,26 @@ public class DashboardController {
     @GetMapping("/events")
     public ResponseEntity<List<EventsUI>> getEvents() {
         return ResponseEntity.ok(dashboardService.getEvents());
+    }
+
+    @GetMapping("/loadTradeAccountConfig")
+    public ResponseEntity<String> loadTradeAccountConfig() {
+        tradeAccountConfigService.loadTradeAccountConfig();
+        return ResponseEntity.ok("Trade Account Config Loaded");
+    }
+
+    @GetMapping("/testPickMyTrade/buy")
+    public ResponseEntity<?> testPickMyTradeBuy() {
+        return ResponseEntity.ok(pickMyTradeService.placeBuyOrders("MNQH5", "22000"));
+    }
+
+    @GetMapping("/testPickMyTrade/close")
+    public ResponseEntity<?> testPickMyTradeClose() {
+        return ResponseEntity.ok(pickMyTradeService.placeCloseOrders("MNQH5", "22000"));
+    }
+
+    @GetMapping("/testPickMyTrade/sell")
+    public ResponseEntity<?> testPickMyTradSell() {
+        return ResponseEntity.ok(pickMyTradeService.placeSellOrders("MNQH5", "22000"));
     }
 }

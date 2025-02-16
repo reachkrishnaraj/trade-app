@@ -24,4 +24,6 @@ public class TradeAppConfigOptions {
     private String notificationPhoneNumbers;
 
     private String twilioVoiceXmlUrl;
+
+    private String pickMyTradeOrderUrl;
 }

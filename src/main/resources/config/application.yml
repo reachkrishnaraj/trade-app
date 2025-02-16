@@ -248,6 +248,7 @@ trade:
     options:
       twilioPhoneNumber: +18333707346
       notificationPhoneNumbers: +14083486083
+      pickMyTradeOrderUrl: https://api.pickmytrade.trade/v2/add-trade-data-latest
 
 telegramBot:
   username: kraj_trades_bot

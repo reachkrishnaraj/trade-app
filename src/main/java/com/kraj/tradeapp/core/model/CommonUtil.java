@@ -5,6 +5,7 @@ import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
+import java.time.format.DateTimeFormatter;
 import org.apache.commons.lang3.StringUtils;
 
 public class CommonUtil {
@@ -29,5 +30,9 @@ public class CommonUtil {
         } catch (Exception e) {
             return false;
         }
+    }
+
+    public static String getIsoNowStr() {
+        return ZonedDateTime.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ssZ"));
     }
 }

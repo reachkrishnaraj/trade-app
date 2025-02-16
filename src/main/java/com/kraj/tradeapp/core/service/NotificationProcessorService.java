@@ -37,6 +37,7 @@ public class NotificationProcessorService implements ApplicationListener<Applica
     private final TradeSignalRepository tradeSignalRepository;
     private final ScoringService scoringService;
     private final TelegramBotConfig telegramBotConfig;
+    private final StrategyService strategyService;
     //private final QueueRepository queueRepository;
 
     private static final String CUSTOM_PAYLOAD_SEPARATOR = "|";
@@ -210,6 +211,9 @@ public class NotificationProcessorService implements ApplicationListener<Applica
             .build();
         notificationEventRepository.save(notificationEvent);
         tradeSignalSnapshotProcessor.notifyEventForProcessing();
+        if (notificationEvent.isStrategy()) {
+            strategyService.handleStrategyEvent(notificationEvent);
+        }
         //tradeSignalSnapshotProcessor.processEventForTradeSignalSnapshot(List.of(notificationEvent));
         //send notification snapshot maintanence service
     }
@@ -264,7 +268,7 @@ public class NotificationProcessorService implements ApplicationListener<Applica
 
     //message format:
     //PAYLOAD=CUSTOM|indicator=Q_LINE|price=500.00|time=2021-09-01T14:00:00Z|strategyName=QUANTVUE_QKRONOS|symbol=SPY|source=TV|interval=1m|candleType=CLASSIC|isStrategy=true
-    public Map<String, String> getPayloadMap(String payload) {
+    public static Map<String, String> getPayloadMap(String payload) {
         if (StringUtils.trim(payload).isEmpty()) {
             return new HashMap<>();
         }
@@ -285,7 +289,7 @@ public class NotificationProcessorService implements ApplicationListener<Applica
         return payloadMap;
     }
 
-    public Optional<String> getValueFor(PayloadKey payloadKey, Map<String, String> payloadMap) {
+    public static Optional<String> getValueFor(PayloadKey payloadKey, Map<String, String> payloadMap) {
         return Optional.ofNullable(payloadMap.get(payloadKey.getKeyName()));
     }
 

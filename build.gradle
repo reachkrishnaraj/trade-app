@@ -176,6 +176,8 @@ dependencies {
     implementation "org.springframework.security:spring-security-messaging"
     implementation 'org.springframework.boot:spring-boot-starter-data-mongodb'
     implementation 'com.github.kshashov:spring-boot-starter-telegram:0.29'
+    implementation 'org.apache.commons:commons-csv:1.13.0'
+
 
     implementation 'com.opencsv:opencsv:5.7.1'
     // jhipster-needle-gradle-dependency - JHipster will add additional dependencies here

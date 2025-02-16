@@ -3,6 +3,7 @@ package com.kraj.tradeapp.core.model;
 import org.apache.commons.lang3.StringUtils;
 
 public enum Strategy {
+    QUANTVUE_QKRONOS_JT_ORIGINAL,
     LILY,
     LOTUS,
     NONE;
