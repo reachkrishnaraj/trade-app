@@ -97,3 +97,7 @@ PAYLOAD=CUSTOM|indicator=V_PATTERN_MISU|price={{close}}|time={{time}}|strategyNa
 
 QUANTVUE_QKRONOS:
 PAYLOAD=CUSTOM|indicator=QUANTVUE_QKRONOS|price={{close}}|time={{time}}|strategyName=QUANTVUE_QKRONOS_JT_ORIGINAL|symbol=MNQH5|source=TV|interval=1s|candleType=RENKO_8B|isStrategy=true|msg={{strategy.order.alert_message}}
+
+QUANTVUE_QELITE:
+PAYLOAD=CUSTOM|indicator=QUANTVUE_QELITE|price={{close}}|time={{time}}|strategyName=none|symbol=MNQH5|source=TV|interval=1s|candleType=RENKO_8B|isStrategy=false|msg=LONG CONDITION
+PAYLOAD=CUSTOM|indicator=QUANTVUE_QELITE|price={{close}}|time={{time}}|strategyName=none|symbol=MNQH5|source=TV|interval=1s|candleType=RENKO_8B|isStrategy=false|msg=SHORT CONDITION
