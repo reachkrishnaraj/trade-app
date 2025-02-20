@@ -23,7 +23,7 @@ import org.springframework.stereotype.Service;
 public class PickMyTradeService {
 
     private final TradeAppConfigOptions tradeAppConfigOptions;
-    private final TradeAccountConfigService tradeAccountConfigService;
+    //private final TradeAccountConfigService tradeAccountConfigService;
     private final AlertService alertService;
 
     private final ObjectMapper objectMapper = new ObjectMapper();
@@ -37,16 +37,12 @@ public class PickMyTradeService {
         builder.quantity(tradeAccountConfig.getQuantity());
         builder.price(price);
         int tpDollar = tradeAccountConfig.isUseTakeProfit()
-            ? (int) (tradeAccountConfig.getQuantity() *
-                tradeAccountConfig.getTakeProfitTicks() *
-                tradeAccountConfig.getPerTickDollarValue().floatValue())
+            ? (int) (tradeAccountConfig.getTakeProfitTicks() * tradeAccountConfig.getTicksPerPoint())
             : 0;
         builder.dollarTp(tpDollar);
 
         int slDollar = tradeAccountConfig.isUseStopLoss()
-            ? (int) (tradeAccountConfig.getQuantity() *
-                tradeAccountConfig.getStopLossTicks() *
-                tradeAccountConfig.getPerTickDollarValue().floatValue())
+            ? (int) (tradeAccountConfig.getStopLossTicks() * tradeAccountConfig.getTicksPerPoint())
             : 0;
         builder.dollarSl(slDollar);
 
@@ -72,20 +68,25 @@ public class PickMyTradeService {
             .collect(Collectors.toList());
     }
 
-    public boolean placeBuyOrders(String symbol, String price) {
-        return placeOrdersBase(symbol, price, "buy");
+    public boolean placeBuyOrders(String symbol, String price, Map<String, List<TradeAccountConfig>> trdGrpAndAccountsMap) {
+        return placeOrdersBase(trdGrpAndAccountsMap, symbol, price, "buy");
     }
 
-    public boolean placeSellOrders(String symbol, String price) {
-        return placeOrdersBase(symbol, price, "sell");
+    public boolean placeSellOrders(String symbol, String price, Map<String, List<TradeAccountConfig>> trdGrpAndAccountsMap) {
+        return placeOrdersBase(trdGrpAndAccountsMap, symbol, price, "sell");
     }
 
-    public boolean placeCloseOrders(String symbol, String price) {
-        return placeOrdersBase(symbol, price, "close");
+    public boolean placeCloseOrders(String symbol, String price, Map<String, List<TradeAccountConfig>> trdGrpAndAccountsMap) {
+        return placeOrdersBase(trdGrpAndAccountsMap, symbol, price, "close");
     }
 
-    public boolean placeOrdersBase(String symbol, String price, String orderDirection) {
-        List<TradeOrder> payloads = getPayload(symbol, price, orderDirection);
+    public boolean placeOrdersBase(
+        Map<String, List<TradeAccountConfig>> trdGrpAndAccountsMap,
+        String symbol,
+        String price,
+        String orderDirection
+    ) {
+        List<TradeOrder> payloads = getPayload(trdGrpAndAccountsMap, symbol, price, orderDirection);
 
         List<CompletableFuture<Boolean>> futures = payloads
             .stream()
@@ -114,11 +115,15 @@ public class PickMyTradeService {
         return results.stream().allMatch(Boolean::booleanValue);
     }
 
-    public List<TradeOrder> getPayload(String symbol, String price, String orderDirection) {
+    public List<TradeOrder> getPayload(
+        Map<String, List<TradeAccountConfig>> trdGrpAndAccountsMap,
+        String symbol,
+        String price,
+        String orderDirection
+    ) {
         List<TradeOrder> tradeOrders = new ArrayList<>();
-        Map<String, List<TradeAccountConfig>> accsByTradeGrp = tradeAccountConfigService.getTraceAccountConfigGroupedByTradeGroup(symbol);
 
-        for (Map.Entry<String, List<TradeAccountConfig>> entry : accsByTradeGrp.entrySet()) {
+        for (Map.Entry<String, List<TradeAccountConfig>> entry : trdGrpAndAccountsMap.entrySet()) {
             List<TradeAccountConfig> tradeAccountConfigs = entry.getValue();
 
             TradeOrder tradeOrder = getBaseTradeOrder(tradeAccountConfigs.get(0), price, orderDirection); //get base trade order

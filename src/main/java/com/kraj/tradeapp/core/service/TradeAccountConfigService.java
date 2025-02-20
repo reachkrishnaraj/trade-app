@@ -2,7 +2,6 @@ package com.kraj.tradeapp.core.service;
 
 import com.kraj.tradeapp.core.model.persistance.mongodb.TradeAccountConfig;
 import com.kraj.tradeapp.core.repository.mongodb.TradeAccountConfigRepository;
-import java.io.FileReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.Reader;
@@ -30,12 +29,8 @@ public class TradeAccountConfigService {
     private final TradeAccountConfigRepository tradeAccountConfigRepository;
     private final ResourceLoader resourceLoader;
 
-    public List<TradeAccountConfig> getTraceAccountConfigForSymbol(String symbol) {
-        return tradeAccountConfigRepository.findBySymbol(symbol);
-    }
-
-    public Map<String, List<TradeAccountConfig>> getTraceAccountConfigGroupedByTradeGroup(String symbol) {
-        List<TradeAccountConfig> accountConfigsForSymbol = tradeAccountConfigRepository.findBySymbol(symbol);
+    public Map<String, List<TradeAccountConfig>> getTradeAccountConfigGroupedByTradeGroup(String parentSymbol) {
+        List<TradeAccountConfig> accountConfigsForSymbol = tradeAccountConfigRepository.findByParentSymbol(parentSymbol);
         Map<String, List<TradeAccountConfig>> tradeGroupedByTradeGroup = accountConfigsForSymbol
             .stream()
             .filter(TradeAccountConfig::isTradeEnabled)
@@ -72,7 +67,7 @@ public class TradeAccountConfigService {
                     .accType(record.get("accType"))
                     .tradePlatform(record.get("tradePlatform"))
                     .pickMyTradeToken(record.get("pickMyTradeToken"))
-                    .symbol(record.get("symbol"))
+                    //.symbol(record.get("symbol"))
                     .useTakeProfit(Boolean.parseBoolean(record.get("useTakeProfit")))
                     .takeProfitTicks(Integer.parseInt(record.get("takeProfitTicks")))
                     .useStopLoss(Boolean.parseBoolean(record.get("useStopLoss")))
@@ -86,6 +81,8 @@ public class TradeAccountConfigService {
                     .tradeEnabled(Boolean.parseBoolean(record.get("tradeEnabled")))
                     .automationPlatform(record.get("automationPlatform"))
                     .ownerName(record.get("ownerName"))
+                    .ticksPerPoint(Integer.parseInt(record.get("ticksPerPoint")))
+                    .parentSymbol(record.get("parentSymbol"))
                     .build();
                 tradeAccounts.add(tradeAccount);
             }

@@ -24,4 +24,7 @@ public interface TradeAccountConfigRepository extends MongoRepository<TradeAccou
 
     // Get records for a specific symbol (Indexed Field)
     List<TradeAccountConfig> findBySymbol(String symbol);
+
+    // Get records for a parentSymbol
+    List<TradeAccountConfig> findByParentSymbol(String parentSymbol);
 }

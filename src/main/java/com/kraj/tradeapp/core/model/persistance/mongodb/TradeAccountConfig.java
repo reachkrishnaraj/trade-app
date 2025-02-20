@@ -42,6 +42,9 @@ public class TradeAccountConfig {
     @Indexed
     private String symbol;
 
+    @Indexed
+    private String parentSymbol;
+
     private boolean useTakeProfit;
 
     private int takeProfitTicks;
@@ -65,4 +68,6 @@ public class TradeAccountConfig {
     private boolean tradeEnabled;
 
     private String automationPlatform;
+
+    private int ticksPerPoint;
 }

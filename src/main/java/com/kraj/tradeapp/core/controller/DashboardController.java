@@ -11,6 +11,7 @@ import java.time.ZonedDateTime;
 import java.util.List;
 import java.util.Optional;
 import lombok.RequiredArgsConstructor;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -23,7 +24,8 @@ public class DashboardController {
     private final NotificationProcessorService notificationProcessorService;
     private final TradeSignalSnapshotProcessor tradeSignalSnapshotProcessor;
     private final TradeAccountConfigService tradeAccountConfigService;
-    private final PickMyTradeService pickMyTradeService;
+    private final StrategyService strategyService;
+    private final MasterConfigService masterConfigService;
 
     @GetMapping("/current-trades")
     public ResponseEntity<List<CurrentTradeUI>> getCurrentTrades() {
@@ -64,18 +66,47 @@ public class DashboardController {
         return ResponseEntity.ok("Trade Account Config Loaded");
     }
 
-    @GetMapping("/testPickMyTrade/buy")
-    public ResponseEntity<?> testPickMyTradeBuy() {
-        return ResponseEntity.ok(pickMyTradeService.placeBuyOrders("MNQH5", "22000"));
+    @GetMapping("/testPickMyTrade/buy/{symbol}")
+    public ResponseEntity<?> testPickMyTradeBuy(@PathVariable String symbol) {
+        strategyService.byPassAndDoLongTrade(symbol, "0");
+        return ResponseEntity.ok("ok");
     }
 
-    @GetMapping("/testPickMyTrade/close")
-    public ResponseEntity<?> testPickMyTradeClose() {
-        return ResponseEntity.ok(pickMyTradeService.placeCloseOrders("MNQH5", "22000"));
+    @GetMapping("/testPickMyTrade/close/{symbol}")
+    public ResponseEntity<?> testPickMyTradeClose(@PathVariable String symbol) {
+        strategyService.byPassAndDoCloseTrades(symbol, "0");
+        return ResponseEntity.ok("ok");
     }
 
-    @GetMapping("/testPickMyTrade/sell")
-    public ResponseEntity<?> testPickMyTradSell() {
-        return ResponseEntity.ok(pickMyTradeService.placeSellOrders("MNQH5", "22000"));
+    @GetMapping("/testPickMyTrade/sell/{symbol}")
+    public ResponseEntity<?> testPickMyTradSell(@PathVariable String symbol) {
+        strategyService.byPassAndDoShortTrade(symbol, "0");
+        return ResponseEntity.ok("ok");
+    }
+
+    @GetMapping("/seedMasterConfig")
+    public ResponseEntity<String> seedMasterConfig() {
+        masterConfigService.seedMasterConfig();
+        return ResponseEntity.ok("Master Config Seeded");
+    }
+
+    @GetMapping("/kraj/automation/{enable}")
+    public ResponseEntity<String> krajAutomation(@PathVariable String enable) {
+        if (StringUtils.trim(enable).equalsIgnoreCase("yes")) {
+            masterConfigService.enableKrajAutomation();
+        } else {
+            masterConfigService.disableKrajAutomation();
+        }
+        return ResponseEntity.ok("Ok");
+    }
+
+    @GetMapping("/vivek/automation/{enable}")
+    public ResponseEntity<String> vivekAutomation(@PathVariable String enable) {
+        if (StringUtils.trim(enable).equalsIgnoreCase("yes")) {
+            masterConfigService.enableVivekAutomation();
+        } else {
+            masterConfigService.disableVivekAutomation();
+        }
+        return ResponseEntity.ok("Ok");
     }
 }
