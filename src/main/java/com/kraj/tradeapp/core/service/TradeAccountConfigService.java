@@ -67,7 +67,7 @@ public class TradeAccountConfigService {
                     .accType(record.get("accType"))
                     .tradePlatform(record.get("tradePlatform"))
                     .pickMyTradeToken(record.get("pickMyTradeToken"))
-                    //.symbol(record.get("symbol"))
+                    .symbol(record.get("symbol"))
                     .useTakeProfit(Boolean.parseBoolean(record.get("useTakeProfit")))
                     .takeProfitTicks(Integer.parseInt(record.get("takeProfitTicks")))
                     .useStopLoss(Boolean.parseBoolean(record.get("useStopLoss")))

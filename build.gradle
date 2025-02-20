@@ -178,6 +178,18 @@ dependencies {
     implementation 'com.github.kshashov:spring-boot-starter-telegram:0.29'
     implementation 'org.apache.commons:commons-csv:1.13.0'
 
+    // Google API Client
+    implementation 'com.google.api-client:google-api-client:2.7.2'
+
+    // Google OAuth Client
+    implementation 'com.google.auth:google-auth-library-oauth2-http:1.32.1'
+
+    // Google Sheets API
+    implementation 'com.google.apis:google-api-services-sheets:v4-rev614-1.18.0-rc'
+
+    implementation 'com.google.http-client:google-http-client-jackson2:1.46.1'
+
+
 
     implementation 'com.opencsv:opencsv:5.7.1'
     // jhipster-needle-gradle-dependency - JHipster will add additional dependencies here

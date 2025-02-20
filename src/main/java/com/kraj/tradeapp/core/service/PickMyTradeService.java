@@ -148,7 +148,6 @@ public class PickMyTradeService {
     // Function to send a POST request with JSON body
     public String sendPostRequest(String url, String json) throws Exception {
         RequestBody body = RequestBody.create(json, MediaType.get("application/json"));
-
         Request request = new Request.Builder().url(url).post(body).header("Content-Type", "application/json").build();
 
         try (Response response = client.newCall(request).execute()) {
