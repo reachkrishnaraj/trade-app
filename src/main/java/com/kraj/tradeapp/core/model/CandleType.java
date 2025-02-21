@@ -10,7 +10,8 @@ public enum CandleType {
     RENKO_5B,
     RENKO_4B,
     RENKO_2B,
-    RENKO_1B;
+    RENKO_1B,
+    RENKO_10B;
 
     public static CandleType getFromValue(@Nullable String value) {
         if (StringUtils.isBlank(value)) {
