@@ -28,6 +28,7 @@ public class TradeAccountConfigService {
 
     private final TradeAccountConfigRepository tradeAccountConfigRepository;
     private final ResourceLoader resourceLoader;
+    private final GoogleSheetsService googleSheetsService;
 
     public Map<String, List<TradeAccountConfig>> getTradeAccountConfigGroupedByTradeGroup(String parentSymbol) {
         List<TradeAccountConfig> accountConfigsForSymbol = tradeAccountConfigRepository.findByParentSymbol(parentSymbol);
@@ -39,7 +40,8 @@ public class TradeAccountConfigService {
     }
 
     public void loadTradeAccountConfig() {
-        List<TradeAccountConfig> tradeAccountConfigsRaw = readFromCsv(TRADE_ACC_CONFIG_FILE);
+        List<TradeAccountConfig> tradeAccountConfigsRaw = googleSheetsService.readFromGoogleSheet();
+
         List<TradeAccountConfig> tradeAccountConfigs = tradeAccountConfigsRaw
             .stream()
             .map(tac -> {

@@ -6,6 +6,7 @@ import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
+import java.util.Base64;
 import org.apache.commons.lang3.StringUtils;
 
 public class CommonUtil {
@@ -34,5 +35,10 @@ public class CommonUtil {
 
     public static String getIsoNowStr() {
         return ZonedDateTime.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ssZ"));
+    }
+
+    public static String decodeBase64(String base64Encoded) {
+        byte[] decodedBytes = Base64.getDecoder().decode(base64Encoded);
+        return new String(decodedBytes);
     }
 }

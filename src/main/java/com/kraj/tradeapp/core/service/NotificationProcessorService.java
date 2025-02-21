@@ -16,8 +16,11 @@ import java.time.format.DateTimeFormatter;
 import java.time.temporal.ChronoUnit;
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 import java.util.concurrent.locks.ReentrantLock;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.boot.context.event.ApplicationReadyEvent;
 import org.springframework.context.ApplicationListener;
@@ -26,6 +29,7 @@ import org.springframework.stereotype.Service;
 
 @Service
 @RequiredArgsConstructor
+@Slf4j
 public class NotificationProcessorService implements ApplicationListener<ApplicationReadyEvent> {
 
     private ApplicationReadyEvent event;
@@ -209,11 +213,24 @@ public class NotificationProcessorService implements ApplicationListener<Applica
             .tradeSignalProcessStatus(isSkipScoring ? ProcessingStatus.NOT_APPLICABLE.name() : ProcessingStatus.PENDING.name())
             .isAlertable(mayBeMsgRule.map(IndicatorMsgRule::isAlertable).orElse(false))
             .build();
+
+        //execute in async
+        if (notificationEvent.isStrategy()) {
+            ExecutorService executor = Executors.newSingleThreadExecutor();
+            executor.execute(() -> {
+                try {
+                    strategyService.handleStrategyEvent(notificationEvent);
+                } catch (Exception e) {
+                    log.error("Error processing strategy event", e);
+                    String msg = "Error processing strategy, msg %s, err:%s".formatted(notificationEvent.getRawAlertMsg(), e.getMessage());
+                    telegramBotConfig.sendMessageToDefaultBotAllChatIds(msg);
+                } finally {
+                    executor.shutdown(); // Shutdown the executor after task completion
+                }
+            });
+        }
         notificationEventRepository.save(notificationEvent);
         tradeSignalSnapshotProcessor.notifyEventForProcessing();
-        if (notificationEvent.isStrategy()) {
-            strategyService.handleStrategyEvent(notificationEvent);
-        }
         //tradeSignalSnapshotProcessor.processEventForTradeSignalSnapshot(List.of(notificationEvent));
         //send notification snapshot maintanence service
     }

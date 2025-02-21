@@ -26,4 +26,6 @@ public class TradeAppConfigOptions {
     private String twilioVoiceXmlUrl;
 
     private String pickMyTradeOrderUrl;
+
+    private String googleSheetServiceAccCredJson;
 }
