@@ -78,6 +78,7 @@ public class SecurityConfiguration {
                     .requestMatchers(mvc.pattern("/api/v1/alerts/**")).permitAll()
                     .requestMatchers(mvc.pattern("/api/v1/testVoiceMsg")).permitAll()
                     .requestMatchers(mvc.pattern("/api/v1/notifications/receiveEvents")).permitAll()
+                    .requestMatchers(mvc.pattern("/api/v1/notifications/ohlc/**")).permitAll()
                     .requestMatchers(mvc.pattern("/api/account/reset-password/init")).permitAll()
                     .requestMatchers(mvc.pattern("/api/account/reset-password/finish")).permitAll()
                     .requestMatchers(mvc.pattern("/api/admin/**")).hasAuthority(AuthoritiesConstants.ADMIN)

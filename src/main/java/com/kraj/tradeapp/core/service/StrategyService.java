@@ -55,7 +55,9 @@ public class StrategyService {
             "REGULAR_LONG_EXIT",
             "REGULAR_SHORT_EXIT",
             "END_OF_DAY_EXIT",
-            "PROFIT_LOSS_TRADE_LIMIT_CLOSE"
+            "PROFIT_LOSS_TRADE_LIMIT_CLOSE",
+            "FLATTEN",
+            "FLATTEN_ALL"
         );
 
         Map<String, List<TradeAccountConfig>> trdGrpAndAccountsMap = tradeAccountConfigService.getTradeAccountConfigGroupedByTradeGroup(

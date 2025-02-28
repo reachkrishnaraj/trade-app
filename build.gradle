@@ -37,6 +37,7 @@ repositories {
     // Local maven repository is required for libraries built locally with maven like development jhipster-bom.
     // mavenLocal()
     mavenCentral()
+    maven { url "https://jitpack.io" }
     // jhipster-needle-gradle-repositories - JHipster will add additional repositories
 }
 
@@ -181,6 +182,7 @@ dependencies {
     implementation 'com.google.api-client:google-api-client:1.23.0'
     implementation 'com.google.api-client:google-api-client-jackson2:2.6.0'
     implementation 'com.google.apis:google-api-services-sheets:v4-rev493-1.23.0'
+    implementation 'com.github.polygon-io:client-jvm:v5.1.2'
 
     implementation 'com.opencsv:opencsv:5.7.1'
     // jhipster-needle-gradle-dependency - JHipster will add additional dependencies here

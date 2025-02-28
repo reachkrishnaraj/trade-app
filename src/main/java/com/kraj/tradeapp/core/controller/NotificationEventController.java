@@ -1,10 +1,12 @@
 package com.kraj.tradeapp.core.controller;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.kraj.tradeapp.core.model.CommonUtil;
 import com.kraj.tradeapp.core.model.dto.NotificationEventDto;
 import com.kraj.tradeapp.core.model.persistance.NotificationEvent;
 import com.kraj.tradeapp.core.model.persistance.TradeSignal;
 import com.kraj.tradeapp.core.service.NotificationProcessorService;
+import com.kraj.tradeapp.core.service.OHLCService;
 import java.time.LocalDateTime;
 import java.time.ZonedDateTime;
 import java.util.List;
@@ -21,10 +23,17 @@ import org.springframework.web.bind.annotation.*;
 public class NotificationEventController {
 
     private final NotificationProcessorService notificationProcessorService;
+    private final OHLCService ohlcService;
 
     @PostMapping("/receiveEvents")
     public ResponseEntity<Void> createNotificationEvent(@RequestBody String payload) {
         notificationProcessorService.queueAndProcessNotification(payload);
+        return ResponseEntity.status(HttpStatus.CREATED).build();
+    }
+
+    @PostMapping("/ohlc")
+    public ResponseEntity<?> handleOhlcDataPost(@RequestBody String payload) throws JsonProcessingException {
+        ohlcService.handleOHLCDataPost(payload);
         return ResponseEntity.status(HttpStatus.CREATED).build();
     }
 

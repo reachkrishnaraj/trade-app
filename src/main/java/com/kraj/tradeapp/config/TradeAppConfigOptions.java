@@ -28,4 +28,6 @@ public class TradeAppConfigOptions {
     private String pickMyTradeOrderUrl;
 
     private String googleSheetServiceAccCredJson;
+
+    private String polygonIOApiKey;
 }
