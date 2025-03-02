@@ -1,5 +1,6 @@
 package com.kraj.tradeapp.core.model.persistance.mongodb;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import com.kraj.tradeapp.core.model.TimeFrame;
 import java.math.BigDecimal;
 import java.time.Instant;
@@ -12,6 +13,8 @@ import org.springframework.data.mongodb.core.index.CompoundIndex;
 import org.springframework.data.mongodb.core.index.IndexDirection;
 import org.springframework.data.mongodb.core.index.Indexed;
 import org.springframework.data.mongodb.core.mapping.Document;
+import org.springframework.data.mongodb.core.mapping.Field;
+import org.springframework.data.mongodb.core.mapping.FieldType;
 
 @Document(collection = "ohlc_data")
 @CompoundIndex(name = "symbol_timestamp_idx", def = "{'symbol': 1, 'timestamp': 1}")
@@ -29,7 +32,9 @@ public class OHLCData {
     private String symbol; // "NQ", "ES"
 
     @Indexed(name = "timestamp_idx", direction = IndexDirection.ASCENDING)
-    private Instant timestamp; // Stored in UTC, convert to NY when needed
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd'T'HH:mm:ss.SSS'Z'", timezone = "UTC")
+    @Field(targetType = FieldType.DATE_TIME)
+    private Instant timestamp;
 
     private BigDecimal open;
 
