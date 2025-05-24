@@ -36,7 +36,7 @@ public class DashboardController {
     public ResponseEntity<List<NotificationEventDto>> getNotificationEvents(@PathVariable String symbol) {
         List<NotificationEventDto> events = notificationProcessorService.getNotificationEvents(
             symbol,
-            ZonedDateTime.now().minusHours(24),
+            ZonedDateTime.now().minusHours(24 * 7),
             ZonedDateTime.now()
             //            CommonUtil.getNYLocalDateTimeNow().minusHours(24),
             //            CommonUtil.getNYLocalDateTimeNow()
