@@ -16,6 +16,9 @@ import ErrorBoundaryRoutes from 'app/shared/error/error-boundary-routes';
 import PageNotFound from 'app/shared/error/page-not-found';
 import { AUTHORITIES } from 'app/config/constants';
 import { sendActivity } from 'app/config/websocket-middleware';
+import MerchantReportingDashboard from 'app/modules/dashboard/MerchantReportingDashboard';
+import MerchantReportingV2 from 'app/modules/dashboard/MerchantReportingV2';
+import AirflowEMRDashboard from 'app/modules/dashboard/AirflowEMRDashboard';
 
 const loading = <div>loading ...</div>;
 
@@ -51,6 +54,9 @@ const AppRoutes = () => {
           <Route path="register" element={<Register />} />
           <Route path="activate" element={<Activate />} />
           <Route path="trade-dashboard/:symbol" element={<TradingDashboardV2 />} />
+          <Route path="merchant-dashboard" element={<MerchantReportingDashboard />} />
+          <Route path="merchant-reporting-v2" element={<MerchantReportingV2 />} />
+          <Route path="merchant-reporting-v3" element={<AirflowEMRDashboard />} />
           <Route path="reset">
             <Route path="request" element={<PasswordResetInit />} />
             <Route path="finish" element={<PasswordResetFinish />} />

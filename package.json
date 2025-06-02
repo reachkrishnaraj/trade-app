@@ -81,7 +81,7 @@
     "dayjs": "1.11.11",
     "fortawesome": "^0.0.1-security",
     "lodash": "4.17.21",
-    "lucide-react": "^0.471.0",
+    "lucide-react": "^0.471.2",
     "path-browserify": "1.0.1",
     "react": "18.3.1",
     "react-bootstrap": "^2.10.7",
