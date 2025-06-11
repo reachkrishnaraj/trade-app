@@ -101,3 +101,8 @@ PAYLOAD=CUSTOM|indicator=QUANTVUE_QKRONOS|price={{close}}|time={{time}}|strategy
 QUANTVUE_QELITE:
 PAYLOAD=CUSTOM|indicator=QUANTVUE_QELITE|price={{close}}|time={{time}}|strategyName=none|symbol=MNQH5|source=TV|interval=1s|candleType=RENKO_8B|isStrategy=false|msg=LONG CONDITION
 PAYLOAD=CUSTOM|indicator=QUANTVUE_QELITE|price={{close}}|time={{time}}|strategyName=none|symbol=MNQH5|source=TV|interval=1s|candleType=RENKO_8B|isStrategy=false|msg=SHORT CONDITION
+
+IFVG_PRO_KIT:
+PAYLOAD=CUSTOM|indicator=IFVG_PRO_KIT|price={{close}}|time={{time}}|strategyName=none|symbol=NQ|source=TV|interval=5m|candleType=CLASSIC|isStrategy=false|msg={{trigger}}
+
+
