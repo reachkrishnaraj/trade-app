@@ -94,8 +94,10 @@ public class NotificationProcessorService implements ApplicationListener<Applica
             .filter(CommonUtil::isNumeric)
             .map(BigDecimal::new)
             .orElse(BigDecimal.ZERO);
+
         BigDecimal priceClose = getValueFor(PayloadKey.PRICE_CLOSE, payloadMap)
             .filter(CommonUtil::isNumeric)
+            .map(value -> value.replaceAll("[^\\d.]", "")) // remove all non-digit, non-dot characters
             .map(BigDecimal::new)
             .orElse(BigDecimal.ZERO);
         BigDecimal price = priceVal.compareTo(BigDecimal.ZERO) == 0 ? priceClose : priceVal;
