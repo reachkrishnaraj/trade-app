@@ -10,7 +10,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.stereotype.Component;
 
-@Component
+//@Component
 public class TelegramBotConfig implements TelegramBotGlobalPropertiesConfiguration {
 
     @Getter

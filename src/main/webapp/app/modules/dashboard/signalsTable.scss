@@ -94,3 +94,63 @@
     background-color: transparent;
   }
 }
+
+.filters-section {
+  padding: 1rem;
+  background: #f8f9fa;
+  border-bottom: 1px solid #dee2e6;
+}
+
+.filters-row {
+  display: flex;
+  gap: 1rem;
+  margin-bottom: 1rem;
+  align-items: end;
+}
+
+.filter-group {
+  display: flex;
+  flex-direction: column;
+  min-width: 150px;
+}
+
+.filter-select,
+.filter-input {
+  padding: 0.375rem 0.75rem;
+  border: 1px solid #ced4da;
+  border-radius: 0.25rem;
+}
+
+.quick-ranges {
+  margin-bottom: 1rem;
+}
+
+.range-buttons {
+  display: flex;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+}
+
+.btn-range {
+  padding: 0.25rem 0.5rem;
+  font-size: 0.875rem;
+}
+
+.sortable {
+  cursor: pointer;
+  user-select: none;
+}
+
+.sortable:hover {
+  background-color: #f8f9fa;
+}
+
+.direction-buy {
+  color: #28a745;
+}
+.direction-sell {
+  color: #dc3545;
+}
+.direction-hold {
+  color: #6c757d;
+}

@@ -1,0 +1,416 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Signal Event Testing</title>
+    <style>
+      body {
+        font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        margin: 0;
+        padding: 20px;
+        background-color: #f5f5f5;
+      }
+
+      .container {
+        max-width: 800px;
+        margin: 0 auto;
+        background: white;
+        padding: 30px;
+        border-radius: 10px;
+        box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+      }
+
+      h1 {
+        color: #333;
+        text-align: center;
+        margin-bottom: 30px;
+      }
+
+      .button-group {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+        gap: 15px;
+        margin-bottom: 30px;
+      }
+
+      button {
+        padding: 12px 20px;
+        border: none;
+        border-radius: 6px;
+        cursor: pointer;
+        font-size: 14px;
+        font-weight: 500;
+        transition: all 0.3s ease;
+        color: white;
+      }
+
+      .btn-primary {
+        background-color: #007bff;
+      }
+
+      .btn-primary:hover {
+        background-color: #0056b3;
+        transform: translateY(-2px);
+      }
+
+      .btn-success {
+        background-color: #28a745;
+      }
+
+      .btn-success:hover {
+        background-color: #218838;
+        transform: translateY(-2px);
+      }
+
+      .btn-warning {
+        background-color: #ffc107;
+        color: #212529;
+      }
+
+      .btn-warning:hover {
+        background-color: #e0a800;
+        transform: translateY(-2px);
+      }
+
+      .btn-danger {
+        background-color: #dc3545;
+      }
+
+      .btn-danger:hover {
+        background-color: #c82333;
+        transform: translateY(-2px);
+      }
+
+      .form-group {
+        margin-bottom: 20px;
+      }
+
+      label {
+        display: block;
+        margin-bottom: 5px;
+        font-weight: 500;
+        color: #555;
+      }
+
+      input,
+      select {
+        width: 100%;
+        padding: 10px;
+        border: 1px solid #ddd;
+        border-radius: 4px;
+        font-size: 14px;
+        box-sizing: border-box;
+      }
+
+      input:focus,
+      select:focus {
+        outline: none;
+        border-color: #007bff;
+        box-shadow: 0 0 0 2px rgba(0, 123, 255, 0.25);
+      }
+
+      .custom-signal-form {
+        background-color: #f8f9fa;
+        padding: 20px;
+        border-radius: 6px;
+        margin-bottom: 20px;
+        border: 1px solid #dee2e6;
+      }
+
+      .response-area {
+        background-color: #f8f9fa;
+        border: 1px solid #dee2e6;
+        border-radius: 6px;
+        padding: 15px;
+        margin-top: 20px;
+        max-height: 300px;
+        overflow-y: auto;
+      }
+
+      .response-item {
+        padding: 10px;
+        margin-bottom: 10px;
+        border-radius: 4px;
+        border-left: 4px solid #007bff;
+        background-color: white;
+      }
+
+      .response-success {
+        border-left-color: #28a745;
+      }
+
+      .response-error {
+        border-left-color: #dc3545;
+      }
+
+      .timestamp {
+        font-size: 12px;
+        color: #6c757d;
+        margin-bottom: 5px;
+      }
+
+      .grid-two {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 15px;
+      }
+
+      @media (max-width: 600px) {
+        .grid-two {
+          grid-template-columns: 1fr;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <div class="container">
+      <h1>🚀 Trading Signal Event Testing</h1>
+
+      <div class="button-group">
+        <button class="btn-primary" onclick="simulateRandomSignal()">🎲 Random Signal</button>
+
+        <button class="btn-success" onclick="simulateBulkSignals()">📊 Bulk Signals (5)</button>
+
+        <button class="btn-warning" onclick="startAutoSimulation()">⚡ Auto Simulation</button>
+
+        <button class="btn-danger" onclick="clearResponses()">🗑️ Clear Log</button>
+      </div>
+
+      <div class="custom-signal-form">
+        <h3>📝 Create Custom Signal</h3>
+        <div class="grid-two">
+          <div class="form-group">
+            <label for="symbol">Symbol:</label>
+            <select id="symbol">
+              <option value="AAPL">AAPL</option>
+              <option value="GOOGL">GOOGL</option>
+              <option value="TSLA">TSLA</option>
+              <option value="MSFT">MSFT</option>
+              <option value="AMZN">AMZN</option>
+              <option value="NVDA">NVDA</option>
+              <option value="META">META</option>
+              <option value="BTC-USD">BTC-USD</option>
+              <option value="ETH-USD">ETH-USD</option>
+            </select>
+          </div>
+
+          <div class="form-group">
+            <label for="price">Price:</label>
+            <input type="number" id="price" step="0.01" value="150.25" placeholder="150.25" />
+          </div>
+        </div>
+
+        <div class="grid-two">
+          <div class="form-group">
+            <label for="indicator">Indicator:</label>
+            <select id="indicator">
+              <option value="RSI">RSI</option>
+              <option value="MACD">MACD</option>
+              <option value="Bollinger Bands">Bollinger Bands</option>
+              <option value="EMA">EMA</option>
+              <option value="Support/Resistance">Support/Resistance</option>
+              <option value="Volume">Volume</option>
+              <option value="Stochastic">Stochastic</option>
+            </select>
+          </div>
+
+          <div class="form-group">
+            <label for="interval">Interval:</label>
+            <select id="interval">
+              <option value="15m">15m</option>
+              <option value="30m">30m</option>
+              <option value="1h" selected>1h</option>
+              <option value="2h">2h</option>
+              <option value="4h">4h</option>
+              <option value="6h">6h</option>
+              <option value="1d">1d</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="grid-two">
+          <div class="form-group">
+            <label for="direction">Direction:</label>
+            <select id="direction">
+              <option value="BUY">🟢 BUY</option>
+              <option value="SELL">🔴 SELL</option>
+              <option value="HOLD">🟡 HOLD</option>
+            </select>
+          </div>
+
+          <div class="form-group">
+            <label for="signalName">Signal Name:</label>
+            <input type="text" id="signalName" value="CUSTOM_SIGNAL" placeholder="CUSTOM_SIGNAL" />
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label for="message">Message:</label>
+          <input type="text" id="message" value="Custom test signal message" placeholder="Custom signal message" />
+        </div>
+
+        <button class="btn-primary" onclick="simulateCustomSignal()" style="width: 100%">🎯 Create Custom Signal</button>
+      </div>
+
+      <div class="response-area" id="responseArea">
+        <div class="response-item">
+          <div class="timestamp">Ready to test signals...</div>
+          <div>Click any button above to generate trading signals and see them appear in your main application!</div>
+        </div>
+      </div>
+    </div>
+
+    <script>
+      const API_BASE = '/api/v1/testing';
+
+      function addResponse(message, isSuccess = true) {
+        const responseArea = document.getElementById('responseArea');
+        const responseItem = document.createElement('div');
+        responseItem.className = `response-item ${isSuccess ? 'response-success' : 'response-error'}`;
+
+        const timestamp = new Date().toLocaleTimeString();
+        responseItem.innerHTML = `
+          <div class="timestamp">${timestamp}</div>
+          <div>${message}</div>
+      `;
+
+        responseArea.insertBefore(responseItem, responseArea.firstChild);
+
+        // Keep only last 10 responses
+        while (responseArea.children.length > 10) {
+          responseArea.removeChild(responseArea.lastChild);
+        }
+      }
+
+      async function simulateRandomSignal() {
+        try {
+          const response = await fetch(`${API_BASE}/simulate-signal`, {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+            },
+          });
+
+          const result = await response.json();
+
+          if (response.ok) {
+            const signal = result.signal;
+            addResponse(`✅ Random signal created: ${signal.direction} ${signal.symbol} at ${signal.price} (${signal.indicator})`, true);
+          } else {
+            addResponse(`❌ Error: ${result.message}`, false);
+          }
+        } catch (error) {
+          addResponse(`❌ Network error: ${error.message}`, false);
+        }
+      }
+
+      async function simulateBulkSignals() {
+        try {
+          const response = await fetch(`${API_BASE}/simulate-bulk-signals?count=5`, {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+            },
+          });
+
+          const result = await response.json();
+
+          if (response.ok) {
+            addResponse(`📊 Successfully created ${result.count} bulk signals`, true);
+          } else {
+            addResponse(`❌ Error: ${result.message}`, false);
+          }
+        } catch (error) {
+          addResponse(`❌ Network error: ${error.message}`, false);
+        }
+      }
+
+      async function startAutoSimulation() {
+        try {
+          const response = await fetch(`${API_BASE}/start-auto-simulation`, {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+            },
+          });
+
+          const result = await response.json();
+
+          if (response.ok) {
+            addResponse(`⚡ Auto simulation started: ${result.message}`, true);
+          } else {
+            addResponse(`❌ Error: ${result.message}`, false);
+          }
+        } catch (error) {
+          addResponse(`❌ Network error: ${error.message}`, false);
+        }
+      }
+
+      async function simulateCustomSignal() {
+        try {
+          const signalData = {
+            symbol: document.getElementById('symbol').value,
+            price: parseFloat(document.getElementById('price').value),
+            indicator: document.getElementById('indicator').value,
+            interval: document.getElementById('interval').value,
+            direction: document.getElementById('direction').value,
+            signalName: document.getElementById('signalName').value,
+            message: document.getElementById('message').value,
+          };
+
+          const response = await fetch(`${API_BASE}/simulate-specific-signal`, {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+            },
+            body: JSON.stringify(signalData),
+          });
+
+          const result = await response.json();
+
+          if (response.ok) {
+            addResponse(
+              `🎯 Custom signal created: ${signalData.direction} ${signalData.symbol} at ${signalData.price} (${signalData.indicator})`,
+              true,
+            );
+          } else {
+            addResponse(`❌ Error: ${result.message}`, false);
+          }
+        } catch (error) {
+          addResponse(`❌ Network error: ${error.message}`, false);
+        }
+      }
+
+      function clearResponses() {
+        const responseArea = document.getElementById('responseArea');
+        responseArea.innerHTML = `
+          <div class="response-item">
+              <div class="timestamp">Log cleared</div>
+              <div>Ready to test signals...</div>
+          </div>
+      `;
+      }
+
+      // Auto-populate realistic prices based on symbol selection
+      document.getElementById('symbol').addEventListener('change', function () {
+        const priceInput = document.getElementById('price');
+        const symbol = this.value;
+
+        const prices = {
+          AAPL: '150.25',
+          GOOGL: '2750.80',
+          TSLA: '220.15',
+          MSFT: '380.90',
+          AMZN: '3200.45',
+          NVDA: '450.30',
+          META: '320.75',
+          'BTC-USD': '42150.00',
+          'ETH-USD': '2500.00',
+        };
+
+        priceInput.value = prices[symbol] || '100.00';
+      });
+    </script>
+  </body>
+</html>

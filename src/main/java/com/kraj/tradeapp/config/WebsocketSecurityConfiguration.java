@@ -16,6 +16,9 @@ public class WebsocketSecurityConfiguration extends AbstractSecurityWebSocketMes
             .authenticated()
             .simpDestMatchers("/topic/tracker")
             .hasAuthority(AuthoritiesConstants.ADMIN)
+            // Add permission for signal-actions topic
+            .simpDestMatchers("/topic/signal-actions")
+            .hasAnyAuthority(AuthoritiesConstants.ADMIN, AuthoritiesConstants.USER)
             // matches any destination that starts with /topic/
             // (i.e. cannot send messages directly to /topic/)
             // (i.e. cannot subscribe to /topic/messages/* to get messages sent to

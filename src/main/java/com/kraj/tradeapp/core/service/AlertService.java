@@ -66,7 +66,7 @@ public class AlertService {
     public void sendTelegramMessage(String message) {
         try {
             for (String chatId : chatIds) {
-                TelegramBotConfig.telegramBot.execute(new SendMessage(chatId, message));
+                //TelegramBotConfig.telegramBot.execute(new SendMessage(chatId, message));
             }
         } catch (Exception e) {
             System.err.println("Failed to send telegram message: " + e.getMessage());

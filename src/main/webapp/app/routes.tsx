@@ -19,6 +19,9 @@ import { sendActivity } from 'app/config/websocket-middleware';
 import MerchantReportingDashboard from 'app/modules/dashboard/MerchantReportingDashboard';
 import MerchantReportingV2 from 'app/modules/dashboard/MerchantReportingV2';
 import AirflowEMRDashboard from 'app/modules/dashboard/AirflowEMRDashboard';
+import MerchantReportTracker from 'app/modules/dashboard/MerchantReportTracker';
+import SignalActionsPage from 'app/modules/dashboard/SignalActionsPage';
+import SignalTestPage from 'app/modules/dashboard/SignalTestPage';
 
 const loading = <div>loading ...</div>;
 
@@ -57,6 +60,9 @@ const AppRoutes = () => {
           <Route path="merchant-dashboard" element={<MerchantReportingDashboard />} />
           <Route path="merchant-reporting-v2" element={<MerchantReportingV2 />} />
           <Route path="merchant-reporting-v3" element={<AirflowEMRDashboard />} />
+          <Route path="merchant-report-tracker" element={<MerchantReportTracker />} />
+          <Route path="trade-signal" element={<SignalActionsPage />} />
+          <Route path="test-trade-signal" element={<SignalTestPage />} />
           <Route path="reset">
             <Route path="request" element={<PasswordResetInit />} />
             <Route path="finish" element={<PasswordResetFinish />} />

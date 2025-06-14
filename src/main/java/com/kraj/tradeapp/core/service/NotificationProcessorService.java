@@ -40,7 +40,7 @@ public class NotificationProcessorService implements ApplicationListener<Applica
     private final NotificationEventRepository notificationEventRepository;
     private final TradeSignalRepository tradeSignalRepository;
     private final ScoringService scoringService;
-    private final TelegramBotConfig telegramBotConfig;
+    //private final TelegramBotConfig telegramBotConfig;
     private final StrategyService strategyService;
     //private final QueueRepository queueRepository;
 
@@ -74,7 +74,7 @@ public class NotificationProcessorService implements ApplicationListener<Applica
             processTradingViewNotificationPriv(payload);
             mainEventQueue.poll();
         } catch (Exception e) {
-            telegramBotConfig.sendMessageToDefaultBotAllChatIds("Error processing event:%s, added to failure queue".formatted(payload));
+            //  telegramBotConfig.sendMessageToDefaultBotAllChatIds("Error processing event:%s, added to failure queue".formatted(payload));
             failedEventsQueue.offer(payload);
             mainEventQueue.poll();
             throw new RuntimeException("Error processing event:%s, added to failure queue".formatted(payload), e);
@@ -164,7 +164,7 @@ public class NotificationProcessorService implements ApplicationListener<Applica
         Optional<IndicatorMsgRule> mayBeMsgRule = scoringService.findMatchingIndicatorEventRule(indicator.name(), rawAlertMsg);
 
         if (mayBeMsgRule.isPresent() && mayBeMsgRule.get().isAlertable()) {
-            telegramBotConfig.sendMessageToDefaultBotAllChatIds("Alertable event found: %s".formatted(rawAlertMsg));
+            //telegramBotConfig.sendMessageToDefaultBotAllChatIds("Alertable event found: %s".formatted(rawAlertMsg));
         }
 
         boolean isSkipScoring =
@@ -225,7 +225,7 @@ public class NotificationProcessorService implements ApplicationListener<Applica
                 } catch (Exception e) {
                     log.error("Error processing strategy event", e);
                     String msg = "Error processing strategy, msg %s, err:%s".formatted(notificationEvent.getRawAlertMsg(), e.getMessage());
-                    telegramBotConfig.sendMessageToDefaultBotAllChatIds(msg);
+                    //telegramBotConfig.sendMessageToDefaultBotAllChatIds(msg);
                 } finally {
                     executor.shutdown(); // Shutdown the executor after task completion
                 }
