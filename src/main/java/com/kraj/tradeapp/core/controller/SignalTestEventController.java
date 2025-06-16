@@ -3,6 +3,7 @@ package com.kraj.tradeapp.core.controller;
 import com.kraj.tradeapp.core.model.dto.SignalActionDTO;
 import com.kraj.tradeapp.core.service.SignalActionsService;
 import java.math.BigDecimal;
+import java.time.ZonedDateTime;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Random;
@@ -13,7 +14,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 /**
- * Controller for testing and simulating signal events
+ * Controller for testing signal events - CLEAN IMPLEMENTATION
+ * Uses SignalActionsService processor interface directly
  */
 @RestController
 @RequestMapping("/api/v1/testing")
@@ -22,30 +24,31 @@ public class SignalTestEventController {
 
     private final Logger log = LoggerFactory.getLogger(SignalTestEventController.class);
 
-    private final SignalActionsService signalActionsService;
+    private final SignalActionsService signalActionsService; // ONLY DEPENDENCY NEEDED
     private final Random random = new Random();
 
-    // Sample data for realistic simulation
+    // Sample data for realistic testing
     private final String[] SYMBOLS = { "AAPL", "GOOGL", "TSLA", "MSFT", "AMZN", "NVDA", "META", "BTC-USD", "ETH-USD", "SPY" };
-    private final String[] INDICATORS = { "RSI", "MACD", "Bollinger Bands", "EMA", "Support/Resistance", "Volume", "Stochastic" };
-    private final String[] INTERVALS = { "15m", "30m", "1h", "2h", "4h", "6h", "1d" };
-    private final String[] SIGNAL_NAMES = {
-        "OVERSOLD",
-        "OVERBOUGHT",
-        "BULLISH_CROSS",
-        "BEARISH_CROSS",
-        "BREAKOUT",
-        "BREAKDOWN",
+    private final String[] INDICATORS = {
+        "RSI",
+        "MACD",
+        "BOLLINGER_BANDS",
+        "EMA_CROSSOVER",
+        "SUPPORT_RESISTANCE",
         "VOLUME_SPIKE",
+        "STOCHASTIC",
     };
+    private final String[] INTERVALS = { "15m", "30m", "1h", "2h", "4h", "6h", "1d" };
+    private final String[] DIRECTIONS = { "BULL", "BEAR", "NEUTRAL" };
 
     @Autowired
     public SignalTestEventController(SignalActionsService signalActionsService) {
-        this.signalActionsService = signalActionsService;
+        this.signalActionsService = signalActionsService; // ONLY DEPENDENCY
     }
 
     /**
-     * POST /simulate-signal : Create and broadcast a random signal for testing
+     * POST /simulate-signal : Create random signal using active processor
+     * CLEAN IMPLEMENTATION - Uses processor interface directly
      */
     @PostMapping("/simulate-signal")
     public ResponseEntity<Map<String, Object>> simulateRandomSignal() {
@@ -53,138 +56,303 @@ public class SignalTestEventController {
             String symbol = SYMBOLS[random.nextInt(SYMBOLS.length)];
             String indicator = INDICATORS[random.nextInt(INDICATORS.length)];
             String interval = INTERVALS[random.nextInt(INTERVALS.length)];
-            String signalName = SIGNAL_NAMES[random.nextInt(SIGNAL_NAMES.length)];
+            String direction = DIRECTIONS[random.nextInt(DIRECTIONS.length)];
 
-            // Generate realistic price based on symbol
             BigDecimal price = generateRealisticPrice(symbol);
+            String alertMessage = generateRealisticMessage(indicator, direction);
+            BigDecimal score = generateRealisticScore();
 
-            SignalActionDTO.SignalDirection direction = SignalActionDTO.SignalDirection.values()[random.nextInt(3)];
-            String message = generateRealisticMessage(indicator, signalName, direction);
-
-            signalActionsService.simulateNewSignal(symbol, price, signalName, indicator, interval, message, direction);
+            // CLEAN APPROACH - Use SignalActionsService processor interface
+            SignalActionDTO signalAction = signalActionsService.createSignalActionFromExternalEvent(
+                symbol,
+                price,
+                indicator,
+                indicator, // indicatorDisplayName
+                interval,
+                alertMessage,
+                direction,
+                ZonedDateTime.now(),
+                score,
+                false, // isStrategy
+                true // isAlertable
+            );
 
             Map<String, Object> response = new HashMap<>();
             response.put("status", "success");
-            response.put("message", "Random signal created and broadcasted");
+            response.put("message", "Signal created using active processor");
+            response.put("processorInfo", signalActionsService.getProcessorInfo());
             response.put(
-                "signal",
+                "signalAction",
                 Map.of(
+                    "id",
+                    signalAction.getId(),
                     "symbol",
-                    symbol,
+                    signalAction.getSymbol(),
                     "price",
-                    price,
+                    signalAction.getPrice(),
                     "indicator",
-                    indicator,
+                    signalAction.getIndicatorName(),
                     "interval",
-                    interval,
+                    signalAction.getInterval(),
                     "direction",
-                    direction,
+                    signalAction.getDirection().toString(),
+                    "status",
+                    signalAction.getStatus().toString(),
+                    "signalName",
+                    signalAction.getSignalName(),
                     "message",
-                    message
+                    signalAction.getMessage()
                 )
             );
 
-            log.info("Simulated random signal: {} {} at {} ({})", direction, symbol, price, indicator);
+            log.info(
+                "Created signal using active processor: {} {} for {} at price {}",
+                signalAction.getDirection(),
+                indicator,
+                symbol,
+                price
+            );
+
             return ResponseEntity.ok(response);
         } catch (Exception e) {
-            log.error("Error simulating signal: {}", e.getMessage());
+            log.error("Error creating test signal: {}", e.getMessage());
             Map<String, Object> response = new HashMap<>();
             response.put("status", "error");
-            response.put("message", "Failed to simulate signal: " + e.getMessage());
+            response.put("message", "Failed to create signal: " + e.getMessage());
             return ResponseEntity.badRequest().body(response);
         }
     }
 
     /**
-     * POST /simulate-specific-signal : Create a specific signal for testing
+     * POST /simulate-specific-signal : Create specific signal using active processor
+     * CLEAN IMPLEMENTATION
      */
     @PostMapping("/simulate-specific-signal")
     public ResponseEntity<Map<String, Object>> simulateSpecificSignal(@RequestBody Map<String, Object> signalRequest) {
         try {
             String symbol = (String) signalRequest.getOrDefault("symbol", "AAPL");
             BigDecimal price = new BigDecimal(signalRequest.getOrDefault("price", "150.00").toString());
-            String signalName = (String) signalRequest.getOrDefault("signalName", "TEST_SIGNAL");
             String indicator = (String) signalRequest.getOrDefault("indicator", "RSI");
             String interval = (String) signalRequest.getOrDefault("interval", "1h");
-            String message = (String) signalRequest.getOrDefault("message", "Test signal message");
-            String directionStr = (String) signalRequest.getOrDefault("direction", "BUY");
+            String alertMessage = (String) signalRequest.getOrDefault("alertMessage", "Test signal message");
+            String direction = (String) signalRequest.getOrDefault("direction", "BULL");
+            BigDecimal score = signalRequest.get("score") != null
+                ? new BigDecimal(signalRequest.get("score").toString())
+                : generateRealisticScore();
+            boolean isStrategy = Boolean.parseBoolean(signalRequest.getOrDefault("isStrategy", "false").toString());
+            boolean isAlertable = Boolean.parseBoolean(signalRequest.getOrDefault("isAlertable", "true").toString());
 
-            SignalActionDTO.SignalDirection direction = SignalActionDTO.SignalDirection.valueOf(directionStr.toUpperCase());
-
-            signalActionsService.simulateNewSignal(symbol, price, signalName, indicator, interval, message, direction);
+            // CLEAN APPROACH - Use SignalActionsService processor interface
+            SignalActionDTO signalAction = signalActionsService.createSignalActionFromExternalEvent(
+                symbol,
+                price,
+                indicator,
+                indicator,
+                interval,
+                alertMessage,
+                direction,
+                ZonedDateTime.now(),
+                score,
+                isStrategy,
+                isAlertable
+            );
 
             Map<String, Object> response = new HashMap<>();
             response.put("status", "success");
-            response.put("message", "Specific signal created and broadcasted");
-            response.put("signal", signalRequest);
+            response.put("message", "Specific signal created using active processor");
+            response.put("processorInfo", signalActionsService.getProcessorInfo());
+            response.put("signalAction", signalAction);
 
-            log.info("Simulated specific signal: {} {} at {} ({})", direction, symbol, price, indicator);
+            log.info(
+                "Created specific signal using active processor: {} {} for {} at price {}",
+                signalAction.getDirection(),
+                indicator,
+                symbol,
+                price
+            );
+
             return ResponseEntity.ok(response);
         } catch (Exception e) {
-            log.error("Error simulating specific signal: {}", e.getMessage());
+            log.error("Error creating specific signal: {}", e.getMessage());
             Map<String, Object> response = new HashMap<>();
             response.put("status", "error");
-            response.put("message", "Failed to simulate specific signal: " + e.getMessage());
+            response.put("message", "Failed to create specific signal: " + e.getMessage());
             return ResponseEntity.badRequest().body(response);
         }
     }
 
     /**
-     * POST /simulate-bulk-signals : Create multiple signals at once for testing
+     * POST /simulate-bulk-signals : Create multiple signals using active processor
+     * CLEAN IMPLEMENTATION
      */
     @PostMapping("/simulate-bulk-signals")
     public ResponseEntity<Map<String, Object>> simulateBulkSignals(@RequestParam(defaultValue = "5") int count) {
         try {
-            for (int i = 0; i < Math.min(count, 20); i++) { // Limit to 20 signals max
-                simulateRandomSignal();
-                // Small delay between signals to make them more realistic
+            int actualCount = Math.min(count, 20); // Limit to 20 signals max
+
+            for (int i = 0; i < actualCount; i++) {
+                String symbol = SYMBOLS[random.nextInt(SYMBOLS.length)];
+                String indicator = INDICATORS[random.nextInt(INDICATORS.length)];
+                String interval = INTERVALS[random.nextInt(INTERVALS.length)];
+                String direction = DIRECTIONS[random.nextInt(DIRECTIONS.length)];
+                BigDecimal price = generateRealisticPrice(symbol);
+                String alertMessage = generateRealisticMessage(indicator, direction);
+                BigDecimal score = generateRealisticScore();
+
+                // CLEAN APPROACH - Use SignalActionsService processor interface
+                signalActionsService.createSignalActionFromExternalEvent(
+                    symbol,
+                    price,
+                    indicator,
+                    indicator,
+                    interval,
+                    alertMessage,
+                    direction,
+                    ZonedDateTime.now(),
+                    score,
+                    false,
+                    true
+                );
+
+                // Small delay between signals
                 Thread.sleep(100);
             }
 
             Map<String, Object> response = new HashMap<>();
             response.put("status", "success");
-            response.put("message", count + " signals created and broadcasted");
-            response.put("count", count);
+            response.put("message", actualCount + " signals created using active processor");
+            response.put("count", actualCount);
+            response.put("processorInfo", signalActionsService.getProcessorInfo());
 
-            log.info("Simulated {} bulk signals", count);
+            log.info("Created {} bulk signals using active processor", actualCount);
             return ResponseEntity.ok(response);
         } catch (Exception e) {
-            log.error("Error simulating bulk signals: {}", e.getMessage());
+            log.error("Error creating bulk signals: {}", e.getMessage());
             Map<String, Object> response = new HashMap<>();
             response.put("status", "error");
-            response.put("message", "Failed to simulate bulk signals: " + e.getMessage());
+            response.put("message", "Failed to create bulk signals: " + e.getMessage());
             return ResponseEntity.badRequest().body(response);
         }
     }
 
     /**
-     * POST /start-auto-simulation : Start automatic signal generation for testing
+     * POST /start-auto-simulation : Start automatic signal generation
+     * CLEAN IMPLEMENTATION
      */
     @PostMapping("/start-auto-simulation")
     public ResponseEntity<Map<String, String>> startAutoSimulation() {
-        // Note: In a real application, you'd use a proper scheduler like @Scheduled
-        // This is just for demonstration
         new Thread(() -> {
             try {
                 for (int i = 0; i < 10; i++) {
-                    simulateRandomSignal();
+                    String symbol = SYMBOLS[random.nextInt(SYMBOLS.length)];
+                    String indicator = INDICATORS[random.nextInt(INDICATORS.length)];
+                    String interval = INTERVALS[random.nextInt(INTERVALS.length)];
+                    String direction = DIRECTIONS[random.nextInt(DIRECTIONS.length)];
+                    BigDecimal price = generateRealisticPrice(symbol);
+                    String alertMessage = generateRealisticMessage(indicator, direction);
+                    BigDecimal score = generateRealisticScore();
+
+                    // CLEAN APPROACH - Use SignalActionsService processor interface
+                    signalActionsService.createSignalActionFromExternalEvent(
+                        symbol,
+                        price,
+                        indicator,
+                        indicator,
+                        interval,
+                        alertMessage,
+                        direction,
+                        ZonedDateTime.now(),
+                        score,
+                        false,
+                        true
+                    );
+
                     Thread.sleep(3000); // Wait 3 seconds between signals
                 }
             } catch (InterruptedException e) {
                 Thread.currentThread().interrupt();
                 log.warn("Auto simulation interrupted");
+            } catch (Exception e) {
+                log.error("Error in auto simulation: {}", e.getMessage());
             }
         }).start();
 
         Map<String, String> response = new HashMap<>();
         response.put("status", "success");
-        response.put("message", "Auto simulation started - will generate 10 signals over 30 seconds");
+        response.put("message", "Auto simulation started - will generate 10 signals using active processor over 30 seconds");
 
-        log.info("Started auto signal simulation");
+        log.info("Started auto signal simulation using active processor");
         return ResponseEntity.ok(response);
     }
 
-    // Helper methods
+    /**
+     * GET /signal-stats : Get current signal statistics
+     * INCLUDES PROCESSOR INFO
+     */
+    @GetMapping("/signal-stats")
+    public ResponseEntity<Map<String, Object>> getSignalStats() {
+        try {
+            Map<SignalActionDTO.SignalStatus, Long> countsByStatus = signalActionsService.getSignalActionCountsByStatus();
+
+            Map<String, Object> stats = new HashMap<>();
+            stats.put("total", signalActionsService.getAllSignalActions().size());
+            stats.put("pending", countsByStatus.getOrDefault(SignalActionDTO.SignalStatus.PENDING, 0L));
+            stats.put("executed", countsByStatus.getOrDefault(SignalActionDTO.SignalStatus.EXECUTED, 0L));
+            stats.put("cancelled", countsByStatus.getOrDefault(SignalActionDTO.SignalStatus.CANCELLED, 0L));
+            stats.put("uniqueSymbols", signalActionsService.getUniqueSymbols().size());
+            stats.put("uniqueIndicators", signalActionsService.getUniqueIndicatorNames().size());
+            stats.put("processorInfo", signalActionsService.getProcessorInfo()); // SHOWS ACTIVE PROCESSOR
+
+            return ResponseEntity.ok(stats);
+        } catch (Exception e) {
+            log.error("Error getting signal stats: {}", e.getMessage());
+            return ResponseEntity.badRequest().build();
+        }
+    }
+
+    /**
+     * GET /processor-info : Get active processor information
+     * NEW ENDPOINT
+     */
+    @GetMapping("/processor-info")
+    public ResponseEntity<Map<String, Object>> getProcessorInfo() {
+        try {
+            Map<String, Object> processorInfo = signalActionsService.getProcessorInfo();
+            return ResponseEntity.ok(processorInfo);
+        } catch (Exception e) {
+            log.error("Error getting processor info: {}", e.getMessage());
+            return ResponseEntity.badRequest().build();
+        }
+    }
+
+    /**
+     * DELETE /clear-signals : Clear all signals for testing
+     * UNCHANGED
+     */
+    @DeleteMapping("/clear-signals")
+    public ResponseEntity<Map<String, String>> clearAllSignals() {
+        try {
+            signalActionsService.clearAllSignalActions();
+
+            Map<String, String> response = new HashMap<>();
+            response.put("status", "success");
+            response.put("message", "All signals cleared successfully");
+
+            log.info("Cleared all signals via test controller");
+            return ResponseEntity.ok(response);
+        } catch (Exception e) {
+            log.error("Error clearing signals: {}", e.getMessage());
+            Map<String, String> response = new HashMap<>();
+            response.put("status", "error");
+            response.put("message", "Failed to clear signals: " + e.getMessage());
+            return ResponseEntity.badRequest().body(response);
+        }
+    }
+
+    // ========================================================================
+    // HELPER METHODS
+    // ========================================================================
+
     private BigDecimal generateRealisticPrice(String symbol) {
         switch (symbol) {
             case "AAPL":
@@ -205,31 +373,50 @@ public class SignalTestEventController {
                 return new BigDecimal(41000 + random.nextDouble() * 2000).setScale(2, BigDecimal.ROUND_HALF_UP);
             case "ETH-USD":
                 return new BigDecimal(2400 + random.nextDouble() * 200).setScale(2, BigDecimal.ROUND_HALF_UP);
+            case "SPY":
+                return new BigDecimal(450 + random.nextDouble() * 20).setScale(2, BigDecimal.ROUND_HALF_UP);
             default:
                 return new BigDecimal(100 + random.nextDouble() * 50).setScale(2, BigDecimal.ROUND_HALF_UP);
         }
     }
 
-    private String generateRealisticMessage(String indicator, String signalName, SignalActionDTO.SignalDirection direction) {
-        String actionWord = direction == SignalActionDTO.SignalDirection.BUY
-            ? "bullish"
-            : direction == SignalActionDTO.SignalDirection.SELL ? "bearish" : "neutral";
+    private String generateRealisticMessage(String indicator, String direction) {
+        String actionWord = direction.equals("BULL") ? "bullish" : direction.equals("BEAR") ? "bearish" : "neutral";
 
         switch (indicator) {
             case "RSI":
-                return String.format("RSI indicates %s conditions with %s signal", actionWord, signalName.toLowerCase());
+                return String.format(
+                    "RSI indicates %s conditions with potential %s opportunity",
+                    direction.equals("BULL") ? "oversold" : direction.equals("BEAR") ? "overbought" : "neutral",
+                    actionWord
+                );
             case "MACD":
-                return String.format("MACD shows %s momentum with %s pattern", actionWord, signalName.toLowerCase());
-            case "Bollinger Bands":
-                return String.format("Price action near Bollinger Bands suggests %s movement", actionWord);
-            case "EMA":
-                return String.format("EMA crossover indicates %s trend formation", actionWord);
-            case "Support/Resistance":
-                return String.format("Key level %s shows potential %s opportunity", signalName.toLowerCase(), actionWord);
-            case "Volume":
-                return String.format("Volume analysis confirms %s pressure with %s", actionWord, signalName.toLowerCase());
+                return String.format("MACD shows %s crossover with %s momentum building", actionWord, actionWord);
+            case "BOLLINGER_BANDS":
+                return String.format("Price action near Bollinger Bands suggests %s movement potential", actionWord);
+            case "EMA_CROSSOVER":
+                return String.format("EMA crossover indicates %s trend formation with strong momentum", actionWord);
+            case "SUPPORT_RESISTANCE":
+                return String.format(
+                    "Key %s level shows potential %s opportunity with volume confirmation",
+                    direction.equals("BULL") ? "support" : "resistance",
+                    actionWord
+                );
+            case "VOLUME_SPIKE":
+                return String.format("Volume analysis confirms %s pressure with unusual activity", actionWord);
+            case "STOCHASTIC":
+                return String.format(
+                    "Stochastic oscillator shows %s conditions with %s divergence",
+                    direction.equals("BULL") ? "oversold" : direction.equals("BEAR") ? "overbought" : "neutral",
+                    actionWord
+                );
             default:
-                return String.format("%s indicator shows %s signal for potential %s move", indicator, signalName.toLowerCase(), actionWord);
+                return String.format("%s indicator shows %s signal for potential %s move", indicator, actionWord, actionWord);
         }
+    }
+
+    private BigDecimal generateRealisticScore() {
+        // Generate score between 40-95 for realistic testing
+        return new BigDecimal(40 + random.nextDouble() * 55).setScale(1, BigDecimal.ROUND_HALF_UP);
     }
 }

@@ -1,7 +1,10 @@
+// Clean NotificationProcessorService.java with separated processors
+
 package com.kraj.tradeapp.core.service;
 
 import com.kraj.tradeapp.core.model.*;
 import com.kraj.tradeapp.core.model.dto.NotificationEventDto;
+import com.kraj.tradeapp.core.model.dto.SignalActionDTO;
 import com.kraj.tradeapp.core.model.persistance.NotificationEvent;
 import com.kraj.tradeapp.core.model.persistance.TradeSignal;
 import com.kraj.tradeapp.core.repository.NotificationEventRepository;
@@ -9,7 +12,6 @@ import com.kraj.tradeapp.core.repository.TradeSignalRepository;
 import jakarta.annotation.Nullable;
 import java.math.BigDecimal;
 import java.time.Instant;
-import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
@@ -24,6 +26,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.boot.context.event.ApplicationReadyEvent;
 import org.springframework.context.ApplicationListener;
+import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 
@@ -33,25 +36,80 @@ import org.springframework.stereotype.Service;
 public class NotificationProcessorService implements ApplicationListener<ApplicationReadyEvent> {
 
     private ApplicationReadyEvent event;
-
     private final ReentrantLock EVENT_PROCESSOR_LOCK = new ReentrantLock();
 
+    // Core dependencies
+    private final SimpMessagingTemplate messagingTemplate;
     private final TradeSignalSnapshotProcessor tradeSignalSnapshotProcessor;
     private final NotificationEventRepository notificationEventRepository;
     private final TradeSignalRepository tradeSignalRepository;
     private final ScoringService scoringService;
-    //private final TelegramBotConfig telegramBotConfig;
     private final StrategyService strategyService;
-    //private final QueueRepository queueRepository;
+    private final SignalActionsService signalActionsService; // Clean interface
 
+    // Event processing queues
     private static final String CUSTOM_PAYLOAD_SEPARATOR = "|";
     private final Queue<String> mainEventQueue = new LinkedList<>();
     private final Queue<String> failedEventsQueue = new LinkedList<>();
     private final ConcurrentHashMap<Long, List<String>> qKronosBuckets = new ConcurrentHashMap<>();
 
+    // ========================================================================
+    // PUBLIC API METHODS
+    // ========================================================================
+
+    /**
+     * Queue notification for processing
+     */
     public void queueAndProcessNotification(String payload) {
         mainEventQueue.offer(payload);
     }
+
+    /**
+     * Simulate real TradingView webhook for testing
+     */
+    public void simulateRealTradingViewWebhook(
+        String symbol,
+        BigDecimal price,
+        String indicator,
+        String direction,
+        String interval,
+        String alertMessage
+    ) {
+        String payload = String.format(
+            "CUSTOM|indicator=%s|symbol=%s|price=%s|dir=%s|interval=%s|alert_message=%s|source=TV|time=%d|candleType=CLASSIC",
+            indicator,
+            symbol,
+            price.toString(),
+            direction,
+            interval,
+            alertMessage,
+            System.currentTimeMillis()
+        );
+
+        log.info("Simulating TradingView webhook for {}: {}", symbol, indicator);
+        queueAndProcessNotification(payload);
+    }
+
+    /**
+     * Process multiple real events in batch
+     */
+    public void processMultipleRealEvents(List<String> payloads) {
+        log.info("Processing {} real events in batch", payloads.size());
+
+        for (String payload : payloads) {
+            try {
+                processTradingViewNotificationPriv(payload);
+            } catch (Exception e) {
+                log.error("Error processing payload in batch: {}", payload, e);
+            }
+        }
+
+        log.info("Completed batch processing of {} real events", payloads.size());
+    }
+
+    // ========================================================================
+    // EVENT PROCESSING ENGINE
+    // ========================================================================
 
     @Override
     public void onApplicationEvent(ApplicationReadyEvent event) {
@@ -68,115 +126,121 @@ public class NotificationProcessorService implements ApplicationListener<Applica
             EVENT_PROCESSOR_LOCK.unlock();
             return;
         }
+
         String payload = null;
         try {
             payload = mainEventQueue.peek();
             processTradingViewNotificationPriv(payload);
             mainEventQueue.poll();
         } catch (Exception e) {
-            //  telegramBotConfig.sendMessageToDefaultBotAllChatIds("Error processing event:%s, added to failure queue".formatted(payload));
             failedEventsQueue.offer(payload);
             mainEventQueue.poll();
-            throw new RuntimeException("Error processing event:%s, added to failure queue".formatted(payload), e);
+            throw new RuntimeException("Error processing event: " + payload + ", added to failure queue", e);
         } finally {
             EVENT_PROCESSOR_LOCK.unlock();
         }
     }
 
+    /**
+     * Main event processing method - clean and focused
+     */
     public void processTradingViewNotificationPriv(String payload) {
         Map<String, String> payloadMap = getPayloadMap(payload);
-        //handle empty
+
         if (payloadMap.isEmpty()) {
             return;
         }
 
+        // Parse event data
+        EventData eventData = parseEventData(payloadMap, payload);
+
+        // Create and save notification event
+        NotificationEvent notificationEvent = createNotificationEvent(eventData);
+        notificationEventRepository.save(notificationEvent);
+
+        // Create signal action using the appropriate processor
+        createSignalActionFromEvent(notificationEvent, eventData);
+
+        // Send WebSocket notification
+        NotificationEventDto eventDto = getDto(notificationEvent);
+        messagingTemplate.convertAndSend("/topic/events", List.of(eventDto));
+
+        // Handle strategy processing if needed
+        handleStrategyProcessing(notificationEvent);
+
+        // Notify signal processor
+        tradeSignalSnapshotProcessor.notifyEventForProcessing();
+    }
+
+    // ========================================================================
+    // HELPER METHODS - CLEAN AND FOCUSED
+    // ========================================================================
+
+    private EventData parseEventData(Map<String, String> payloadMap, String payload) {
+        EventData data = new EventData();
+
+        // Parse price
         BigDecimal priceVal = getValueFor(PayloadKey.PRICE, payloadMap)
             .filter(CommonUtil::isNumeric)
             .map(BigDecimal::new)
             .orElse(BigDecimal.ZERO);
-
         BigDecimal priceClose = getValueFor(PayloadKey.PRICE_CLOSE, payloadMap)
             .filter(CommonUtil::isNumeric)
-            .map(value -> value.replaceAll("[^\\d.]", "")) // remove all non-digit, non-dot characters
+            .map(value -> value.replaceAll("[^\\d.]", ""))
             .map(BigDecimal::new)
             .orElse(BigDecimal.ZERO);
-        BigDecimal price = priceVal.compareTo(BigDecimal.ZERO) == 0 ? priceClose : priceVal;
+        data.price = priceVal.compareTo(BigDecimal.ZERO) == 0 ? priceClose : priceVal;
 
-        String indicatorRaw = StringUtils.isNotBlank(payloadMap.get("indicator")) ? payloadMap.get("indicator") : "UNKNOWN";
-        Indicator indicator = Indicator.fromString(indicatorRaw);
+        // Parse basic fields
+        data.indicator = Indicator.fromString(
+            StringUtils.isNotBlank(payloadMap.get("indicator")) ? payloadMap.get("indicator") : "UNKNOWN"
+        );
+        data.symbol = getValueFor(PayloadKey.SYMBOL, payloadMap).filter(StringUtils::isNotBlank).orElse("UNKNOWN");
+        data.interval = EventInterval.getFromValue(
+            getValueFor(PayloadKey.INTERVAL, payloadMap).filter(StringUtils::isNotBlank).orElse("UNKNOWN")
+        );
+        data.source = IndicatorSource.fromString(
+            getValueFor(PayloadKey.SOURCE, payloadMap).filter(StringUtils::isNotBlank).orElse("UNKNOWN")
+        );
+        data.rawAlertMsg = getValueFor(PayloadKey.ALERT_MESSAGE, payloadMap).filter(StringUtils::isNotBlank).orElse("UNKNOWN");
+        data.candleType = CandleType.getFromValue(
+            getValueFor(PayloadKey.CANDLE_TYPE, payloadMap).filter(StringUtils::isNotBlank).orElse(CandleType.CLASSIC.name())
+        );
 
-        String symbol = getValueFor(PayloadKey.SYMBOL, payloadMap).filter(StringUtils::isNotBlank).orElse("UNKNOWN");
-
-        String intervalRaw = getValueFor(PayloadKey.INTERVAL, payloadMap).filter(StringUtils::isNotBlank).orElse("UNKNOWN");
-        EventInterval interval = EventInterval.getFromValue(intervalRaw);
-
-        //        String direction = StringUtils.isNotBlank(payloadMap.get("dir")) ? payloadMap.get("dir") : "UNKNOWN";
-        String sourceStr = getValueFor(PayloadKey.SOURCE, payloadMap).filter(StringUtils::isNotBlank).orElse("UNKNOWN");
-        IndicatorSource source = IndicatorSource.fromString(sourceStr);
-        String rawAlertMsg = getValueFor(PayloadKey.ALERT_MESSAGE, payloadMap).filter(StringUtils::isNotBlank).orElse("UNKNOWN");
-        String candleTypeStr = getValueFor(PayloadKey.CANDLE_TYPE, payloadMap)
-            .filter(StringUtils::isNotBlank)
-            .orElse(CandleType.CLASSIC.name());
-        CandleType candleType = CandleType.getFromValue(candleTypeStr);
-
-        //String derivedValue = getDerivedValue(indicator, payloadMap);
-
-        @Nullable
+        // Parse timestamp
         String eventDateTimeStr = getValueFor(PayloadKey.TIME, payloadMap).orElse(ZonedDateTime.now().toString());
-
-        ZonedDateTime eventDateTime = null;
         if (CommonUtil.isNumeric(eventDateTimeStr)) {
             ChronoUnit chronoUnit = determineTimeUnit(Long.parseLong(eventDateTimeStr));
-            eventDateTime = chronoUnit == ChronoUnit.MILLIS
+            data.eventDateTime = chronoUnit == ChronoUnit.MILLIS
                 ? Instant.ofEpochMilli(Long.parseLong(eventDateTimeStr)).atZone(ZoneId.of("UTC"))
                 : chronoUnit == ChronoUnit.SECONDS
                     ? Instant.ofEpochSecond(Long.parseLong(eventDateTimeStr)).atZone(ZoneId.of("UTC"))
                     : ZonedDateTime.now();
-            //            eventDateTime = chronoUnit == ChronoUnit.MILLIS
-            //                ? LocalDateTime.ofInstant(Instant.ofEpochMilli(Long.parseLong(eventDateTimeStr)), ZoneId.of("America/New_York"))
-            //                : chronoUnit == ChronoUnit.SECONDS
-            //                    ? LocalDateTime.ofEpochSecond(
-            //                        Long.parseLong(eventDateTimeStr),
-            //                        0,
-            //                        ZoneId.of("America/New_York").getRules().getOffset(Instant.now())
-            //                    )
-            //                    : LocalDateTime.now();
         } else {
-            //eventDateTime = ZonedDateTime.parse(eventDateTimeStr).withZoneSameInstant(ZoneId.of("America/New_York")).toLocalDateTime();
-            eventDateTime = ZonedDateTime.now();
+            data.eventDateTime = ZonedDateTime.now();
         }
-        //stale event, set to now
-        //eventDateTime = CommonUtil.getNYLocalDateTimeNow();
 
-        //        if (indicator == Indicator.QUANTVUE_QKRONOS) {
-        //            long epochSecondsWithDelay = eventDateTime.toEpochSecond(ZoneId.of("America/New_York").getRules().getOffset(Instant.now())) + 5;
-        //            long epochSecond = eventDateTime.toEpochSecond(ZoneId.of("America/New_York").getRules().getOffset(Instant.now()));
-        //            qKronosBuckets.computeIfAbsent(epochSecond, k -> new ArrayList<>()).add(payload);
-        //            return;
-        //        }
+        // Parse strategy
+        data.strategy = Strategy.fromString(getValueFor(PayloadKey.STRATEGY, payloadMap).filter(StringUtils::isNotBlank).orElse(null));
 
-        @Nullable
-        String strategyStr = getValueFor(PayloadKey.STRATEGY, payloadMap).filter(StringUtils::isNotBlank).orElse(null);
-        Strategy strategy = Strategy.fromString(strategyStr);
+        data.payload = payload;
+        return data;
+    }
 
-        StrategyProcessStatus strategyProcessStatus = strategy == Strategy.NONE ? StrategyProcessStatus.NA : StrategyProcessStatus.PENDING;
+    private NotificationEvent createNotificationEvent(EventData data) {
+        StrategyProcessStatus strategyProcessStatus = data.strategy == Strategy.NONE
+            ? StrategyProcessStatus.NA
+            : StrategyProcessStatus.PENDING;
 
-        Optional<IndicatorMsgRule> mayBeMsgRule = scoringService.findMatchingIndicatorEventRule(indicator.name(), rawAlertMsg);
-
-        if (mayBeMsgRule.isPresent() && mayBeMsgRule.get().isAlertable()) {
-            //telegramBotConfig.sendMessageToDefaultBotAllChatIds("Alertable event found: %s".formatted(rawAlertMsg));
-        }
+        Optional<IndicatorMsgRule> mayBeMsgRule = scoringService.findMatchingIndicatorEventRule(data.indicator.name(), data.rawAlertMsg);
 
         boolean isSkipScoring =
             mayBeMsgRule.isEmpty() ||
             (StringUtils.isNotBlank(mayBeMsgRule.get().getIsSkipScoring()) &&
                 StringUtils.equalsIgnoreCase(mayBeMsgRule.get().getIsSkipScoring(), "true"));
 
-        @Nullable
         BigDecimal scoreRangeMin = mayBeMsgRule.map(IndicatorMsgRule::getScoreRangeMin).orElse(null);
-        @Nullable
         BigDecimal scoreRangeMax = mayBeMsgRule.map(IndicatorMsgRule::getScoreRangeMax).orElse(null);
-        @Nullable
         BigDecimal score = mayBeMsgRule.map(IndicatorMsgRule::getScore).orElse(null);
 
         BigDecimal scorePercent = (isSkipScoring || scoreRangeMin == null || scoreRangeMax == null || score == null)
@@ -185,9 +249,9 @@ public class NotificationProcessorService implements ApplicationListener<Applica
 
         Direction scoreDirection = isSkipScoring || score == null ? Direction.UNKNOWN : ScoringService.categorizeScore(scorePercent);
 
-        NotificationEvent notificationEvent = NotificationEvent.builder()
-            .price(price)
-            .symbol(symbol)
+        return NotificationEvent.builder()
+            .price(data.price)
+            .symbol(data.symbol)
             .minScore(scoreRangeMin)
             .maxScore(scoreRangeMax)
             .score(score == null ? BigDecimal.ZERO : score)
@@ -199,24 +263,53 @@ public class NotificationProcessorService implements ApplicationListener<Applica
             .indicatorSubCategoryDisplayName(
                 mayBeMsgRule.map(IndicatorMsgRule::getIndicatorSubCategoryDisplayName).filter(StringUtils::isNotBlank).orElse("UNKNOWN")
             )
-            .rawAlertMsg(rawAlertMsg)
-            .rawPayload(payload)
-            .interval(interval.name())
-            .candleType(candleType.name())
-            .isStrategy(strategy != Strategy.NONE)
-            .strategyName(strategy.name())
+            .rawAlertMsg(data.rawAlertMsg)
+            .rawPayload(data.payload)
+            .interval(data.interval.name())
+            .candleType(data.candleType.name())
+            .isStrategy(data.strategy != Strategy.NONE)
+            .strategyName(data.strategy.name())
             .strategyProcessStatus(strategyProcessStatus.name())
-            .source(source.name())
-            .datetime(eventDateTime)
-            .indicator(indicator.name())
+            .source(data.source.name())
+            .datetime(data.eventDateTime)
+            .indicator(data.indicator.name())
             .indicatorDisplayName(
                 mayBeMsgRule.map(IndicatorMsgRule::getIndicatorDisplayName).filter(StringUtils::isNotBlank).orElse("UNKNOWN")
             )
             .tradeSignalProcessStatus(isSkipScoring ? ProcessingStatus.NOT_APPLICABLE.name() : ProcessingStatus.PENDING.name())
             .isAlertable(mayBeMsgRule.map(IndicatorMsgRule::isAlertable).orElse(false))
             .build();
+    }
 
-        //execute in async
+    private void createSignalActionFromEvent(NotificationEvent notificationEvent, EventData eventData) {
+        try {
+            // Use the clean processor interface
+            SignalActionDTO signalAction = signalActionsService.createSignalActionFromExternalEvent(
+                notificationEvent.getSymbol(),
+                notificationEvent.getPrice(),
+                notificationEvent.getIndicator(),
+                notificationEvent.getIndicatorDisplayName(),
+                notificationEvent.getInterval(),
+                notificationEvent.getRawAlertMsg(),
+                notificationEvent.getDirection(),
+                ZonedDateTime.now(),
+                notificationEvent.getScore(),
+                notificationEvent.isStrategy(),
+                notificationEvent.isAlertable()
+            );
+
+            log.info(
+                "Created SignalAction {} from NotificationEvent {} for symbol {}",
+                signalAction.getId(),
+                notificationEvent.getId(),
+                notificationEvent.getSymbol()
+            );
+        } catch (Exception e) {
+            log.error("Error creating SignalAction from NotificationEvent {}: {}", notificationEvent.getId(), e.getMessage());
+        }
+    }
+
+    private void handleStrategyProcessing(NotificationEvent notificationEvent) {
         if (notificationEvent.isStrategy()) {
             ExecutorService executor = Executors.newSingleThreadExecutor();
             executor.execute(() -> {
@@ -224,69 +317,17 @@ public class NotificationProcessorService implements ApplicationListener<Applica
                     strategyService.handleStrategyEvent(notificationEvent);
                 } catch (Exception e) {
                     log.error("Error processing strategy event", e);
-                    String msg = "Error processing strategy, msg %s, err:%s".formatted(notificationEvent.getRawAlertMsg(), e.getMessage());
-                    //telegramBotConfig.sendMessageToDefaultBotAllChatIds(msg);
                 } finally {
-                    executor.shutdown(); // Shutdown the executor after task completion
+                    executor.shutdown();
                 }
             });
         }
-        notificationEventRepository.save(notificationEvent);
-        tradeSignalSnapshotProcessor.notifyEventForProcessing();
-        //tradeSignalSnapshotProcessor.processEventForTradeSignalSnapshot(List.of(notificationEvent));
-        //send notification snapshot maintanence service
     }
 
-    //    private NotificationEvent overrideFieldsIfNeeded(NotificationEvent notificationEvent, Indicator indicator, String payload) {
-    //        switch (indicator) {
-    //            case Q_LINE,
-    //                Q_BANDS,
-    //                Q_CLOUD,
-    //                Q_GRID,
-    //                Q_MOMENTUM,
-    //                Q_MONEY_BALL,
-    //                Q_ORACLE_SQUEEZER,
-    //                Q_SMC_2ND_TREND_RIBBON,
-    //                Q_SMC_TREND_RIBBON,
-    //                 QUANTVUE_QELITE,
-    //                Q_WAVE,
-    //                QKRONOS,
-    //                QSUMO,
-    //                QGRID_ELITE,
-    //                QCLOUD_TREND_TRADER,
-    //                QSCALPER -> {
-    //                notificationEvent.setIndicatorSubCategory(EventCategory.DIRECTION.name());
-    //                Direction direction = StringUtils.containsIgnoreCase(payload, "BULL")
-    //                    ? Direction.BULL
-    //                    : StringUtils.containsIgnoreCase(payload, "BEAR") ? Direction.BEAR : Direction.NEUTRAL;
-    //                notificationEvent.setDirection(direction.name());
-    //                notificationEvent.setDerivedValue(direction.name());
-    //                return notificationEvent;
-    //            }
-    //            case ABSORPTION, EXHAUSTION, BIG_TRADES -> {}
-    //            case DELTA_TURNAROUND -> {}
-    //            case SPEED_OF_TAPE -> {}
-    //            case FVG_DETECTOR -> {}
-    //            case IFVG_DETECTOR -> {}
-    //            case FVG_REJECTION_DETECTOR -> {}
-    //            case DISPLACEMENT_DETECTOR -> {}
-    //            case SMT_DIVERGENCE_DETECTOR -> {}
-    //            case LIQUIDITY_SWEEP_DETECTOR -> {}
-    //            case PRICE_DROP_DETECTOR -> {}
-    //            case SMC_BREAKOUT -> {}
-    //            case STACKED_IMBALANCES -> {}
-    //            case BJ_KEY_LEVELS -> {}
-    //            case SR_CHANNEL_V2 -> {}
-    //            case SMC_CONCEPTS -> {}
-    //            case BPR_DETECTOR -> {}
-    //            case CONSOLIDATION_ZONE_TRACKER -> {}
-    //            case UNKNOWN -> {}
-    //        }
-    //        return notificationEvent;
-    //    }
+    // ========================================================================
+    // EXISTING HELPER METHODS - UNCHANGED
+    // ========================================================================
 
-    //message format:
-    //PAYLOAD=CUSTOM|indicator=Q_LINE|price=500.00|time=2021-09-01T14:00:00Z|strategyName=QUANTVUE_QKRONOS|symbol=SPY|source=TV|interval=1m|candleType=CLASSIC|isStrategy=true
     public static Map<String, String> getPayloadMap(String payload) {
         if (StringUtils.trim(payload).isEmpty()) {
             return new HashMap<>();
@@ -296,8 +337,8 @@ public class NotificationProcessorService implements ApplicationListener<Applica
         if (payloadStrArr.length < 2) {
             return new HashMap<>();
         }
-        Map<String, String> payloadMap = new HashMap<>();
 
+        Map<String, String> payloadMap = new HashMap<>();
         for (String payloadItem : payloadStrArr) {
             String[] payloadItemArr = StringUtils.split(payloadItem, "=");
             if (payloadItemArr.length < 2) {
@@ -310,26 +351,6 @@ public class NotificationProcessorService implements ApplicationListener<Applica
 
     public static Optional<String> getValueFor(PayloadKey payloadKey, Map<String, String> payloadMap) {
         return Optional.ofNullable(payloadMap.get(payloadKey.getKeyName()));
-    }
-
-    private Map<String, String> getPayloadMapV2(String payload) {
-        if (!payload.toUpperCase().startsWith("CUSTOM")) {
-            return new HashMap<>();
-        }
-        String[] payloadStrArr = StringUtils.split(payload, CUSTOM_PAYLOAD_SEPARATOR);
-        if (payloadStrArr.length < 2) {
-            return new HashMap<>();
-        }
-
-        Map<String, String> payloadMap = new HashMap<>();
-        for (String payloadItem : payloadStrArr) {
-            String[] payloadItemArr = StringUtils.split(payloadItem, "=");
-            if (payloadItemArr.length < 2) {
-                continue;
-            }
-            payloadMap.put(payloadItemArr[0].trim(), payloadItemArr[1].trim());
-        }
-        return payloadMap;
     }
 
     public List<NotificationEventDto> getNotificationEvents(String symbol, ZonedDateTime from, ZonedDateTime to) {
@@ -361,10 +382,10 @@ public class NotificationProcessorService implements ApplicationListener<Applica
     }
 
     private NotificationEventDto getDto(NotificationEvent event) {
-        //int minsSinceEventTime = (int) event.getDatetime().until(CommonUtil.getNYLocalDateTimeNow(), java.time.temporal.ChronoUnit.MINUTES);
-        int minsSinceEventTime = (int) event.getDatetime().until(ZonedDateTime.now(), java.time.temporal.ChronoUnit.MINUTES);
+        int minsSinceEventTime = (int) event.getDatetime().until(ZonedDateTime.now(), ChronoUnit.MINUTES);
         int hoursSinceEventTime = minsSinceEventTime / 60;
         String sinceCreatedStr = hoursSinceEventTime > 0 ? hoursSinceEventTime + "hr(s) ago" : minsSinceEventTime + "min(s) ago";
+
         return NotificationEventDto.builder()
             .id(event.getId())
             .datetime(event.getDatetime().format(DateTimeFormatter.ISO_OFFSET_DATE_TIME))
@@ -389,7 +410,6 @@ public class NotificationProcessorService implements ApplicationListener<Applica
             .strategyProcessMsg(event.getStrategyProcessMsg())
             .strategyProcessedAt(event.getStrategyProcessedAt() == null ? null : event.getStrategyProcessedAt().toString())
             .sinceCreatedStr(sinceCreatedStr)
-            .sinceCreatedStr(sinceCreatedStr)
             .build();
     }
 
@@ -401,5 +421,23 @@ public class NotificationProcessorService implements ApplicationListener<Applica
         } else {
             return ChronoUnit.FOREVER;
         }
+    }
+
+    // ========================================================================
+    // INNER CLASS FOR EVENT DATA
+    // ========================================================================
+
+    private static class EventData {
+
+        BigDecimal price;
+        Indicator indicator;
+        String symbol;
+        EventInterval interval;
+        IndicatorSource source;
+        String rawAlertMsg;
+        CandleType candleType;
+        ZonedDateTime eventDateTime;
+        Strategy strategy;
+        String payload;
     }
 }

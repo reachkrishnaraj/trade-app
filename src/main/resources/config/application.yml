@@ -252,3 +252,33 @@ trade:
 
 telegramBot:
   username: kraj_trades_bot
+
+# ==============================================================================
+# SIGNAL PROCESSING CONFIGURATION
+# ==============================================================================
+
+trading:
+  # Processor Mode: SIMULATION or REAL_TIME
+  processor:
+    mode: REAL_TIME
+
+  # Simulation Processor Settings
+  simulation:
+    enabled: false
+
+  # Real-time Processor Settings
+  realtime:
+    enabled: true
+
+  # ==============================================================================
+  # SCHEDULER CONFIGURATION
+  # ==============================================================================
+
+  scheduler:
+    # Enable/disable automatic signal simulation (for testing only)
+    simulation:
+      enabled: false
+
+    # Enable/disable automatic processing of pending signals
+    auto-processing:
+      enabled: true

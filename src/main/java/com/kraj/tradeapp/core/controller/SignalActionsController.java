@@ -1,7 +1,9 @@
 package com.kraj.tradeapp.core.controller;
 
 import com.kraj.tradeapp.core.model.dto.SignalActionDTO;
+import com.kraj.tradeapp.core.service.NotificationProcessorService;
 import com.kraj.tradeapp.core.service.SignalActionsService;
+import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.HashMap;
 import java.util.List;
@@ -21,21 +23,20 @@ public class SignalActionsController {
     private final Logger log = LoggerFactory.getLogger(SignalActionsController.class);
 
     private final SignalActionsService signalActionsService;
+    private final NotificationProcessorService notificationProcessorService; // ONLY NEW DEPENDENCY
 
     @Autowired
-    public SignalActionsController(SignalActionsService signalActionsService) {
+    public SignalActionsController(
+        SignalActionsService signalActionsService,
+        NotificationProcessorService notificationProcessorService // ONLY NEW PARAMETER
+    ) {
         this.signalActionsService = signalActionsService;
+        this.notificationProcessorService = notificationProcessorService; // ONLY NEW ASSIGNMENT
     }
 
     /**
      * GET /signal-actions : Get all signal actions with optional filtering
-     *
-     * @param symbol filter by symbol (optional)
-     * @param interval filter by interval (optional)
-     * @param indicatorName filter by indicator name (optional)
-     * @param fromDateTime filter from date time (optional)
-     * @param toDateTime filter to date time (optional)
-     * @return the ResponseEntity with status 200 (OK) and the list of signal actions in body
+     * UNCHANGED - Your frontend will work exactly the same
      */
     @GetMapping("/signal-actions")
     public ResponseEntity<List<SignalActionDTO>> getAllSignalActions(
@@ -68,9 +69,7 @@ public class SignalActionsController {
 
     /**
      * GET /signal-actions/{id} : Get signal action by id
-     *
-     * @param id the id of the signal action to retrieve
-     * @return the ResponseEntity with status 200 (OK) and with body the signal action, or with status 404 (Not Found)
+     * UNCHANGED - Your frontend will work exactly the same
      */
     @GetMapping("/signal-actions/{id}")
     public ResponseEntity<SignalActionDTO> getSignalAction(@PathVariable Long id) {
@@ -86,9 +85,7 @@ public class SignalActionsController {
 
     /**
      * POST /signal-actions/{id}/execute : Execute a signal action
-     *
-     * @param id the id of the signal action to execute
-     * @return the ResponseEntity with status 200 (OK) if successful, or with status 404 (Not Found) or 400 (Bad Request)
+     * UNCHANGED - Your frontend will work exactly the same
      */
     @PostMapping("/signal-actions/{id}/execute")
     public ResponseEntity<Map<String, String>> executeSignalAction(@PathVariable Long id) {
@@ -111,9 +108,7 @@ public class SignalActionsController {
 
     /**
      * POST /signal-actions/{id}/cancel : Cancel a signal action
-     *
-     * @param id the id of the signal action to cancel
-     * @return the ResponseEntity with status 200 (OK) if successful, or with status 404 (Not Found) or 400 (Bad Request)
+     * UNCHANGED - Your frontend will work exactly the same
      */
     @PostMapping("/signal-actions/{id}/cancel")
     public ResponseEntity<Map<String, String>> cancelSignalAction(@PathVariable Long id) {
@@ -136,9 +131,7 @@ public class SignalActionsController {
 
     /**
      * POST /signal-actions : Create a new signal action
-     *
-     * @param signalActionDTO the signal action to create
-     * @return the ResponseEntity with status 201 (Created) and with body the new signal action
+     * UNCHANGED - Your frontend will work exactly the same
      */
     @PostMapping("/signal-actions")
     public ResponseEntity<SignalActionDTO> createSignalAction(@RequestBody SignalActionDTO signalActionDTO) {
@@ -150,8 +143,7 @@ public class SignalActionsController {
 
     /**
      * GET /signal-actions/filter-options : Get available filter options
-     *
-     * @return the ResponseEntity with status 200 (OK) and filter options in body
+     * UNCHANGED - Your frontend will work exactly the same
      */
     @GetMapping("/signal-actions/filter-options")
     public ResponseEntity<Map<String, List<String>>> getFilterOptions() {
@@ -163,5 +155,65 @@ public class SignalActionsController {
         filterOptions.put("indicators", signalActionsService.getUniqueIndicatorNames());
 
         return ResponseEntity.ok(filterOptions);
+    }
+
+    // ============================================================================
+    // OPTIONAL NEW ENDPOINTS - Your frontend doesn't need to use these
+    // These are just for testing real events if needed
+    // ============================================================================
+
+    /**
+     * POST /signal-actions/test-real-event : Test real event (OPTIONAL - for testing only)
+     * Your frontend doesn't need to use this - it's just for testing
+     */
+    @PostMapping("/signal-actions/test-real-event")
+    public ResponseEntity<Map<String, String>> testRealEvent(@RequestBody Map<String, Object> eventData) {
+        log.debug("REST request to test real event: {}", eventData);
+
+        try {
+            String symbol = (String) eventData.getOrDefault("symbol", "AAPL");
+            BigDecimal price = new BigDecimal(eventData.getOrDefault("price", "150.0").toString());
+            String indicator = (String) eventData.getOrDefault("indicator", "RSI");
+            String direction = (String) eventData.getOrDefault("direction", "BULL");
+            String interval = (String) eventData.getOrDefault("interval", "1h");
+            String alertMessage = (String) eventData.getOrDefault("alertMessage", "Test alert");
+
+            notificationProcessorService.simulateRealTradingViewWebhook(symbol, price, indicator, direction, interval, alertMessage);
+
+            Map<String, String> response = new HashMap<>();
+            response.put("message", "Real event test completed successfully");
+            response.put("status", "success");
+            return ResponseEntity.ok(response);
+        } catch (Exception e) {
+            log.error("Error testing real event: {}", e.getMessage());
+            Map<String, String> response = new HashMap<>();
+            response.put("message", "Error testing real event: " + e.getMessage());
+            response.put("status", "error");
+            return ResponseEntity.badRequest().body(response);
+        }
+    }
+
+    /**
+     * GET /signal-actions/count : Get simple count (OPTIONAL - for dashboard widgets)
+     * Your frontend can use this if you want to show counts
+     */
+    @GetMapping("/signal-actions/count")
+    public ResponseEntity<Map<String, Object>> getSignalActionsCount() {
+        log.debug("REST request to get signal actions count");
+
+        try {
+            Map<SignalActionDTO.SignalStatus, Long> countsByStatus = signalActionsService.getSignalActionCountsByStatus();
+
+            Map<String, Object> response = new HashMap<>();
+            response.put("total", signalActionsService.getAllSignalActions().size());
+            response.put("pending", countsByStatus.getOrDefault(SignalActionDTO.SignalStatus.PENDING, 0L));
+            response.put("executed", countsByStatus.getOrDefault(SignalActionDTO.SignalStatus.EXECUTED, 0L));
+            response.put("cancelled", countsByStatus.getOrDefault(SignalActionDTO.SignalStatus.CANCELLED, 0L));
+
+            return ResponseEntity.ok(response);
+        } catch (Exception e) {
+            log.error("Error getting signal actions count: {}", e.getMessage());
+            return ResponseEntity.badRequest().build();
+        }
     }
 }

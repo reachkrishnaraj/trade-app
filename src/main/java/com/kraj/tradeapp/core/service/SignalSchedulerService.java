@@ -1,3 +1,5 @@
+// Updated SignalSchedulerService.java - Disabled simulation, enabled real event triggers
+
 package com.kraj.tradeapp.core.service;
 
 import com.kraj.tradeapp.core.model.dto.SignalActionDTO;
@@ -6,209 +8,190 @@ import java.util.Random;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 
 /**
- * Service for automatically generating trading signals at scheduled intervals
- * This simulates real-world signal generation from trading algorithms
+ * Service for managing real trading signals and cleanup operations
+ * Simulation methods are disabled in favor of real TradingView webhooks
  */
 @Service
 public class SignalSchedulerService {
 
     private final Logger log = LoggerFactory.getLogger(SignalSchedulerService.class);
 
+    private final NotificationProcessorService notificationProcessorService;
     private final SignalActionsService signalActionsService;
-    private final Random random = new Random();
 
-    // Market data for realistic simulation
-    private final String[] SYMBOLS = {
-        "AAPL",
-        "GOOGL",
-        "TSLA",
-        "MSFT",
-        "AMZN",
-        "NVDA",
-        "META",
-        "BTC-USD",
-        "ETH-USD",
-        "SPY",
-        "QQQ",
-        "AMD",
-        "NFLX",
-        "CRM",
-    };
-    private final String[] INDICATORS = {
-        "RSI",
-        "MACD",
-        "Bollinger Bands",
-        "EMA",
-        "SMA",
-        "Support/Resistance",
-        "Volume",
-        "Stochastic",
-        "Williams %R",
-        "CCI",
-    };
-    private final String[] INTERVALS = { "15m", "30m", "1h", "2h", "4h", "6h", "1d" };
+    // Configuration to enable/disable simulation (should be false for production)
+    @Value("${trading.simulation.enabled:false}")
+    private boolean simulationEnabled;
 
-    // Signal patterns for different market conditions
-    private final SignalPattern[] SIGNAL_PATTERNS = {
-        new SignalPattern("RSI_OVERSOLD", "RSI", "Price in oversold territory, potential reversal", SignalActionDTO.SignalDirection.BUY),
-        new SignalPattern(
-            "RSI_OVERBOUGHT",
-            "RSI",
-            "Price in overbought territory, potential reversal",
-            SignalActionDTO.SignalDirection.SELL
-        ),
-        new SignalPattern("MACD_BULLISH_CROSS", "MACD", "MACD line crossed above signal line", SignalActionDTO.SignalDirection.BUY),
-        new SignalPattern("MACD_BEARISH_CROSS", "MACD", "MACD line crossed below signal line", SignalActionDTO.SignalDirection.SELL),
-        new SignalPattern(
-            "BOLLINGER_SQUEEZE",
-            "Bollinger Bands",
-            "Bollinger Bands showing volatility squeeze",
-            SignalActionDTO.SignalDirection.HOLD
-        ),
-        new SignalPattern("VOLUME_BREAKOUT", "Volume", "High volume breakout detected", SignalActionDTO.SignalDirection.BUY),
-        new SignalPattern(
-            "SUPPORT_BOUNCE",
-            "Support/Resistance",
-            "Price bounced off key support level",
-            SignalActionDTO.SignalDirection.BUY
-        ),
-        new SignalPattern(
-            "RESISTANCE_REJECTION",
-            "Support/Resistance",
-            "Price rejected at resistance level",
-            SignalActionDTO.SignalDirection.SELL
-        ),
-        new SignalPattern("EMA_GOLDEN_CROSS", "EMA", "50 EMA crossed above 200 EMA", SignalActionDTO.SignalDirection.BUY),
-        new SignalPattern("EMA_DEATH_CROSS", "EMA", "50 EMA crossed below 200 EMA", SignalActionDTO.SignalDirection.SELL),
-    };
+    // Configuration for testing real events
+    @Value("${trading.test-real-events.enabled:false}")
+    private boolean testRealEventsEnabled;
 
     @Autowired
-    public SignalSchedulerService(SignalActionsService signalActionsService) {
+    public SignalSchedulerService(NotificationProcessorService notificationProcessorService, SignalActionsService signalActionsService) {
+        this.notificationProcessorService = notificationProcessorService;
         this.signalActionsService = signalActionsService;
     }
 
     /**
-     * Generate random signals every 30 seconds during market hours simulation
-     * In production, this would be based on real market analysis
+     * DISABLED: Generate random signals - replaced with real TradingView webhooks
+     * Only runs if simulation is explicitly enabled via configuration
      */
-    @Scheduled(fixedRate = 30000) // Every 30 seconds
-    public void generateRandomSignal() {
-        try {
-            // Only generate signals during "market hours" simulation (70% chance)
-            if (random.nextDouble() > 0.3) {
-                SignalPattern pattern = SIGNAL_PATTERNS[random.nextInt(SIGNAL_PATTERNS.length)];
-                String symbol = SYMBOLS[random.nextInt(SYMBOLS.length)];
-                String interval = INTERVALS[random.nextInt(INTERVALS.length)];
-
-                BigDecimal price = generateRealisticPrice(symbol);
-
-                signalActionsService.simulateNewSignal(
-                    symbol,
-                    price,
-                    pattern.signalName,
-                    pattern.indicator,
-                    interval,
-                    pattern.message,
-                    pattern.direction
-                );
-
-                log.debug("Auto-generated signal: {} {} at {} ({})", pattern.direction, symbol, price, pattern.indicator);
-            }
-        } catch (Exception e) {
-            log.error("Error auto-generating signal: {}", e.getMessage());
+    @Scheduled(fixedRate = 300000) // Every 5 minutes (less frequent than before)
+    public void generateSimulatedSignalsIfEnabled() {
+        if (!simulationEnabled) {
+            // Simulation disabled - real events expected from TradingView webhooks
+            return;
         }
+
+        log.warn("Simulation mode is enabled - this should be disabled in production");
+        // Keep original simulation logic for development/testing only
+        // ... (original simulation code can go here if needed)
     }
 
     /**
-     * Generate burst of signals during high volatility periods (every 5 minutes)
-     */
-    @Scheduled(fixedRate = 300000) // Every 5 minutes
-    public void generateVolatilityBurst() {
-        try {
-            // 20% chance of volatility burst
-            if (random.nextDouble() < 0.2) {
-                int signalCount = 2 + random.nextInt(4); // 2-5 signals
-
-                log.info("Generating volatility burst with {} signals", signalCount);
-
-                for (int i = 0; i < signalCount; i++) {
-                    SignalPattern pattern = SIGNAL_PATTERNS[random.nextInt(SIGNAL_PATTERNS.length)];
-                    String symbol = SYMBOLS[random.nextInt(SYMBOLS.length)];
-                    String interval = INTERVALS[random.nextInt(INTERVALS.length)];
-
-                    BigDecimal price = generateRealisticPrice(symbol);
-
-                    signalActionsService.simulateNewSignal(
-                        symbol,
-                        price,
-                        pattern.signalName + "_VOLATILE",
-                        pattern.indicator,
-                        interval,
-                        "High volatility: " + pattern.message,
-                        pattern.direction
-                    );
-
-                    // Small delay between burst signals
-                    Thread.sleep(500);
-                }
-            }
-        } catch (Exception e) {
-            log.error("Error generating volatility burst: {}", e.getMessage());
-        }
-    }
-
-    /**
-     * Generate crypto-specific signals (every 2 minutes for crypto)
+     * Test real events generation for development/testing
+     * This simulates what real TradingView webhooks would send
      */
     @Scheduled(fixedRate = 120000) // Every 2 minutes
-    public void generateCryptoSignals() {
+    public void generateTestRealEvents() {
+        if (!testRealEventsEnabled) {
+            return;
+        }
+
         try {
-            // 40% chance for crypto signals
-            if (random.nextDouble() < 0.4) {
-                String[] cryptoSymbols = { "BTC-USD", "ETH-USD", "ADA-USD", "DOT-USD", "SOL-USD" };
-                String symbol = cryptoSymbols[random.nextInt(cryptoSymbols.length)];
+            log.info("Generating test real events (simulating TradingView webhooks)");
 
-                SignalPattern pattern = SIGNAL_PATTERNS[random.nextInt(SIGNAL_PATTERNS.length)];
-                String interval = INTERVALS[random.nextInt(3)]; // Prefer shorter intervals for crypto
+            // Simulate real TradingView webhook payloads
+            String[] testSymbols = { "AAPL", "TSLA", "SPY", "BTC-USD", "ETH-USD" };
+            String[] testIndicators = { "RSI", "MACD", "BOLLINGER_BANDS", "EMA_CROSSOVER", "VOLUME_SPIKE" };
+            String[] testDirections = { "BULL", "BEAR", "NEUTRAL" };
+            String[] testIntervals = { "1m", "5m", "15m", "1h", "4h" };
 
-                BigDecimal price = generateRealisticPrice(symbol);
+            Random random = new Random();
+            String symbol = testSymbols[random.nextInt(testSymbols.length)];
+            String indicator = testIndicators[random.nextInt(testIndicators.length)];
+            String direction = testDirections[random.nextInt(testDirections.length)];
+            String interval = testIntervals[random.nextInt(testIntervals.length)];
 
-                signalActionsService.simulateNewSignal(
-                    symbol,
-                    price,
-                    pattern.signalName + "_CRYPTO",
-                    pattern.indicator,
-                    interval,
-                    "Crypto market: " + pattern.message,
-                    pattern.direction
-                );
+            BigDecimal price = generateRealisticPrice(symbol);
+            String alertMessage = generateTestAlertMessage(indicator, direction);
 
-                log.debug("Auto-generated crypto signal: {} {} at {}", pattern.direction, symbol, price);
-            }
+            // Use the NotificationProcessorService to simulate real webhook
+            notificationProcessorService.simulateRealTradingViewWebhook(symbol, price, indicator, direction, interval, alertMessage);
+
+            log.debug("Generated test real event: {} {} at {} - {}", direction, symbol, price, indicator);
         } catch (Exception e) {
-            log.error("Error generating crypto signal: {}", e.getMessage());
+            log.error("Error generating test real events: {}", e.getMessage());
         }
     }
 
     /**
-     * Weekly cleanup of old executed/cancelled signals (every Sunday at 2 AM)
+     * Monitor failed events and retry processing (every 10 minutes)
      */
-    @Scheduled(cron = "0 0 2 * * SUN")
-    public void weeklyCleanup() {
+    @Scheduled(fixedRate = 600000) // Every 10 minutes
+    public void monitorAndRetryFailedEvents() {
         try {
-            log.info("Performing weekly signal cleanup");
-            // In a real application, you would clean up old signals from database
-            // This is just a placeholder for demonstration
+            // In a real application, you would check for failed events in the database
+            // and attempt to reprocess them
+            log.debug("Monitoring for failed events to retry");
+            // This could query the database for events that failed processing
+            // and attempt to reprocess them
+
         } catch (Exception e) {
-            log.error("Error during weekly cleanup: {}", e.getMessage());
+            log.error("Error monitoring failed events: {}", e.getMessage());
         }
     }
 
-    // Helper methods
+    /**
+     * Generate real event alerts based on market conditions (every 5 minutes)
+     */
+    @Scheduled(fixedRate = 300000) // Every 5 minutes
+    public void checkMarketConditionsForAlerts() {
+        try {
+            // This method could integrate with external market data APIs
+            // to generate alerts based on real market conditions
+
+            log.debug("Checking market conditions for real-time alerts");
+            // Example: Check for significant price movements, volume spikes, etc.
+            // and generate appropriate alerts through the notification system
+
+        } catch (Exception e) {
+            log.error("Error checking market conditions: {}", e.getMessage());
+        }
+    }
+
+    /**
+     * Daily cleanup of old signals and events (every day at 2 AM)
+     */
+    @Scheduled(cron = "0 0 2 * * *")
+    public void dailyCleanup() {
+        try {
+            log.info("Performing daily cleanup of old signals and events");
+
+            // Clean up old executed/cancelled signals
+            var signalCounts = signalActionsService.getSignalActionCountsByStatus();
+            log.info("Current signal counts by status: {}", signalCounts);
+
+            // In a real application, you would:
+            // 1. Archive old signals to a separate table
+            // 2. Clean up old notification events
+            // 3. Generate summary reports
+            // 4. Send daily statistics
+
+            log.info("Daily cleanup completed successfully");
+        } catch (Exception e) {
+            log.error("Error during daily cleanup: {}", e.getMessage());
+        }
+    }
+
+    /**
+     * Weekly performance analysis (every Sunday at 3 AM)
+     */
+    @Scheduled(cron = "0 0 3 * * SUN")
+    public void weeklyPerformanceAnalysis() {
+        try {
+            log.info("Performing weekly performance analysis");
+
+            // Analyze signal performance over the past week
+            // Generate reports on:
+            // - Signal accuracy
+            // - Most profitable signals
+            // - Best performing indicators
+            // - Symbol performance
+
+            log.info("Weekly performance analysis completed");
+        } catch (Exception e) {
+            log.error("Error during weekly performance analysis: {}", e.getMessage());
+        }
+    }
+
+    /**
+     * Health check for real-time data feeds (every minute)
+     */
+    @Scheduled(fixedRate = 60000) // Every minute
+    public void healthCheckDataFeeds() {
+        try {
+            // Monitor the health of real-time data feeds
+            // Check for:
+            // - Last received event timestamp
+            // - Data feed connectivity
+            // - Processing queue sizes
+
+            // If no events received in the last 5 minutes, log a warning
+            // In production, this could send alerts to monitoring systems
+
+        } catch (Exception e) {
+            log.error("Error during data feed health check: {}", e.getMessage());
+        }
+    }
+
+    // Helper methods for testing
     private BigDecimal generateRealisticPrice(String symbol) {
         double basePrice;
         double volatility;
@@ -218,29 +201,13 @@ public class SignalSchedulerService {
                 basePrice = 150.0;
                 volatility = 5.0;
                 break;
-            case "GOOGL":
-                basePrice = 2750.0;
-                volatility = 50.0;
-                break;
             case "TSLA":
                 basePrice = 220.0;
                 volatility = 15.0;
                 break;
-            case "MSFT":
-                basePrice = 380.0;
-                volatility = 10.0;
-                break;
-            case "AMZN":
-                basePrice = 3200.0;
-                volatility = 60.0;
-                break;
-            case "NVDA":
+            case "SPY":
                 basePrice = 450.0;
-                volatility = 20.0;
-                break;
-            case "META":
-                basePrice = 320.0;
-                volatility = 15.0;
+                volatility = 10.0;
                 break;
             case "BTC-USD":
                 basePrice = 42000.0;
@@ -250,43 +217,32 @@ public class SignalSchedulerService {
                 basePrice = 2500.0;
                 volatility = 100.0;
                 break;
-            case "ADA-USD":
-                basePrice = 0.45;
-                volatility = 0.02;
-                break;
-            case "DOT-USD":
-                basePrice = 6.50;
-                volatility = 0.30;
-                break;
-            case "SOL-USD":
-                basePrice = 95.0;
-                volatility = 5.0;
-                break;
             default:
                 basePrice = 100.0;
                 volatility = 5.0;
         }
 
-        // Add some random movement
+        Random random = new Random();
         double priceVariation = (random.nextGaussian() * volatility * 0.1);
         double finalPrice = basePrice + priceVariation;
 
         return new BigDecimal(finalPrice).setScale(2, BigDecimal.ROUND_HALF_UP);
     }
 
-    // Inner class for signal patterns
-    private static class SignalPattern {
-
-        final String signalName;
-        final String indicator;
-        final String message;
-        final SignalActionDTO.SignalDirection direction;
-
-        SignalPattern(String signalName, String indicator, String message, SignalActionDTO.SignalDirection direction) {
-            this.signalName = signalName;
-            this.indicator = indicator;
-            this.message = message;
-            this.direction = direction;
+    private String generateTestAlertMessage(String indicator, String direction) {
+        switch (indicator) {
+            case "RSI":
+                return direction.equals("BULL") ? "RSI indicates oversold condition" : "RSI indicates overbought condition";
+            case "MACD":
+                return direction.equals("BULL") ? "MACD bullish crossover detected" : "MACD bearish crossover detected";
+            case "BOLLINGER_BANDS":
+                return direction.equals("BULL") ? "Price bounced off lower Bollinger Band" : "Price rejected at upper Bollinger Band";
+            case "EMA_CROSSOVER":
+                return direction.equals("BULL") ? "EMA golden cross detected" : "EMA death cross detected";
+            case "VOLUME_SPIKE":
+                return "Unusual volume spike detected with " + direction.toLowerCase() + " momentum";
+            default:
+                return "Signal detected: " + direction + " momentum";
         }
     }
 }

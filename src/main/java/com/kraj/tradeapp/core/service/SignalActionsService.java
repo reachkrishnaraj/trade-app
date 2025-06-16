@@ -1,9 +1,12 @@
+// Fixed SignalActionsService.java - No circular dependencies
+
 package com.kraj.tradeapp.core.service;
 
 import com.kraj.tradeapp.core.model.dto.SignalActionDTO;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
-import java.util.ArrayList;
+import java.time.ZonedDateTime;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
@@ -12,6 +15,7 @@ import java.util.stream.Collectors;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Service;
 
@@ -21,148 +25,127 @@ public class SignalActionsService {
     private final Logger log = LoggerFactory.getLogger(SignalActionsService.class);
 
     private final SimpMessagingTemplate simpMessagingTemplate;
+    private final List<SignalActionProcessor> processors;
 
-    // In-memory storage for demo purposes - replace with database repository
+    // In-memory storage - replace with database repository in production
     private final Map<Long, SignalActionDTO> signalActionsStore = new ConcurrentHashMap<>();
     private final AtomicLong idGenerator = new AtomicLong(1);
 
+    @Value("${trading.processor.mode:REAL_TIME}")
+    private String processorMode; // SIMULATION or REAL_TIME
+
     @Autowired
-    public SignalActionsService(SimpMessagingTemplate simpMessagingTemplate) {
+    public SignalActionsService(SimpMessagingTemplate simpMessagingTemplate, List<SignalActionProcessor> processors) {
         this.simpMessagingTemplate = simpMessagingTemplate;
-        initializeSampleData();
+        this.processors = processors;
+    }
+
+    // ========================================================================
+    // CORE SERVICE METHODS - Used by controllers and processors
+    // ========================================================================
+
+    /**
+     * Create a new signal action (used by frontend and internal creation)
+     * HANDLES: ID generation, storage, broadcasting
+     */
+    public SignalActionDTO createSignalAction(SignalActionDTO signalActionDTO) {
+        log.debug("Creating signal action: {}", signalActionDTO);
+
+        // Assign ID and timestamp if not already set
+        if (signalActionDTO.getId() == null) {
+            signalActionDTO.setId(idGenerator.getAndIncrement());
+        }
+        if (signalActionDTO.getDateTime() == null) {
+            signalActionDTO.setDateTime(LocalDateTime.now());
+        }
+        if (signalActionDTO.getStatus() == null) {
+            signalActionDTO.setStatus(SignalActionDTO.SignalStatus.PENDING);
+        }
+        if (signalActionDTO.getDirection() == null) {
+            signalActionDTO.setDirection(SignalActionDTO.SignalDirection.HOLD);
+        }
+
+        // Store the signal action
+        signalActionsStore.put(signalActionDTO.getId(), signalActionDTO);
+
+        // Broadcast update via WebSocket
+        broadcastSignalActionsUpdate();
+
+        log.info(
+            "Created signal action: {} for {} at price {}",
+            signalActionDTO.getSignalName(),
+            signalActionDTO.getSymbol(),
+            signalActionDTO.getPrice()
+        );
+
+        return signalActionDTO;
     }
 
     /**
-     * Initialize sample data for demonstration
+     * Create signal action from external event (uses appropriate processor)
+     * CLEAN FLOW: Service -> Processor -> DTO -> Service stores it
      */
-    private void initializeSampleData() {
-        // Create sample signal actions with enhanced data
-        createSampleSignalAction(
-            "AAPL",
-            new BigDecimal("150.25"),
-            "RSI_OVERSOLD",
-            "RSI",
-            "1h",
-            "RSI indicates oversold condition, potential buying opportunity",
-            SignalActionDTO.SignalDirection.BUY,
-            SignalActionDTO.SignalStatus.PENDING,
-            5
-        );
-
-        createSampleSignalAction(
-            "GOOGL",
-            new BigDecimal("2750.80"),
-            "MACD_BULLISH",
-            "MACD",
-            "4h",
-            "MACD crossover signal indicates bullish momentum",
-            SignalActionDTO.SignalDirection.BUY,
-            SignalActionDTO.SignalStatus.PENDING,
-            15
-        );
-
-        createSampleSignalAction(
-            "TSLA",
-            new BigDecimal("220.15"),
-            "BREAKOUT_PATTERN",
-            "Support/Resistance",
-            "1d",
-            "Price broke above resistance level with high volume",
-            SignalActionDTO.SignalDirection.BUY,
-            SignalActionDTO.SignalStatus.EXECUTED,
-            30
-        );
-
-        createSampleSignalAction(
-            "MSFT",
-            new BigDecimal("380.90"),
-            "VOLUME_SPIKE",
-            "Volume",
-            "15m",
-            "Unusual volume spike detected, monitor for breakout",
-            SignalActionDTO.SignalDirection.HOLD,
-            SignalActionDTO.SignalStatus.PENDING,
-            2
-        );
-
-        createSampleSignalAction(
-            "AMZN",
-            new BigDecimal("3200.45"),
-            "SUPPORT_BOUNCE",
-            "Support/Resistance",
-            "2h",
-            "Price bounced off key support level",
-            SignalActionDTO.SignalDirection.BUY,
-            SignalActionDTO.SignalStatus.CANCELLED,
-            45
-        );
-
-        createSampleSignalAction(
-            "NVDA",
-            new BigDecimal("450.30"),
-            "BOLLINGER_UPPER",
-            "Bollinger Bands",
-            "1h",
-            "Price touching upper Bollinger Band, potential reversal",
-            SignalActionDTO.SignalDirection.SELL,
-            SignalActionDTO.SignalStatus.PENDING,
-            8
-        );
-
-        createSampleSignalAction(
-            "META",
-            new BigDecimal("320.75"),
-            "EMA_CROSSOVER",
-            "EMA",
-            "30m",
-            "20 EMA crossed above 50 EMA - bullish signal",
-            SignalActionDTO.SignalDirection.BUY,
-            SignalActionDTO.SignalStatus.PENDING,
-            12
-        );
-
-        createSampleSignalAction(
-            "BTC-USD",
-            new BigDecimal("42150.00"),
-            "STOCH_OVERBOUGHT",
-            "Stochastic",
-            "6h",
-            "Stochastic RSI shows overbought conditions",
-            SignalActionDTO.SignalDirection.SELL,
-            SignalActionDTO.SignalStatus.EXECUTED,
-            22
-        );
-    }
-
-    private void createSampleSignalAction(
+    public SignalActionDTO createSignalActionFromExternalEvent(
         String symbol,
         BigDecimal price,
-        String signalName,
-        String indicatorName,
+        String indicator,
+        String indicatorDisplayName,
         String interval,
-        String message,
-        SignalActionDTO.SignalDirection direction,
-        SignalActionDTO.SignalStatus status,
-        int minutesAgo
+        String alertMessage,
+        String direction,
+        ZonedDateTime eventTime,
+        BigDecimal score,
+        boolean isStrategy,
+        boolean isAlertable
     ) {
-        SignalActionDTO signalAction = new SignalActionDTO();
-        signalAction.setId(idGenerator.getAndIncrement());
-        signalAction.setSymbol(symbol);
-        signalAction.setPrice(price);
-        signalAction.setSignalName(signalName);
-        signalAction.setIndicatorName(indicatorName);
-        signalAction.setInterval(interval);
-        signalAction.setMessage(message);
-        signalAction.setDirection(direction);
-        signalAction.setDateTime(LocalDateTime.now().minusMinutes(minutesAgo));
-        signalAction.setStatus(status);
-        signalActionsStore.put(signalAction.getId(), signalAction);
+        log.debug("Creating signal action from external event for symbol: {}", symbol);
+
+        // Get the appropriate processor
+        SignalActionProcessor processor = getActiveProcessor();
+
+        SignalActionDTO signalActionDTO;
+
+        if (processor == null) {
+            log.warn("No active processor found, using manual creation");
+            signalActionDTO = createManualSignalActionDTO(
+                symbol,
+                price,
+                indicator,
+                indicatorDisplayName,
+                interval,
+                alertMessage,
+                direction,
+                eventTime
+            );
+        } else {
+            log.debug("Using processor: {} for external event", processor.getProcessorType());
+
+            // CLEAN: Processor returns DTO, no circular calls
+            signalActionDTO = processor.createSignalActionDTO(
+                symbol,
+                price,
+                indicator,
+                indicatorDisplayName,
+                interval,
+                alertMessage,
+                direction,
+                eventTime,
+                score,
+                isStrategy,
+                isAlertable
+            );
+        }
+
+        // SERVICE handles storage, ID generation, and broadcasting
+        return createSignalAction(signalActionDTO);
     }
 
+    // ========================================================================
+    // SIGNAL MANAGEMENT METHODS (UNCHANGED)
+    // ========================================================================
+
     /**
-     * Get all signal actions sorted by dateTime descending (latest first)
-     *
-     * @return list of all signal actions
+     * Get all signal actions sorted by dateTime descending
      */
     public List<SignalActionDTO> getAllSignalActions() {
         log.debug("Getting all signal actions");
@@ -175,13 +158,6 @@ public class SignalActionsService {
 
     /**
      * Get signal actions with filtering options
-     *
-     * @param symbol filter by symbol (optional)
-     * @param interval filter by interval (optional)
-     * @param indicatorName filter by indicator name (optional)
-     * @param fromDateTime filter from date time (optional)
-     * @param toDateTime filter to date time (optional)
-     * @return filtered list of signal actions
      */
     public List<SignalActionDTO> getFilteredSignalActions(
         String symbol,
@@ -208,9 +184,6 @@ public class SignalActionsService {
 
     /**
      * Get signal action by id
-     *
-     * @param id the id of the signal action
-     * @return the signal action or null if not found
      */
     public SignalActionDTO getSignalActionById(Long id) {
         log.debug("Getting signal action by id: {}", id);
@@ -218,36 +191,7 @@ public class SignalActionsService {
     }
 
     /**
-     * Create a new signal action
-     *
-     * @param signalActionDTO the signal action to create
-     * @return the created signal action
-     */
-    public SignalActionDTO createSignalAction(SignalActionDTO signalActionDTO) {
-        log.debug("Creating new signal action: {}", signalActionDTO);
-
-        signalActionDTO.setId(idGenerator.getAndIncrement());
-        signalActionDTO.setDateTime(LocalDateTime.now());
-        if (signalActionDTO.getStatus() == null) {
-            signalActionDTO.setStatus(SignalActionDTO.SignalStatus.PENDING);
-        }
-        if (signalActionDTO.getDirection() == null) {
-            signalActionDTO.setDirection(SignalActionDTO.SignalDirection.HOLD);
-        }
-
-        signalActionsStore.put(signalActionDTO.getId(), signalActionDTO);
-
-        // Broadcast update via WebSocket
-        broadcastSignalActionsUpdate();
-
-        return signalActionDTO;
-    }
-
-    /**
      * Execute a signal action
-     *
-     * @param id the id of the signal action to execute
-     * @throws IllegalStateException if the signal action cannot be executed
      */
     public void executeSignalAction(Long id) {
         log.debug("Executing signal action: {}", id);
@@ -265,7 +209,6 @@ public class SignalActionsService {
         signalAction.setStatus(SignalActionDTO.SignalStatus.EXECUTED);
         signalAction.setDateTime(LocalDateTime.now()); // Update execution time
 
-        // Here you would typically integrate with your trading system
         log.info(
             "Executed signal action for {} ({}) - {} signal at price {}",
             signalAction.getSymbol(),
@@ -280,9 +223,6 @@ public class SignalActionsService {
 
     /**
      * Cancel a signal action
-     *
-     * @param id the id of the signal action to cancel
-     * @throws IllegalStateException if the signal action cannot be cancelled
      */
     public void cancelSignalAction(Long id) {
         log.debug("Cancelling signal action: {}", id);
@@ -312,10 +252,12 @@ public class SignalActionsService {
         broadcastSignalActionsUpdate();
     }
 
+    // ========================================================================
+    // UTILITY METHODS (UNCHANGED)
+    // ========================================================================
+
     /**
      * Get unique symbols from all signal actions
-     *
-     * @return list of unique symbols
      */
     public List<String> getUniqueSymbols() {
         return signalActionsStore.values().stream().map(SignalActionDTO::getSymbol).distinct().sorted().collect(Collectors.toList());
@@ -323,8 +265,6 @@ public class SignalActionsService {
 
     /**
      * Get unique intervals from all signal actions
-     *
-     * @return list of unique intervals
      */
     public List<String> getUniqueIntervals() {
         return signalActionsStore.values().stream().map(SignalActionDTO::getInterval).distinct().sorted().collect(Collectors.toList());
@@ -332,53 +272,101 @@ public class SignalActionsService {
 
     /**
      * Get unique indicator names from all signal actions
-     *
-     * @return list of unique indicator names
      */
     public List<String> getUniqueIndicatorNames() {
         return signalActionsStore.values().stream().map(SignalActionDTO::getIndicatorName).distinct().sorted().collect(Collectors.toList());
     }
 
     /**
-     * Broadcast signal actions update via WebSocket
+     * Get signal actions count by status
      */
+    public Map<SignalActionDTO.SignalStatus, Long> getSignalActionCountsByStatus() {
+        return signalActionsStore.values().stream().collect(Collectors.groupingBy(SignalActionDTO::getStatus, Collectors.counting()));
+    }
+
+    /**
+     * Clear all signal actions (for testing)
+     */
+    public void clearAllSignalActions() {
+        signalActionsStore.clear();
+        broadcastSignalActionsUpdate();
+        log.info("Cleared all signal actions");
+    }
+
+    /**
+     * Get active processor information
+     */
+    public Map<String, Object> getProcessorInfo() {
+        SignalActionProcessor activeProcessor = getActiveProcessor();
+
+        Map<String, Object> info = new HashMap<>();
+        info.put("configuredMode", processorMode);
+        info.put("activeProcessor", activeProcessor != null ? activeProcessor.getProcessorType() : "NONE");
+        info.put(
+            "availableProcessors",
+            processors.stream().map(p -> Map.of("type", p.getProcessorType(), "enabled", p.isEnabled())).collect(Collectors.toList())
+        );
+
+        return info;
+    }
+
+    // ========================================================================
+    // PRIVATE HELPER METHODS
+    // ========================================================================
+
+    private SignalActionProcessor getActiveProcessor() {
+        return processors
+            .stream()
+            .filter(processor -> processor.getProcessorType().equals(processorMode))
+            .filter(SignalActionProcessor::isEnabled)
+            .findFirst()
+            .orElse(null);
+    }
+
+    private SignalActionDTO createManualSignalActionDTO(
+        String symbol,
+        BigDecimal price,
+        String indicator,
+        String indicatorDisplayName,
+        String interval,
+        String alertMessage,
+        String direction,
+        ZonedDateTime eventTime
+    ) {
+        SignalActionDTO signalAction = new SignalActionDTO();
+        signalAction.setSymbol(symbol);
+        signalAction.setPrice(price);
+        signalAction.setSignalName("MANUAL_" + indicator);
+        signalAction.setIndicatorName(indicatorDisplayName != null ? indicatorDisplayName : indicator);
+        signalAction.setInterval(interval);
+        signalAction.setMessage(alertMessage);
+        signalAction.setDirection(mapDirection(direction));
+        signalAction.setDateTime(eventTime != null ? eventTime.toLocalDateTime() : LocalDateTime.now());
+        signalAction.setStatus(SignalActionDTO.SignalStatus.PENDING);
+
+        return signalAction; // Return DTO, let createSignalAction handle storage
+    }
+
+    private SignalActionDTO.SignalDirection mapDirection(String direction) {
+        if (direction == null) return SignalActionDTO.SignalDirection.HOLD;
+
+        switch (direction.toUpperCase()) {
+            case "BULL":
+            case "BULLISH":
+            case "BUY":
+                return SignalActionDTO.SignalDirection.BUY;
+            case "BEAR":
+            case "BEARISH":
+            case "SELL":
+                return SignalActionDTO.SignalDirection.SELL;
+            default:
+                return SignalActionDTO.SignalDirection.HOLD;
+        }
+    }
+
     private void broadcastSignalActionsUpdate() {
         List<SignalActionDTO> allSignalActions = getAllSignalActions();
         simpMessagingTemplate.convertAndSend("/topic/signal-actions", allSignalActions);
         log.debug("Broadcasted signal actions update to {} subscribers", allSignalActions.size());
-    }
-
-    /**
-     * Simulate receiving a new signal (for testing purposes)
-     * This method can be called by external systems or scheduled tasks
-     */
-    public void simulateNewSignal(String symbol, BigDecimal price, String signalName) {
-        simulateNewSignal(symbol, price, signalName, "Unknown", "1h", "Simulated signal for testing", SignalActionDTO.SignalDirection.HOLD);
-    }
-
-    /**
-     * Enhanced simulate new signal with all fields
-     */
-    public void simulateNewSignal(
-        String symbol,
-        BigDecimal price,
-        String signalName,
-        String indicatorName,
-        String interval,
-        String message,
-        SignalActionDTO.SignalDirection direction
-    ) {
-        SignalActionDTO newSignal = new SignalActionDTO();
-        newSignal.setSymbol(symbol);
-        newSignal.setPrice(price);
-        newSignal.setSignalName(signalName);
-        newSignal.setIndicatorName(indicatorName);
-        newSignal.setInterval(interval);
-        newSignal.setMessage(message);
-        newSignal.setDirection(direction);
-        newSignal.setStatus(SignalActionDTO.SignalStatus.PENDING);
-
-        createSignalAction(newSignal);
-        log.info("Simulated new signal: {} ({}) for {} at {} - {}", signalName, indicatorName, symbol, price, direction);
     }
 }
