@@ -479,7 +479,17 @@ const SignalActionsTable = () => {
                   ) : (
                     filteredData.map(signal => (
                       <tr key={signal.id}>
-                        <td className="date-time">{new Date(signal.dateTime).toLocaleString()}</td>
+                        <td className="date-time">
+                          {new Date(signal.dateTime).toLocaleString('en-US', {
+                            hour: 'numeric',
+                            minute: 'numeric',
+                            second: 'numeric',
+                            hour12: true,
+                            year: 'numeric',
+                            month: 'short',
+                            day: 'numeric',
+                          })}
+                        </td>
                         <td className="symbol">{signal.symbol}</td>
                         <td className="indicator-name">{signal.indicatorName}</td>
                         <td className="interval">{signal.interval}</td>
