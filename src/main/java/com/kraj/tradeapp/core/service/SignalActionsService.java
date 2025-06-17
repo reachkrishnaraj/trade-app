@@ -2,6 +2,7 @@
 
 package com.kraj.tradeapp.core.service;
 
+import com.kraj.tradeapp.core.model.CommonUtil;
 import com.kraj.tradeapp.core.model.dto.SignalActionDTO;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
@@ -56,7 +57,7 @@ public class SignalActionsService {
             signalActionDTO.setId(idGenerator.getAndIncrement());
         }
         if (signalActionDTO.getDateTime() == null) {
-            signalActionDTO.setDateTime(LocalDateTime.now());
+            signalActionDTO.setDateTime(CommonUtil.getNYLocalDateTimeNow());
         }
         if (signalActionDTO.getStatus() == null) {
             signalActionDTO.setStatus(SignalActionDTO.SignalStatus.PENDING);
@@ -207,7 +208,7 @@ public class SignalActionsService {
 
         // Update status to EXECUTED
         signalAction.setStatus(SignalActionDTO.SignalStatus.EXECUTED);
-        signalAction.setDateTime(LocalDateTime.now()); // Update execution time
+        signalAction.setDateTime(CommonUtil.getNYLocalDateTimeNow());
 
         log.info(
             "Executed signal action for {} ({}) - {} signal at price {}",
@@ -238,7 +239,7 @@ public class SignalActionsService {
 
         // Update status to CANCELLED
         signalAction.setStatus(SignalActionDTO.SignalStatus.CANCELLED);
-        signalAction.setDateTime(LocalDateTime.now()); // Update cancellation time
+        signalAction.setDateTime(CommonUtil.getNYLocalDateTimeNow());
 
         log.info(
             "Cancelled signal action for {} ({}) - {} signal at price {}",
@@ -341,7 +342,7 @@ public class SignalActionsService {
         signalAction.setInterval(interval);
         signalAction.setMessage(alertMessage);
         signalAction.setDirection(mapDirection(direction));
-        signalAction.setDateTime(eventTime != null ? eventTime.toLocalDateTime() : LocalDateTime.now());
+        signalAction.setDateTime(CommonUtil.getNYLocalDateTimeNow());
         signalAction.setStatus(SignalActionDTO.SignalStatus.PENDING);
 
         return signalAction; // Return DTO, let createSignalAction handle storage

@@ -1,5 +1,6 @@
 package com.kraj.tradeapp.core.service;
 
+import com.kraj.tradeapp.core.model.CommonUtil;
 import com.kraj.tradeapp.core.model.dto.SignalActionDTO;
 import com.kraj.tradeapp.core.service.SignalActionsService;
 import java.math.BigDecimal;
@@ -49,7 +50,7 @@ public class SimulationSignalActionProcessor implements SignalActionProcessor {
         signalAction.setInterval(interval);
         signalAction.setMessage("[SIMULATION] " + alertMessage);
         signalAction.setDirection(mapDirectionToSignalDirection(direction));
-        signalAction.setDateTime(eventTime != null ? eventTime.toLocalDateTime() : LocalDateTime.now());
+        signalAction.setDateTime(CommonUtil.getNYLocalDateTimeNow());
         signalAction.setStatus(determineSimulatedStatus(score));
 
         log.info(

@@ -1,5 +1,6 @@
 package com.kraj.tradeapp.core.service;
 
+import com.kraj.tradeapp.core.model.CommonUtil;
 import com.kraj.tradeapp.core.model.dto.SignalActionDTO;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
@@ -45,7 +46,7 @@ public class RealTimeSignalActionProcessor implements SignalActionProcessor {
         signalAction.setInterval(interval);
         signalAction.setMessage(alertMessage);
         signalAction.setDirection(mapDirectionToSignalDirection(direction));
-        signalAction.setDateTime(eventTime != null ? eventTime.toLocalDateTime() : LocalDateTime.now());
+        signalAction.setDateTime(CommonUtil.getNYLocalDateTimeNow());
         signalAction.setStatus(determineRealTimeStatus(isStrategy, isAlertable, score));
 
         log.info(
