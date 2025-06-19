@@ -2,6 +2,7 @@ package com.kraj.tradeapp.core.service;
 
 import com.google.api.services.sheets.v4.Sheets;
 import com.google.api.services.sheets.v4.model.ValueRange;
+import com.kraj.tradeapp.core.model.TradingReminderConfig;
 import com.kraj.tradeapp.core.model.persistance.mongodb.TradeAccountConfig;
 import java.io.IOException;
 import java.util.ArrayList;
@@ -19,7 +20,6 @@ public class GoogleSheetsService {
 
     private static final String APPLICATION_NAME = "Trade Account Config Reader";
     private static final String SPREADSHEET_ID = "1jqHjwMlP1-NQN_f0oetQ8ZVdk8UoN6fsYt55Sbl4a-U";
-    private static final String SHEET_NAME = "main_config";
 
     public List<TradeAccountConfig> readFromGoogleSheet() {
         try {
@@ -36,7 +36,7 @@ public class GoogleSheetsService {
 
         try {
             // Auto-detect range by fetching all non-empty cells from the first sheet
-            String detectedRange = detectAvailableRange(googleSheets, SPREADSHEET_ID);
+            String detectedRange = detectAvailableRange(googleSheets, SPREADSHEET_ID, "main_config");
             log.info("Detected range: {}", detectedRange);
 
             ValueRange response = googleSheets.spreadsheets().values().get(SPREADSHEET_ID, detectedRange).execute();
@@ -105,25 +105,19 @@ public class GoogleSheetsService {
     /**
      * Detects the available range in the first sheet by getting the last row and last column dynamically.
      */
-    private String detectAvailableRange(Sheets sheetsService, String spreadsheetId) throws IOException {
-        ValueRange response = sheetsService
-            .spreadsheets()
-            .values()
-            .get(spreadsheetId, SHEET_NAME) // Get all non-empty rows from the first sheet
-            .execute();
+    private String detectAvailableRange(Sheets sheetsService, String spreadsheetId, String sheetName) throws IOException {
+        ValueRange response = sheetsService.spreadsheets().values().get(spreadsheetId, sheetName).execute();
 
         List<List<Object>> values = response.getValues();
         if (values == null || values.isEmpty()) {
-            return SHEET_NAME + "!A1:A1"; // Default fallback if no data
+            return sheetName + "!A1:A1";
         }
 
         int lastRow = values.size();
-        int lastColumn = values.get(0).size(); // Assumes first row has all headers
-
-        // Convert column index to letters (A, B, C, ..., Z, AA, AB, ...)
+        int lastColumn = values.get(0).size();
         String lastColumnLetter = columnToLetter(lastColumn);
 
-        return "%s!A1:%s%s".formatted(SHEET_NAME, lastColumnLetter, lastRow);
+        return "%s!A1:%s%s".formatted(sheetName, lastColumnLetter, lastRow);
     }
 
     /**
@@ -137,5 +131,42 @@ public class GoogleSheetsService {
             column /= 26;
         }
         return letter.toString();
+    }
+
+    public List<TradingReminderConfig> readRemindersFromSheet() {
+        String reminderSheet = "futures_trading_reminders";
+
+        try {
+            String detectedRange = detectAvailableRange(googleSheets, SPREADSHEET_ID, reminderSheet);
+            log.info("Detected reminder sheet range: {}", detectedRange);
+
+            ValueRange response = googleSheets.spreadsheets().values().get(SPREADSHEET_ID, detectedRange).execute();
+            List<List<Object>> values = response.getValues();
+
+            List<TradingReminderConfig> reminders = new ArrayList<>();
+            if (values == null || values.isEmpty()) {
+                log.warn("No data found in reminder sheet.");
+                return reminders;
+            }
+
+            List<Object> headers = values.get(0);
+            for (int i = 1; i < values.size(); i++) {
+                if (isCommentLine(values.get(i))) continue;
+
+                List<Object> row = values.get(i);
+                TradingReminderConfig reminder = TradingReminderConfig.builder()
+                    .frequency(getValue(row, headers, "frequency"))
+                    .cronExpr(getValue(row, headers, "cron_expr"))
+                    .message(getValue(row, headers, "message"))
+                    .build();
+
+                reminders.add(reminder);
+            }
+
+            return reminders;
+        } catch (Exception e) {
+            log.error("Error reading reminders from Google Sheet", e);
+            throw new RuntimeException(e);
+        }
     }
 }

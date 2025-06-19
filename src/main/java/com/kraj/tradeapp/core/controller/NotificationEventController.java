@@ -36,6 +36,12 @@ public class NotificationEventController {
         return ResponseEntity.status(HttpStatus.CREATED).build();
     }
 
+    @PostMapping("/drt")
+    public ResponseEntity<Void> consumeDealingRange(@RequestBody String payload) {
+        notificationProcessorService.queueAndProcessNotification(payload);
+        return ResponseEntity.status(HttpStatus.CREATED).build();
+    }
+
     @PostMapping("/ohlc")
     public ResponseEntity<?> handleOhlcDataPost(@RequestBody String payload) throws JsonProcessingException {
         handleOhlcDataPostAsync(payload);

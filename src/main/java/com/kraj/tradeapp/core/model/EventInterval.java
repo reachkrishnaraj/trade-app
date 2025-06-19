@@ -15,6 +15,7 @@ public enum EventInterval {
     M30("30m"),
     H1("1h"),
     H4("4h"),
+    H7("7h"),
     D1("1d"),
     W1("1w"),
     NA("NA");

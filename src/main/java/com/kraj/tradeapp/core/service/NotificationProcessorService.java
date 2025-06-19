@@ -9,7 +9,6 @@ import com.kraj.tradeapp.core.model.persistance.NotificationEvent;
 import com.kraj.tradeapp.core.model.persistance.TradeSignal;
 import com.kraj.tradeapp.core.repository.NotificationEventRepository;
 import com.kraj.tradeapp.core.repository.TradeSignalRepository;
-import jakarta.annotation.Nullable;
 import java.math.BigDecimal;
 import java.time.Instant;
 import java.time.ZoneId;
