@@ -5,8 +5,8 @@ public enum Quadrant {
     Q2_50_75("Q2 (50-75%)", "Upper middle quadrant"),
     Q3_25_50("Q3 (25-50%)", "Lower middle quadrant"),
     Q4_0_25("Q4 (0-25%)", "Bottom quadrant"),
-    BELOW_RANGE("Below Range", "Price below 0% range"),
-    ABOVE_RANGE("Above Range", "Price above 100% range"),
+    BREACH_ABOVE_RANGE("Breach Above Range", "Price above range"),
+    BREACH_BELOW_RANGE("Breach Below Range", "Price below range"),
     UNKNOWN("Unknown", "Could not determine quadrant");
 
     private final String displayName;
@@ -42,9 +42,9 @@ public enum Quadrant {
         } else if (normalized.contains("Q4") || (normalized.contains("0") && normalized.contains("25"))) {
             return Q4_0_25;
         } else if (normalized.contains("BELOW") || normalized.contains("UNDER")) {
-            return BELOW_RANGE;
+            return BREACH_BELOW_RANGE;
         } else if (normalized.contains("ABOVE") || normalized.contains("OVER")) {
-            return ABOVE_RANGE;
+            return BREACH_ABOVE_RANGE;
         }
 
         // Try exact enum name matching

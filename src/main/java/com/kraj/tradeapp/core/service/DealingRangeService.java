@@ -2,10 +2,10 @@ package com.kraj.tradeapp.core.service;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.kraj.tradeapp.core.model.DealingRangeSnapshot;
-import com.kraj.tradeapp.core.model.EventInterval;
-import com.kraj.tradeapp.core.model.Quadrant;
+import com.kraj.tradeapp.core.model.*;
 import com.kraj.tradeapp.core.model.dto.DealingRangeDto;
+import com.kraj.tradeapp.core.model.persistance.NotificationEvent;
+import com.kraj.tradeapp.core.repository.NotificationEventRepository;
 import com.kraj.tradeapp.core.repository.mongodb.DealingRangeSnapshotRepository;
 import java.math.BigDecimal;
 import java.time.Instant;
@@ -13,6 +13,7 @@ import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.util.*;
 import java.util.stream.Collectors;
+import javax.annotation.Nullable;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
@@ -26,6 +27,7 @@ public class DealingRangeService {
 
     private final DealingRangeSnapshotRepository dealingRangeSnapshotRepository;
     private final SimpMessagingTemplate messagingTemplate;
+    private final NotificationEventRepository notificationEventRepository;
     private final ObjectMapper objectMapper = new ObjectMapper();
 
     // ========================================================================
@@ -39,27 +41,85 @@ public class DealingRangeService {
         try {
             log.info("Processing dealing range JSON webhook: {}", jsonPayload);
 
-            DealingRangeSnapshot snapshot = createSnapshotFromJson(jsonPayload);
-            if (snapshot == null) {
+            DealingRangeSnapshot newSnapshot = createSnapshotFromJson(jsonPayload);
+            Optional<DealingRangeSnapshot> mayBeCurrSnapshot = dealingRangeSnapshotRepository.findBySymbolAndInterval(
+                getCleanedSymbol(newSnapshot.getSymbol()),
+                newSnapshot.getInterval()
+            );
+
+            //if current snapshot for the interval is same status as the new snapshot, skip processing
+            if (
+                mayBeCurrSnapshot.isPresent() &&
+                mayBeCurrSnapshot.get().getInterval() == newSnapshot.getInterval() &&
+                mayBeCurrSnapshot.get().getCurrentQuadrant() == newSnapshot.getCurrentQuadrant()
+            ) {
+                log.info(
+                    "No change in status for {}: {} at {}",
+                    newSnapshot.getSymbol(),
+                    newSnapshot.getCurrentQuadrant().getDisplayName(),
+                    newSnapshot.getCurrentPrice()
+                );
+                return;
+            }
+
+            if (newSnapshot == null) {
                 log.warn("Could not create snapshot from JSON payload: {}", jsonPayload);
                 return;
             }
 
-            saveOrUpdateSnapshot(snapshot);
+            saveOrUpdateSnapshot(newSnapshot);
+
+            // Create and save notification event when status changes
+            NotificationEvent notificationEvent = createNotificationEvent(newSnapshot);
+            notificationEventRepository.save(notificationEvent);
 
             // Send real-time update
-            DealingRangeDto dto = convertToDto(snapshot);
+            DealingRangeDto dto = convertToDto(newSnapshot);
             messagingTemplate.convertAndSend("/topic/dealing-range", dto);
 
             log.info(
                 "Successfully processed dealing range for {}: {} at {}",
-                snapshot.getSymbol(),
-                snapshot.getCurrentQuadrant().getDisplayName(),
-                snapshot.getCurrentPrice()
+                newSnapshot.getSymbol(),
+                newSnapshot.getCurrentQuadrant().getDisplayName(),
+                newSnapshot.getCurrentPrice()
             );
         } catch (Exception e) {
             log.error("Error processing dealing range JSON webhook: {}", jsonPayload, e);
         }
+    }
+
+    private NotificationEvent createNotificationEvent(DealingRangeSnapshot snapshot) {
+        NotificationEvent notificationEvent = NotificationEvent.builder()
+            .created(ZonedDateTime.now())
+            .symbol(snapshot.getSymbol())
+            .datetime(snapshot.getRangeCalculatedAt())
+            .candleType(CandleType.CLASSIC.name())
+            .direction(Direction.UNKNOWN.name())
+            .source(IndicatorSource.TRADING_VIEW.name())
+            .tradeSignalProcessStatus(ProcessingStatus.PROCESSED.name())
+            .indicatorDisplayName(Indicator.DEALING_RANGE.name())
+            .indicator(Indicator.DEALING_RANGE.name())
+            .indicatorSubCategory(Indicator.DEALING_RANGE.name())
+            .indicatorSubCategoryDisplayName(Indicator.DEALING_RANGE.name())
+            .lastUpdated(ZonedDateTime.now())
+            .maxScore(BigDecimal.ZERO)
+            .minScore(BigDecimal.ZERO)
+            .rawAlertMsg(snapshot.getAlertMessage())
+            .rawPayload(snapshot.getAlertMessage())
+            .score(BigDecimal.ZERO)
+            .interval(snapshot.getInterval().name())
+            .scorePercent(BigDecimal.ZERO)
+            .price(snapshot.getCurrentPrice())
+            .isAlertable(false)
+            .isStrategy(false)
+            .strategyName(Strategy.NONE.name())
+            .strategyProcessStatus(ProcessingStatus.NOT_APPLICABLE.name())
+            .build();
+        return notificationEvent;
+    }
+
+    private String getCleanedSymbol(String symbol) {
+        return StringUtils.replaceChars(symbol, "1!", "").replace("2!", "").replace("!", "");
     }
 
     /**
@@ -184,7 +244,7 @@ public class DealingRangeService {
         simulateDealingRangeJsonAlert(
             "EURUSD",
             new BigDecimal("1.0650"),
-            Quadrant.ABOVE_RANGE,
+            Quadrant.BREACH_ABOVE_RANGE,
             new BigDecimal("1.0600"),
             new BigDecimal("1.0500"),
             "240",
@@ -263,10 +323,7 @@ public class DealingRangeService {
             JsonNode jsonNode = objectMapper.readTree(jsonPayload);
 
             // Parse required fields
-            String symbol = getJsonStringValue(jsonNode, "ticker");
-            symbol = StringUtils.replaceChars(symbol, "1!", "");
-            symbol = StringUtils.replaceChars(symbol, "2!", "");
-            symbol = StringUtils.replaceChars(symbol, "!", "");
+            String symbol = getCleanedSymbol(getJsonStringValue(jsonNode, "ticker"));
             if (StringUtils.isBlank(symbol)) {
                 log.warn("Missing ticker in dealing range JSON data");
                 return null;

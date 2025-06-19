@@ -51,15 +51,15 @@ public class DealingRangeSnapshot {
 
     // Quick access methods
     public boolean isInRange() {
-        return currentQuadrant != Quadrant.BELOW_RANGE && currentQuadrant != Quadrant.ABOVE_RANGE;
+        return currentQuadrant != Quadrant.BREACH_BELOW_RANGE && currentQuadrant != Quadrant.BREACH_ABOVE_RANGE;
     }
 
     public boolean isExtremePosition() {
         return (
             currentQuadrant == Quadrant.Q1_75_100 ||
             currentQuadrant == Quadrant.Q4_0_25 ||
-            currentQuadrant == Quadrant.BELOW_RANGE ||
-            currentQuadrant == Quadrant.ABOVE_RANGE
+            currentQuadrant == Quadrant.BREACH_ABOVE_RANGE ||
+            currentQuadrant == Quadrant.BREACH_ABOVE_RANGE
         );
     }
 

@@ -59,7 +59,8 @@ public enum Indicator {
     LUXALGO_SO(EventImportance.CRITICAL, false),
     LUXALGO_IFVG(EventImportance.CRITICAL, false),
     TFO_IFVG(EventImportance.CRITICAL, false),
-    TIMELESS_IFVG_PRO_KIT(EventImportance.CRITICAL, false);
+    TIMELESS_IFVG_PRO_KIT(EventImportance.CRITICAL, false),
+    DEALING_RANGE(EventImportance.CRITICAL, false);
 
     private final EventImportance defaultImportance;
 
