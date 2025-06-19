@@ -264,6 +264,9 @@ public class DealingRangeService {
 
             // Parse required fields
             String symbol = getJsonStringValue(jsonNode, "ticker");
+            symbol = StringUtils.replaceChars(symbol, "1!", "");
+            symbol = StringUtils.replaceChars(symbol, "2!", "");
+            symbol = StringUtils.replaceChars(symbol, "!", "");
             if (StringUtils.isBlank(symbol)) {
                 log.warn("Missing ticker in dealing range JSON data");
                 return null;
