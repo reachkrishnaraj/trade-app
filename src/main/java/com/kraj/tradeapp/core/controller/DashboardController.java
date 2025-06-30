@@ -35,7 +35,7 @@ public class DashboardController {
     @GetMapping("/events/{symbol}")
     public ResponseEntity<List<NotificationEventDto>> getNotificationEvents(@PathVariable String symbol) {
         List<NotificationEventDto> events = notificationProcessorService.getNotificationEvents(
-            symbol,
+            StringUtils.upperCase(symbol),
             ZonedDateTime.now().minusHours(24 * 7),
             ZonedDateTime.now()
             //            CommonUtil.getNYLocalDateTimeNow().minusHours(24),
@@ -51,7 +51,7 @@ public class DashboardController {
 
     @GetMapping("/signal-snapshot/{symbol}")
     public ResponseEntity<TradeSignalScoreSnapshot> getSignalSnapshot(@PathVariable String symbol) {
-        Optional<TradeSignalScoreSnapshot> maybeSnapshot = tradeSignalSnapshotProcessor.getLatestSnapshot(symbol);
+        Optional<TradeSignalScoreSnapshot> maybeSnapshot = tradeSignalSnapshotProcessor.getLatestSnapshot(StringUtils.upperCase(symbol));
         return ResponseEntity.ok(maybeSnapshot.orElseGet(TradeSignalScoreSnapshot::new));
     }
 
@@ -68,19 +68,19 @@ public class DashboardController {
 
     @GetMapping("/testPickMyTrade/buy/{symbol}")
     public ResponseEntity<?> testPickMyTradeBuy(@PathVariable String symbol) {
-        strategyService.byPassAndDoLongTrade(symbol, "0");
+        strategyService.byPassAndDoLongTrade(StringUtils.upperCase(symbol), "0");
         return ResponseEntity.ok("ok");
     }
 
     @GetMapping("/testPickMyTrade/close/{symbol}")
     public ResponseEntity<?> testPickMyTradeClose(@PathVariable String symbol) {
-        strategyService.byPassAndDoCloseTrades(symbol, "0");
+        strategyService.byPassAndDoCloseTrades(StringUtils.upperCase(symbol), "0");
         return ResponseEntity.ok("ok");
     }
 
     @GetMapping("/testPickMyTrade/sell/{symbol}")
     public ResponseEntity<?> testPickMyTradSell(@PathVariable String symbol) {
-        strategyService.byPassAndDoShortTrade(symbol, "0");
+        strategyService.byPassAndDoShortTrade(StringUtils.upperCase(symbol), "0");
         return ResponseEntity.ok("ok");
     }
 
