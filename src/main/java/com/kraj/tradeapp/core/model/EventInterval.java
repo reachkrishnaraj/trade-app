@@ -18,7 +18,8 @@ public enum EventInterval {
     H7("7h"),
     D1("1d"),
     W1("1w"),
-    NA("NA");
+    NA("NA"),
+    ANY("ANY");
 
     private final String value;
 

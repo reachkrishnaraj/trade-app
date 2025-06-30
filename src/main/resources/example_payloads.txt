@@ -105,4 +105,17 @@ PAYLOAD=CUSTOM|indicator=QUANTVUE_QELITE|price={{close}}|time={{time}}|strategyN
 IFVG_PRO_KIT:
 PAYLOAD=CUSTOM|indicator=IFVG_PRO_KIT|price={{close}}|time={{time}}|strategyName=none|symbol=NQ|source=TV|interval=5m|candleType=CLASSIC|isStrategy=false|msg={{trigger}}
 
+## My cisd setup:
+/receiveEvents/NQ/5m/MY_CISD?isCall=false&isVoice=false&isAnnounce=false
+/receiveEvents/NQ/15m/MY_CISD?isCall=false&isVoice=false&isAnnounce=false
+/receiveEvents/NQ/1h/MY_CISD?isCall=false&isVoice=false&isAnnounce=false
 
+## SMT_FADI:
+/receiveEvents/NQ/5m/SMT_FADI?isCall=false&isVoice=false&isAnnounce=false
+/receiveEvents/NQ/15m/SMT_FADI?isCall=false&isVoice=false&isAnnounce=false
+/receiveEvents/NQ/1h/SMT_FADI?isCall=false&isVoice=false&isAnnounce=false
+
+## SMT_DETECTOR:
+/receiveEvents/NQ/5m/SMT_DETECTOR?isCall=false&isVoice=false&isAnnounce=false
+/receiveEvents/NQ/15m/SMT_DETECTOR?isCall=false&isVoice=false&isAnnounce=false
+/receiveEvents/NQ/1h/SMT_DETECTOR?isCall=false&isVoice=false&isAnnounce=false

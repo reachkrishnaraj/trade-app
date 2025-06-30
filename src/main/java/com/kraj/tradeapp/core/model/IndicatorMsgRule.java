@@ -2,6 +2,7 @@ package com.kraj.tradeapp.core.model;
 
 import jakarta.annotation.Nullable;
 import java.math.BigDecimal;
+import java.util.List;
 import lombok.Builder;
 import lombok.Data;
 
@@ -43,4 +44,10 @@ public class IndicatorMsgRule {
     private String direction;
 
     private boolean isAlertable;
+
+    private List<String> textTimeframes;
+
+    private List<String> callTimeframes;
+
+    private List<String> announceTimeframes;
 }

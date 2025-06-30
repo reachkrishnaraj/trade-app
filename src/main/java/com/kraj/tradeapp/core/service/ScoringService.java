@@ -1,9 +1,6 @@
 package com.kraj.tradeapp.core.service;
 
-import com.kraj.tradeapp.core.model.AlertMessageMatchType;
-import com.kraj.tradeapp.core.model.Direction;
-import com.kraj.tradeapp.core.model.IndicatorMsgRule;
-import com.kraj.tradeapp.core.model.IndicatorSubCategoryRange;
+import com.kraj.tradeapp.core.model.*;
 import com.opencsv.CSVReader;
 import jakarta.annotation.Nullable;
 import jakarta.annotation.PostConstruct;
@@ -84,6 +81,27 @@ public class ScoringService {
                 @Nullable
                 String isAlertable = StringUtils.isBlank(StringUtils.trim(line[10])) ? null : StringUtils.trim(line[10]);
 
+                @Nullable
+                String direction = StringUtils.isBlank(StringUtils.trim(line[11])) ? null : StringUtils.trim(line[11]);
+
+                @Nullable
+                String textTimeframesStr = StringUtils.isBlank(StringUtils.trim(line[12])) ? null : StringUtils.trim(line[12]);
+                List<String> textTimeframes = StringUtils.isBlank(textTimeframesStr)
+                    ? Collections.emptyList()
+                    : Arrays.asList(StringUtils.split(textTimeframesStr, ","));
+
+                @Nullable
+                String callTimeframesStr = StringUtils.isBlank(StringUtils.trim(line[13])) ? null : StringUtils.trim(line[13]);
+                List<String> callTimeframes = StringUtils.isBlank(callTimeframesStr)
+                    ? Collections.emptyList()
+                    : Arrays.asList(StringUtils.split(callTimeframesStr, ","));
+
+                @Nullable
+                String announceTimeframesStr = StringUtils.isBlank(StringUtils.trim(line[14])) ? null : StringUtils.trim(line[14]);
+                List<String> announceTimeframes = StringUtils.isBlank(announceTimeframesStr)
+                    ? Collections.emptyList()
+                    : Arrays.asList(StringUtils.split(announceTimeframesStr, ","));
+
                 if (indicatorName == null || alertMessage == null) {
                     log.error("Indicator name or alert message is missing in scoring file. Skipping this line");
                     continue;
@@ -107,6 +125,10 @@ public class ScoringService {
                     .indicatorSubCategoryDisplayName(subCategoryDisplayName)
                     .alertMessage(alertMessage)
                     .isAlertable(StringUtils.isNotBlank(isAlertable) && isAlertable.equalsIgnoreCase("true"))
+                    .direction(direction)
+                    .textTimeframes(textTimeframes)
+                    .callTimeframes(callTimeframes)
+                    .announceTimeframes(announceTimeframes)
                     .build();
                 indicatorMsgRules.addLast(indicatorMsgRule);
             }
@@ -195,7 +217,8 @@ public class ScoringService {
                     throw new RuntimeException("Invalid match type: " + rule.getMatchType());
             }
         }
-        throw new RuntimeException("No matching rule found for indicator: " + indicatorName + " and message: " + message);
+        return Optional.empty();
+        //throw new RuntimeException("No matching rule found for indicator: " + indicatorName + " and message: " + message);
     }
 
     private Optional<BigDecimal> getMatchingMinScore(IndicatorMsgRule rule) {

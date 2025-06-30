@@ -1,0 +1,236 @@
+//@version=5
+indicator("Dealing Range Quadrants with Mid/Low/High (1-Minute Alerts)", overlay=true)
+
+// === INPUTS ===
+range_lookback_bars = input.int(20, title="Lookback Candles for Range")
+use_alert_function = input.bool(true, title="Use alert() function for alerts")
+show_quadrant_details = input.bool(true, title="Show Quadrant Mid/Low/High in Alerts")
+alert_on_mid_touch = input.bool(true, title="Alert on Mid-Band Touches")
+mid_touch_tolerance = input.float(0.01, title="Mid-Band Touch Tolerance %", minval=0.001, maxval=1.0)
+
+// === GET 1-MINUTE DATA ===
+close_1m = request.security(syminfo.tickerid, "1", close, barmerge.gaps_off, barmerge.lookahead_off)
+high_1m = request.security(syminfo.tickerid, "1", high, barmerge.gaps_off, barmerge.lookahead_off)
+low_1m = request.security(syminfo.tickerid, "1", low, barmerge.gaps_off, barmerge.lookahead_off)
+
+// Detect new 1-minute bar
+new_1m_bar = close_1m != close_1m[1]
+
+// === CALCULATE DYNAMIC RANGE ===
+rolling_high = ta.highest(high, range_lookback_bars)
+rolling_low = ta.lowest(low, range_lookback_bars)
+range_size = rolling_high - rolling_low
+
+// Previous bar range for breach detection
+prev_rolling_high = ta.highest(high[1], range_lookback_bars)
+prev_rolling_low = ta.lowest(low[1], range_lookback_bars)
+
+// === MAIN QUADRANT LEVELS ===
+q1 = rolling_low     // 0%
+q2 = q1 + range_size * 0.25   // 25%
+q3 = q1 + range_size * 0.50   // 50%
+q4 = q1 + range_size * 0.75   // 75%
+q5 = rolling_high    // 100%
+
+// === QUADRANT MID/LOW/HIGH CALCULATIONS ===
+// Q1 Quadrant (75-100%)
+q1_low = q4                           // 75%
+q1_mid = q4 + range_size * 0.125      // 87.5%
+q1_high = q5                          // 100%
+
+// Q2 Quadrant (50-75%)
+q2_low = q3                           // 50%
+q2_mid = q3 + range_size * 0.125      // 62.5%
+q2_high = q4                          // 75%
+
+// Q3 Quadrant (25-50%)
+q3_low = q2                           // 25%
+q3_mid = q2 + range_size * 0.125      // 37.5%
+q3_high = q3                          // 50%
+
+// Q4 Quadrant (0-25%)
+q4_low = q1                           // 0%
+q4_mid = q1 + range_size * 0.125      // 12.5%
+q4_high = q2                          // 25%
+
+// === PLOT CLEAN RANGE LINES ===
+// Bottom bands (green)
+plot(q1, "0% (Range Low)", color=color.new(color.green, 0), linewidth=2, display=display.all)
+plot(q2, "25%", color=color.new(color.green, 30), linewidth=1, display=display.all)
+
+// Mid bands (gray)
+plot(q3, "50% (Range Mid)", color=color.new(color.gray, 0), linewidth=2, display=display.all)
+plot(q4, "75%", color=color.new(color.gray, 30), linewidth=1, display=display.all)
+
+// Top band (red)
+plot(q5, "100% (Range High)", color=color.new(color.red, 0), linewidth=2, display=display.all)
+
+// Plot quadrant midpoints (gray)
+plot(q1_mid, "Q1 Mid (87.5%)", color=color.new(color.gray, 50), linewidth=1, style=plot.style_linebr, display=display.all)
+plot(q2_mid, "Q2 Mid (62.5%)", color=color.new(color.gray, 50), linewidth=1, style=plot.style_linebr, display=display.all)
+plot(q3_mid, "Q3 Mid (37.5%)", color=color.new(color.gray, 50), linewidth=1, style=plot.style_linebr, display=display.all)
+plot(q4_mid, "Q4 Mid (12.5%)", color=color.new(color.gray, 50), linewidth=1, style=plot.style_linebr, display=display.all)
+
+// === CURRENT POSITION DETECTION ===
+price_1m = close_1m
+
+// Detect breaches (using previous bar's range)
+breach_above = new_1m_bar and (price_1m > prev_rolling_high)
+breach_below = new_1m_bar and (price_1m < prev_rolling_low)
+
+// Current quadrant within updated range
+in_q1_1m = price_1m >= q4 and price_1m <= q5  // 75-100%
+in_q2_1m = price_1m >= q3 and price_1m < q4   // 50-75%
+in_q3_1m = price_1m >= q2 and price_1m < q3   // 25-50%
+in_q4_1m = price_1m >= q1 and price_1m < q2   // 0-25%
+
+// Mid-band touch detection
+tolerance_pct = mid_touch_tolerance / 100
+q1_mid_touch = new_1m_bar and math.abs(price_1m - q1_mid) <= (q1_mid * tolerance_pct)
+q2_mid_touch = new_1m_bar and math.abs(price_1m - q2_mid) <= (q2_mid * tolerance_pct)
+q3_mid_touch = new_1m_bar and math.abs(price_1m - q3_mid) <= (q3_mid * tolerance_pct)
+q4_mid_touch = new_1m_bar and math.abs(price_1m - q4_mid) <= (q4_mid * tolerance_pct)
+
+any_mid_touch = q1_mid_touch or q2_mid_touch or q3_mid_touch or q4_mid_touch
+mid_touch_level = q1_mid_touch ? "Q1_MID_87.5" : q2_mid_touch ? "Q2_MID_62.5" : q3_mid_touch ? "Q3_MID_37.5" : q4_mid_touch ? "Q4_MID_12.5" : ""
+
+// Determine current status
+current_status = breach_above ? "BREACH_ABOVE_RANGE" :
+                 breach_below ? "BREACH_BELOW_RANGE" :
+                 in_q1_1m ? "Q1_75_100" :
+                 in_q2_1m ? "Q2_50_75" :
+                 in_q3_1m ? "Q3_25_50" :
+                 in_q4_1m ? "Q4_0_25" : "UNKNOWN"
+
+// === QUADRANT DETAILS FUNCTION ===
+get_current_quadrant_details() =>
+    result = ""
+    if in_q1_1m
+        result := ',"q1_low":' + str.tostring(math.round(q1_low, 2)) + ',"q1_mid":' + str.tostring(math.round(q1_mid, 2)) + ',"q1_high":' + str.tostring(math.round(q1_high, 2))
+    else if in_q2_1m
+        result := ',"q2_low":' + str.tostring(math.round(q2_low, 2)) + ',"q2_mid":' + str.tostring(math.round(q2_mid, 2)) + ',"q2_high":' + str.tostring(math.round(q2_high, 2))
+    else if in_q3_1m
+        result := ',"q3_low":' + str.tostring(math.round(q3_low, 2)) + ',"q3_mid":' + str.tostring(math.round(q3_mid, 2)) + ',"q3_high":' + str.tostring(math.round(q3_high, 2))
+    else if in_q4_1m
+        result := ',"q4_low":' + str.tostring(math.round(q4_low, 2)) + ',"q4_mid":' + str.tostring(math.round(q4_mid, 2)) + ',"q4_high":' + str.tostring(math.round(q4_high, 2))
+    result
+
+get_all_quadrant_details() =>
+    part1 = ',"q1_low":' + str.tostring(math.round(q1_low, 2)) + ',"q1_mid":' + str.tostring(math.round(q1_mid, 2)) + ',"q1_high":' + str.tostring(math.round(q1_high, 2))
+    part2 = ',"q2_low":' + str.tostring(math.round(q2_low, 2)) + ',"q2_mid":' + str.tostring(math.round(q2_mid, 2)) + ',"q2_high":' + str.tostring(math.round(q2_high, 2))
+    part3 = ',"q3_low":' + str.tostring(math.round(q3_low, 2)) + ',"q3_mid":' + str.tostring(math.round(q3_mid, 2)) + ',"q3_high":' + str.tostring(math.round(q3_high, 2))
+    part4 = ',"q4_low":' + str.tostring(math.round(q4_low, 2)) + ',"q4_mid":' + str.tostring(math.round(q4_mid, 2)) + ',"q4_high":' + str.tostring(math.round(q4_high, 2))
+    part1 + part2 + part3 + part4
+
+// === ALERT EVERY MINUTE ===
+if use_alert_function and new_1m_bar
+    quadrant_details = show_quadrant_details ? get_all_quadrant_details() : get_current_quadrant_details()
+
+    base_message = '{"ticker":"' + syminfo.ticker + '","quadrant":"' + current_status + '","price":' + str.tostring(math.round(price_1m, 2))
+    range_info = ',"range_high":' + str.tostring(math.round(rolling_high, 2)) + ',"range_low":' + str.tostring(math.round(rolling_low, 2))
+    time_info = ',"time":"' + str.tostring(timenow) + '"}'
+
+    alert_message = base_message + range_info + quadrant_details + time_info
+    alert(alert_message, alert.freq_once_per_bar)
+
+// === MID-BAND TOUCH ALERTS ===
+if alert_on_mid_touch and any_mid_touch
+    mid_alert_message = '{"ticker":"' + syminfo.ticker + '","event":"MID_BAND_TOUCH","level":"' + mid_touch_level + '","price":' + str.tostring(math.round(price_1m, 2)) + ',"time":"' + str.tostring(timenow) + '"}'
+    alert("Mid-Band Touch: " + mid_alert_message, alert.freq_once_per_bar)
+
+// === ALERT CONDITIONS ===
+// Use both conditions to ensure 1-minute triggering
+alertcondition(new_1m_bar, title="1M Status Update", message="1-minute status update")
+alertcondition(barstate.isconfirmed and timeframe.isintraday and timeframe.multiplier == 1, title="1M Confirmed", message="1-minute confirmed")
+
+// Mid-band touch alert conditions
+alertcondition(q1_mid_touch, title="Q1 Mid Touch (87.5%)", message="Price touched Q1 midpoint")
+alertcondition(q2_mid_touch, title="Q2 Mid Touch (62.5%)", message="Price touched Q2 midpoint")
+alertcondition(q3_mid_touch, title="Q3 Mid Touch (37.5%)", message="Price touched Q3 midpoint")
+alertcondition(q4_mid_touch, title="Q4 Mid Touch (12.5%)", message="Price touched Q4 midpoint")
+alertcondition(any_mid_touch, title="Any Mid-Band Touch", message="Price touched any quadrant midpoint")
+
+// === CLEAN VISUAL AIDS ===
+// Subtle background colors for quadrants (no yellow)
+bgcolor_color = breach_above ? color.new(color.blue, 95) : breach_below ? color.new(color.purple, 95) : in_q1_1m ? color.new(color.red, 97) : in_q2_1m ? color.new(color.orange, 97) : in_q3_1m ? color.new(color.gray, 97) : in_q4_1m ? color.new(color.green, 97) : na
+bgcolor(bgcolor_color)
+
+// Clean status markers
+plotshape(new_1m_bar and breach_above, title="Breach Above", style=shape.triangleup, location=location.abovebar, color=color.blue, size=size.normal)
+plotshape(new_1m_bar and breach_below, title="Breach Below", style=shape.triangledown, location=location.belowbar, color=color.purple, size=size.normal)
+plotshape(new_1m_bar and in_q1_1m and not breach_above, title="Q1", style=shape.circle, location=location.abovebar, color=color.red, size=size.small)
+plotshape(new_1m_bar and in_q4_1m and not breach_below, title="Q4", style=shape.circle, location=location.belowbar, color=color.green, size=size.small)
+
+// Mid-band touch markers
+plotshape(q1_mid_touch, title="Q1 Mid Touch", style=shape.diamond, location=location.abovebar, color=color.red, size=size.tiny)
+plotshape(q2_mid_touch, title="Q2 Mid Touch", style=shape.diamond, location=location.abovebar, color=color.orange, size=size.tiny)
+plotshape(q3_mid_touch, title="Q3 Mid Touch", style=shape.diamond, location=location.belowbar, color=color.gray, size=size.tiny)
+plotshape(q4_mid_touch, title="Q4 Mid Touch", style=shape.diamond, location=location.belowbar, color=color.green, size=size.tiny)
+
+// Current price line (black for white background)
+plot(price_1m, title="1M Close", color=color.black, linewidth=2)
+
+// === CLEAN STATUS LABEL (BLACK TEXT - SINGLE LINE) ===
+var label status_label = na
+if new_1m_bar
+    label.delete(status_label)
+    label_color = breach_above ? color.blue : breach_below ? color.purple : color.white
+
+    // Single line label text with quadrant details
+    label_text = current_status
+    if in_q1_1m
+        label_text += " | L:" + str.tostring(q1_low, "#.##") + " M:" + str.tostring(q1_mid, "#.##") + " H:" + str.tostring(q1_high, "#.##")
+    else if in_q2_1m
+        label_text += " | L:" + str.tostring(q2_low, "#.##") + " M:" + str.tostring(q2_mid, "#.##") + " H:" + str.tostring(q2_high, "#.##")
+    else if in_q3_1m
+        label_text += " | L:" + str.tostring(q3_low, "#.##") + " M:" + str.tostring(q3_mid, "#.##") + " H:" + str.tostring(q3_high, "#.##")
+    else if in_q4_1m
+        label_text += " | L:" + str.tostring(q4_low, "#.##") + " M:" + str.tostring(q4_mid, "#.##") + " H:" + str.tostring(q4_high, "#.##")
+
+    status_label := label.new(bar_index, price_1m, label_text, style=label.style_label_up, size=size.small, color=label_color, textcolor=color.black)
+
+// === CLEAN BLACK TABLE ===
+if barstate.islast
+    var table quad_table = table.new(position.top_right, 4, 6, bgcolor=color.white, frame_width=2, frame_color=color.black, border_width=1)
+
+    table.clear(quad_table, 0, 0)
+
+    // Black headers
+    table.cell(quad_table, 0, 0, "Quad", text_color=color.white, bgcolor=color.black, text_size=size.small)
+    table.cell(quad_table, 1, 0, "Low", text_color=color.white, bgcolor=color.black, text_size=size.small)
+    table.cell(quad_table, 2, 0, "Mid", text_color=color.white, bgcolor=color.black, text_size=size.small)
+    table.cell(quad_table, 3, 0, "High", text_color=color.white, bgcolor=color.black, text_size=size.small)
+
+    // Q1 Row (Red theme for upper)
+    q1_bg = in_q1_1m ? color.new(color.red, 70) : color.new(color.red, 90)
+    table.cell(quad_table, 0, 1, "Q1", text_color=color.black, bgcolor=q1_bg, text_size=size.small)
+    table.cell(quad_table, 1, 1, str.tostring(q1_low, "#.##"), text_color=color.black, bgcolor=q1_bg, text_size=size.small)
+    table.cell(quad_table, 2, 1, str.tostring(q1_mid, "#.##"), text_color=color.black, bgcolor=q1_bg, text_size=size.small)
+    table.cell(quad_table, 3, 1, str.tostring(q1_high, "#.##"), text_color=color.black, bgcolor=q1_bg, text_size=size.small)
+
+    // Q2 Row (Orange theme for upper-mid)
+    q2_bg = in_q2_1m ? color.new(color.orange, 70) : color.new(color.orange, 90)
+    table.cell(quad_table, 0, 2, "Q2", text_color=color.black, bgcolor=q2_bg, text_size=size.small)
+    table.cell(quad_table, 1, 2, str.tostring(q2_low, "#.##"), text_color=color.black, bgcolor=q2_bg, text_size=size.small)
+    table.cell(quad_table, 2, 2, str.tostring(q2_mid, "#.##"), text_color=color.black, bgcolor=q2_bg, text_size=size.small)
+    table.cell(quad_table, 3, 2, str.tostring(q2_high, "#.##"), text_color=color.black, bgcolor=q2_bg, text_size=size.small)
+
+    // Q3 Row (Gray theme for mid)
+    q3_bg = in_q3_1m ? color.new(color.gray, 60) : color.new(color.gray, 85)
+    table.cell(quad_table, 0, 3, "Q3", text_color=color.black, bgcolor=q3_bg, text_size=size.small)
+    table.cell(quad_table, 1, 3, str.tostring(q3_low, "#.##"), text_color=color.black, bgcolor=q3_bg, text_size=size.small)
+    table.cell(quad_table, 2, 3, str.tostring(q3_mid, "#.##"), text_color=color.black, bgcolor=q3_bg, text_size=size.small)
+    table.cell(quad_table, 3, 3, str.tostring(q3_high, "#.##"), text_color=color.black, bgcolor=q3_bg, text_size=size.small)
+
+    // Q4 Row (Green theme for lower)
+    q4_bg = in_q4_1m ? color.new(color.green, 70) : color.new(color.green, 90)
+    table.cell(quad_table, 0, 4, "Q4", text_color=color.black, bgcolor=q4_bg, text_size=size.small)
+    table.cell(quad_table, 1, 4, str.tostring(q4_low, "#.##"), text_color=color.black, bgcolor=q4_bg, text_size=size.small)
+    table.cell(quad_table, 2, 4, str.tostring(q4_mid, "#.##"), text_color=color.black, bgcolor=q4_bg, text_size=size.small)
+    table.cell(quad_table, 3, 4, str.tostring(q4_high, "#.##"), text_color=color.black, bgcolor=q4_bg, text_size=size.small)
+
+    // Current Price Row (White background, black text)
+    table.cell(quad_table, 0, 5, "Price", text_color=color.black, bgcolor=color.white, text_size=size.small)
+    table.cell(quad_table, 1, 5, str.tostring(price_1m, "#.##"), text_color=color.black, bgcolor=color.white, text_size=size.small)
+    table.cell(quad_table, 2, 5, current_status, text_color=color.black, bgcolor=color.white, text_size=size.small)
+    table.cell(quad_table, 3, 5, "", text_color=color.black, bgcolor=color.white, text_size=size.small)

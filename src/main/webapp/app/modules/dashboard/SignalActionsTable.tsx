@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { Storage } from 'react-jhipster';
 import { Subscription } from 'rxjs';
 import { connectWebSocket, disconnectWebSocket, subscribeToTopic, unsubscribeFromTopic } from 'app/utils/websocket-utils';
+import { VoiceAnnouncementsRef } from './VoiceAnnouncements'; // Import the ref type
 import './SignalActionsTable.scss';
 
 interface SignalAction {
@@ -15,6 +16,7 @@ interface SignalAction {
   interval: string;
   message: string;
   direction: 'BUY' | 'SELL' | 'HOLD';
+  announce?: boolean;
 }
 
 interface FilterState {
@@ -36,7 +38,13 @@ interface SignalActionWithReceived extends SignalAction {
   receivedAt?: number; // Timestamp when received by frontend
 }
 
-const SignalActionsTable = () => {
+// 🎯 ADD PROPS INTERFACE
+interface SignalActionsTableProps {
+  voiceRef?: React.MutableRefObject<VoiceAnnouncementsRef | null>;
+}
+
+// 🎯 UPDATE COMPONENT TO ACCEPT PROPS
+const SignalActionsTable: React.FC<SignalActionsTableProps> = ({ voiceRef }) => {
   const [data, setData] = useState<SignalActionWithReceived[]>([]);
   const [filteredData, setFilteredData] = useState<SignalActionWithReceived[]>([]);
   const [loading, setLoading] = useState(true);
@@ -75,6 +83,20 @@ const SignalActionsTable = () => {
   const [uniqueSymbols, setUniqueSymbols] = useState<string[]>([]);
   const [uniqueIntervals, setUniqueIntervals] = useState<string[]>([]);
   const [uniqueIndicators, setUniqueIndicators] = useState<string[]>([]);
+
+  // 🗣️ Helper function to convert signal for voice announcements
+  const convertSignalForVoice = (signal: SignalActionWithReceived) => {
+    return {
+      id: signal.id,
+      symbol: signal.symbol,
+      direction: signal.direction,
+      indicatorName: signal.indicatorName,
+      price: signal.price,
+      interval: signal.interval,
+      message: signal.message,
+      announce: signal.announce,
+    };
+  };
 
   // Notification management
   const addNotification = (message: string, type: 'success' | 'info' | 'warning' | 'error' = 'info') => {
@@ -299,7 +321,7 @@ const SignalActionsTable = () => {
     return receivedAt > tenMinutesAgo;
   };
 
-  // Check for new signals and show notifications
+  // 🗣️ UPDATED: Check for new signals and show notifications + voice announcements
   const checkForNewSignals = (newData: SignalActionWithReceived[], oldData: SignalActionWithReceived[]) => {
     if (oldData.length === 0) return; // Skip on initial load
 
@@ -317,6 +339,12 @@ const SignalActionsTable = () => {
 
       newSignals.forEach(signal => {
         newTimestamps.set(signal.id, now);
+
+        // 🗣️ VOICE ANNOUNCEMENT - Use the passed voiceRef
+        if (voiceRef?.current) {
+          const voiceSignalData = convertSignalForVoice(signal);
+          voiceRef.current.announceSignal(voiceSignalData);
+        }
       });
 
       setReceivedTimestamps(newTimestamps);
@@ -517,6 +545,9 @@ const SignalActionsTable = () => {
       if (response.ok) {
         const signal = data.find(s => s.id === signalId);
         addNotification(`✅ Successfully executed signal for ${signal?.symbol}`, 'success');
+
+        // 🗣️ Voice announcement for execution
+        voiceRef?.current?.announceCustomMessage(`Signal executed for ${signal?.symbol}`);
       } else {
         addNotification('❌ Failed to execute signal', 'error');
       }
@@ -540,6 +571,9 @@ const SignalActionsTable = () => {
       if (response.ok) {
         const signal = data.find(s => s.id === signalId);
         addNotification(`⏹️ Successfully cancelled signal for ${signal?.symbol}`, 'warning');
+
+        // 🗣️ Voice announcement for cancellation
+        voiceRef?.current?.announceCustomMessage(`Signal cancelled for ${signal?.symbol}`);
       } else {
         addNotification('❌ Failed to cancel signal', 'error');
       }
@@ -800,6 +834,26 @@ const SignalActionsTable = () => {
             >
               {audioEnabled ? 'Test Sound' : 'Enable Sound'}
             </button>
+
+            {/* 🗣️ Voice Test Button */}
+            <button
+              onClick={() => voiceRef?.current?.testVoice()}
+              className="btn btn-test-voice"
+              title="Test voice announcement"
+              style={{
+                padding: '6px 12px',
+                background: '#6f42c1',
+                color: 'white',
+                border: 'none',
+                borderRadius: '4px',
+                cursor: 'pointer',
+                fontSize: '12px',
+                marginLeft: '5px',
+              }}
+            >
+              🎤 Test Voice
+            </button>
+
             {!audioEnabled && <span className="audio-hint">👈 Click to hear notifications!</span>}
             {audioEnabled && <span className="audio-enabled-text">✅ Audio ON</span>}
           </div>

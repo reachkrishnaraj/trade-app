@@ -27,6 +27,7 @@ public class SignalActionDTO {
     private String interval;
     private String message;
     private SignalDirection direction;
+    private boolean isAnnounce;
 
     public enum SignalStatus {
         PENDING,

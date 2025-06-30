@@ -20,6 +20,7 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.locks.ReentrantLock;
+import lombok.Builder;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
@@ -55,6 +56,55 @@ public class NotificationProcessorService implements ApplicationListener<Applica
     // ========================================================================
     // PUBLIC API METHODS
     // ========================================================================
+
+    /**
+     * Queue notification for processing
+     */
+    public void processSpecificEventAndQueue(
+        String symbol,
+        String interval,
+        String indicator,
+        String rawMsg,
+        String isCall,
+        String isText,
+        String announce
+    ) {
+        EventInterval eventInterval = EventInterval.getFromValue(interval);
+        Indicator eventIndicator = Indicator.fromString(indicator);
+        Map<String, String> payloadMap = new HashMap<>();
+        payloadMap.put(PayloadKey.SYMBOL.getKeyName(), symbol);
+        payloadMap.put(PayloadKey.INTERVAL.getKeyName(), interval);
+        payloadMap.put(PayloadKey.INDICATOR_NAME.getKeyName(), eventIndicator.name());
+        rawMsg = Optional.ofNullable(rawMsg).filter(StringUtils::isNotBlank).orElse("No message provided");
+        payloadMap.put(PayloadKey.ALERT_MESSAGE.getKeyName(), rawMsg);
+        payloadMap.put(PayloadKey.TIME.getKeyName(), String.valueOf(ZonedDateTime.now().toInstant().toEpochMilli()));
+        payloadMap.put(PayloadKey.SOURCE.getKeyName(), IndicatorSource.TRADING_VIEW.name());
+        payloadMap.put(PayloadKey.CANDLE_TYPE.getKeyName(), CandleType.CLASSIC.name());
+        EnumSet.of(PayloadKey.PRICE, PayloadKey.PRICE_CLOSE, PayloadKey.PRICE_OPEN, PayloadKey.PRICE_LOW, PayloadKey.PRICE_HIGH).forEach(
+            key -> payloadMap.put(key.getKeyName(), "0")
+        ); // Default price values
+        payloadMap.put(PayloadKey.STRATEGY.getKeyName(), Strategy.NONE.name());
+        payloadMap.put(PayloadKey.IS_STRATEGY.getKeyName(), "false");
+        payloadMap.put(PayloadKey.CANDLE_TYPE.getKeyName(), CandleType.CLASSIC.name());
+
+        // Parse event data
+        EventData eventData = parseEventData(payloadMap, rawMsg);
+
+        // Create and save notification event
+        NotificationEvent notificationEvent = createNotificationEvent(eventData);
+        notificationEventRepository.save(notificationEvent);
+
+        eventData.isCall = StringUtils.containsIgnoreCase(isCall, "true");
+        eventData.isText = StringUtils.containsIgnoreCase(isText, "true");
+        eventData.isAnnounce = StringUtils.containsIgnoreCase(announce, "true");
+
+        // Create signal action using the appropriate processor
+        createSignalActionFromEvent(notificationEvent, eventData);
+
+        // Send WebSocket notification
+        NotificationEventDto eventDto = getDto(notificationEvent);
+        messagingTemplate.convertAndSend("/topic/events", List.of(eventDto));
+    }
 
     /**
      * Queue notification for processing
@@ -157,6 +207,41 @@ public class NotificationProcessorService implements ApplicationListener<Applica
         NotificationEvent notificationEvent = createNotificationEvent(eventData);
         notificationEventRepository.save(notificationEvent);
 
+        Optional<IndicatorMsgRule> mayBeRule = scoringService.findMatchingIndicatorEventRule(
+            eventData.indicator.name(),
+            eventData.rawAlertMsg
+        );
+
+        eventData.isAnnounce = mayBeRule
+            .map(
+                r ->
+                    r
+                        .getAnnounceTimeframes()
+                        .stream()
+                        .anyMatch(timeframe -> timeframe.equalsIgnoreCase(eventData.interval.name()) || timeframe.contains("ANY"))
+            )
+            .orElse(false);
+
+        eventData.isCall = mayBeRule
+            .map(
+                r ->
+                    r
+                        .getCallTimeframes()
+                        .stream()
+                        .anyMatch(timeframe -> timeframe.equalsIgnoreCase(eventData.interval.name()) || timeframe.contains("ANY"))
+            )
+            .orElse(false);
+
+        eventData.isText = mayBeRule
+            .map(
+                r ->
+                    r
+                        .getTextTimeframes()
+                        .stream()
+                        .anyMatch(timeframe -> timeframe.equalsIgnoreCase(eventData.interval.name()) || timeframe.contains("ANY"))
+            )
+            .orElse(false);
+
         // Create signal action using the appropriate processor
         createSignalActionFromEvent(notificationEvent, eventData);
 
@@ -241,27 +326,40 @@ public class NotificationProcessorService implements ApplicationListener<Applica
         BigDecimal scoreRangeMin = mayBeMsgRule.map(IndicatorMsgRule::getScoreRangeMin).orElse(null);
         BigDecimal scoreRangeMax = mayBeMsgRule.map(IndicatorMsgRule::getScoreRangeMax).orElse(null);
         BigDecimal score = mayBeMsgRule.map(IndicatorMsgRule::getScore).orElse(null);
+        String indicatorSubCategory = mayBeMsgRule.map(IndicatorMsgRule::getSubCategory).orElse(data.indicator.name());
+        String indicatorSubCategoryDisplayName = mayBeMsgRule
+            .map(IndicatorMsgRule::getIndicatorSubCategoryDisplayName)
+            .filter(StringUtils::isNotBlank)
+            .orElse(data.indicator.name());
+        String indicatorDisplayName = mayBeMsgRule
+            .map(IndicatorMsgRule::getIndicatorDisplayName)
+            .filter(StringUtils::isNotBlank)
+            .orElse(data.indicator.name());
 
         BigDecimal scorePercent = (isSkipScoring || scoreRangeMin == null || scoreRangeMax == null || score == null)
             ? BigDecimal.ZERO
             : ScoringService.calculateBipolarPercentage(scoreRangeMin, scoreRangeMax, score);
 
-        Direction scoreDirection = isSkipScoring || score == null ? Direction.UNKNOWN : ScoringService.categorizeScore(scorePercent);
+        Direction scoreDirection = null;
+
+        if (mayBeMsgRule.isPresent() && StringUtils.isNotBlank(mayBeMsgRule.get().getDirection())) {
+            scoreDirection = Direction.valueOf(mayBeMsgRule.get().getDirection().toUpperCase());
+        } else {
+            scoreDirection = isSkipScoring || score == null ? Direction.UNKNOWN : ScoringService.categorizeScore(scorePercent);
+        }
 
         return NotificationEvent.builder()
             .price(data.price)
             .symbol(data.symbol)
-            .minScore(scoreRangeMin)
-            .maxScore(scoreRangeMax)
+            .minScore(isSkipScoring ? BigDecimal.ZERO : scoreRangeMin)
+            .maxScore(isSkipScoring ? BigDecimal.ZERO : scoreRangeMax)
             .score(score == null ? BigDecimal.ZERO : score)
-            .scorePercent(scorePercent)
+            .scorePercent(isSkipScoring ? BigDecimal.ZERO : scorePercent)
             .direction(scoreDirection.name())
             .created(ZonedDateTime.now())
             .lastUpdated(ZonedDateTime.now())
-            .indicatorSubCategory(mayBeMsgRule.map(IndicatorMsgRule::getSubCategory).orElse("UNKNOWN"))
-            .indicatorSubCategoryDisplayName(
-                mayBeMsgRule.map(IndicatorMsgRule::getIndicatorSubCategoryDisplayName).filter(StringUtils::isNotBlank).orElse("UNKNOWN")
-            )
+            .indicatorSubCategory(indicatorSubCategory)
+            .indicatorSubCategoryDisplayName(indicatorSubCategoryDisplayName)
             .rawAlertMsg(data.rawAlertMsg)
             .rawPayload(data.payload)
             .interval(data.interval.name())
@@ -272,9 +370,7 @@ public class NotificationProcessorService implements ApplicationListener<Applica
             .source(data.source.name())
             .datetime(data.eventDateTime)
             .indicator(data.indicator.name())
-            .indicatorDisplayName(
-                mayBeMsgRule.map(IndicatorMsgRule::getIndicatorDisplayName).filter(StringUtils::isNotBlank).orElse("UNKNOWN")
-            )
+            .indicatorDisplayName(indicatorDisplayName)
             .tradeSignalProcessStatus(isSkipScoring ? ProcessingStatus.NOT_APPLICABLE.name() : ProcessingStatus.PENDING.name())
             .isAlertable(mayBeMsgRule.map(IndicatorMsgRule::isAlertable).orElse(false))
             .build();
@@ -294,8 +390,10 @@ public class NotificationProcessorService implements ApplicationListener<Applica
                 ZonedDateTime.now(),
                 notificationEvent.getScore(),
                 notificationEvent.isStrategy(),
-                notificationEvent.isAlertable()
+                notificationEvent.isAlertable(),
+                eventData.isAnnounce
             );
+            signalAction.setAnnounce(eventData.isAnnounce);
 
             log.info(
                 "Created SignalAction {} from NotificationEvent {} for symbol {}",
@@ -438,5 +536,8 @@ public class NotificationProcessorService implements ApplicationListener<Applica
         ZonedDateTime eventDateTime;
         Strategy strategy;
         String payload;
+        boolean isAnnounce;
+        boolean isCall;
+        boolean isText;
     }
 }

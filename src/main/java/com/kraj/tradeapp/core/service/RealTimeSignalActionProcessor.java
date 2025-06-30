@@ -32,7 +32,8 @@ public class RealTimeSignalActionProcessor implements SignalActionProcessor {
         ZonedDateTime eventTime,
         BigDecimal score,
         boolean isStrategy,
-        boolean isAlertable
+        boolean isAlertable,
+        boolean isAnnounce
     ) {
         log.debug("Creating REAL-TIME signal action DTO for symbol: {}", symbol);
 
@@ -48,12 +49,14 @@ public class RealTimeSignalActionProcessor implements SignalActionProcessor {
         signalAction.setDirection(mapDirectionToSignalDirection(direction));
         signalAction.setDateTime(CommonUtil.getNYLocalDateTimeNow());
         signalAction.setStatus(determineRealTimeStatus(isStrategy, isAlertable, score));
+        signalAction.setAnnounce(isAnnounce);
 
         log.info(
-            "Created REAL-TIME SignalAction DTO: {} for {} at price {}",
+            "Created REAL-TIME SignalAction DTO: {} for {} at price {}, isAnnounce: {}",
             signalAction.getSignalName(),
             signalAction.getSymbol(),
-            signalAction.getPrice()
+            signalAction.getPrice(),
+            signalAction.isAnnounce()
         );
 
         return signalAction; // PURE - Just return DTO, no storage

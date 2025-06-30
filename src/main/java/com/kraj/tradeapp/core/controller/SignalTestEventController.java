@@ -74,7 +74,8 @@ public class SignalTestEventController {
                 ZonedDateTime.now(),
                 score,
                 false, // isStrategy
-                true // isAlertable
+                true, // isAlertable
+                true
             );
 
             Map<String, Object> response = new HashMap<>();
@@ -154,7 +155,8 @@ public class SignalTestEventController {
                 ZonedDateTime.now(),
                 score,
                 isStrategy,
-                isAlertable
+                isAlertable,
+                true
             );
 
             Map<String, Object> response = new HashMap<>();
@@ -211,6 +213,7 @@ public class SignalTestEventController {
                     ZonedDateTime.now(),
                     score,
                     false,
+                    true,
                     true
                 );
 
@@ -264,6 +267,7 @@ public class SignalTestEventController {
                         ZonedDateTime.now(),
                         score,
                         false,
+                        true,
                         true
                     );
 

@@ -36,6 +36,28 @@ public class NotificationEventController {
         return ResponseEntity.status(HttpStatus.CREATED).build();
     }
 
+    @PostMapping("/receiveEvents/{symbol}/{interval}/{indicator}")
+    public ResponseEntity<Void> createNotificationEvent(
+        @PathVariable String symbol,
+        @PathVariable String interval,
+        @PathVariable String indicator,
+        @RequestParam(value = "isVoice", defaultValue = "false") String isVoice,
+        @RequestParam(value = "isCall", defaultValue = "false") String isCall,
+        @RequestParam(value = "isAnnounce", defaultValue = "false") String isAnnounce,
+        @RequestBody(required = false) String payload
+    ) {
+        notificationProcessorService.processSpecificEventAndQueue(
+            symbol,
+            interval,
+            indicator,
+            payload,
+            isCall,
+            isVoice, // or whatever mapping you need
+            isAnnounce
+        );
+        return ResponseEntity.status(HttpStatus.CREATED).build();
+    }
+
     @PostMapping("/drt")
     public ResponseEntity<Void> consumeDealingRange(@RequestBody String payload) {
         notificationProcessorService.queueAndProcessNotification(payload);

@@ -20,7 +20,8 @@ public interface SignalActionProcessor {
         ZonedDateTime eventTime,
         BigDecimal score,
         boolean isStrategy,
-        boolean isAlertable
+        boolean isAlertable,
+        boolean isAnnounce
     );
 
     /**

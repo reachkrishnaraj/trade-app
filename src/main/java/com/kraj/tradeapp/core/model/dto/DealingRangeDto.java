@@ -33,4 +33,29 @@ public class DealingRangeDto {
     private boolean isExtremePosition;
     private BigDecimal rangeSize;
     private String alertMessage;
+
+    // New fields for enhanced tracking
+    private boolean quadrantChanged;
+    private int minutesInCurrentQuadrant;
+    private Quadrant previousQuadrant;
+    private ZonedDateTime lastQuadrantChange;
+
+    // Helper methods
+    public String getQuadrantDisplayText() {
+        if (currentQuadrant != null) {
+            return currentQuadrant.getDisplayName() + " (" + currentQuadrant.name() + ")";
+        }
+        return "Unknown";
+    }
+
+    public String getRangeText() {
+        if (rangeLow != null && rangeHigh != null) {
+            return rangeLow.toString() + " - " + rangeHigh.toString();
+        }
+        return "Unknown Range";
+    }
+
+    public boolean isBreached() {
+        return currentQuadrant == Quadrant.BREACH_ABOVE_RANGE || currentQuadrant == Quadrant.BREACH_BELOW_RANGE;
+    }
 }

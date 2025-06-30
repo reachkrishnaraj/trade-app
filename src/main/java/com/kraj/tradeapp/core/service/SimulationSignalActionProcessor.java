@@ -36,7 +36,8 @@ public class SimulationSignalActionProcessor implements SignalActionProcessor {
         ZonedDateTime eventTime,
         BigDecimal score,
         boolean isStrategy,
-        boolean isAlertable
+        boolean isAlertable,
+        boolean isAnnounce
     ) {
         log.debug("Creating SIMULATED signal action DTO for symbol: {}", symbol);
 
@@ -52,9 +53,10 @@ public class SimulationSignalActionProcessor implements SignalActionProcessor {
         signalAction.setDirection(mapDirectionToSignalDirection(direction));
         signalAction.setDateTime(CommonUtil.getNYLocalDateTimeNow());
         signalAction.setStatus(determineSimulatedStatus(score));
+        signalAction.setAnnounce(isAnnounce);
 
         log.info(
-            "Created SIMULATED SignalAction DTO: {} for {} at price {}",
+            "Created SIMULATED SignalAction DTO: {} for {} at price {}, isAnnounce: {}",
             signalAction.getSignalName(),
             signalAction.getSymbol(),
             signalAction.getPrice()

@@ -78,6 +78,8 @@ public class SecurityConfiguration {
                     .requestMatchers(mvc.pattern("/api/v1/alerts/**")).permitAll()
                     .requestMatchers(mvc.pattern("/api/v1/testVoiceMsg")).permitAll()
                     .requestMatchers(mvc.pattern("/api/v1/notifications/receiveEvents")).permitAll()
+                    .requestMatchers(mvc.pattern("/api/v1/notifications/receiveEvents/**")).permitAll()
+                    .requestMatchers(mvc.pattern("/api/dealing-range/v2/**")).permitAll()
                     .requestMatchers(mvc.pattern("/api/dealing-range/**")).permitAll()
                     .requestMatchers(mvc.pattern("/api/v1/testing/**")).permitAll()
                     .requestMatchers(mvc.pattern("/api/v1/notifications/ohlc/**")).permitAll()

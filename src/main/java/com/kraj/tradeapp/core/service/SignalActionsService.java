@@ -97,7 +97,8 @@ public class SignalActionsService {
         ZonedDateTime eventTime,
         BigDecimal score,
         boolean isStrategy,
-        boolean isAlertable
+        boolean isAlertable,
+        boolean isAnnounce
     ) {
         log.debug("Creating signal action from external event for symbol: {}", symbol);
 
@@ -116,7 +117,8 @@ public class SignalActionsService {
                 interval,
                 alertMessage,
                 direction,
-                eventTime
+                eventTime,
+                isAnnounce
             );
         } else {
             log.debug("Using processor: {} for external event", processor.getProcessorType());
@@ -133,7 +135,8 @@ public class SignalActionsService {
                 eventTime,
                 score,
                 isStrategy,
-                isAlertable
+                isAlertable,
+                isAnnounce
             );
         }
 
@@ -332,7 +335,8 @@ public class SignalActionsService {
         String interval,
         String alertMessage,
         String direction,
-        ZonedDateTime eventTime
+        ZonedDateTime eventTime,
+        boolean isAnnounce
     ) {
         SignalActionDTO signalAction = new SignalActionDTO();
         signalAction.setSymbol(symbol);
@@ -344,6 +348,7 @@ public class SignalActionsService {
         signalAction.setDirection(mapDirection(direction));
         signalAction.setDateTime(CommonUtil.getNYLocalDateTimeNow());
         signalAction.setStatus(SignalActionDTO.SignalStatus.PENDING);
+        signalAction.setAnnounce(isAnnounce);
 
         return signalAction; // Return DTO, let createSignalAction handle storage
     }
